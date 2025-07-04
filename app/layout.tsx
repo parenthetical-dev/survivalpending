@@ -28,7 +28,7 @@ export default function RootLayout({
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
         <AuthProvider>
           <div className="min-h-screen flex flex-col relative">

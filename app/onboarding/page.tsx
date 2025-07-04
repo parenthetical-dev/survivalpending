@@ -73,8 +73,8 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="fixed top-0 left-0 right-0 bg-gradient-to-b from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="fixed top-0 left-0 right-0 bg-gray-50 dark:bg-gray-900 z-10">
         <div className="container max-w-2xl mx-auto px-4 py-4 md:py-8">
           <div className="text-center">
             <h1 className="text-2xl md:text-3xl">

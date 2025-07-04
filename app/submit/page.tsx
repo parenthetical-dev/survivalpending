@@ -90,10 +90,10 @@ export default function SubmitStoryPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <QuickExitButton />
       
-      <div className="fixed top-0 left-0 right-0 bg-gradient-to-b from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent z-10">
+      <div className="fixed top-0 left-0 right-0 bg-gray-50 dark:bg-gray-900 z-10">
         <div className="container max-w-4xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl">
