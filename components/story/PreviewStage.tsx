@@ -91,44 +91,44 @@ export default function PreviewStage({
 
 
   return (
-    <div className="container max-w-3xl mx-auto px-4">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Preview your story</h2>
-        <p className="text-muted-foreground">
+    <div className="container max-w-3xl mx-auto px-3 sm:px-4">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-3xl font-bold mb-2">Preview your story</h2>
+        <p className="text-xs sm:text-base text-muted-foreground">
           Listen to how your story sounds. Make sure you're happy before publishing.
         </p>
       </div>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Your Story</CardTitle>
-          <CardDescription>
+      <Card className="mb-4 sm:mb-6">
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg">Your Story</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
             Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm dark:prose-invert max-w-none mb-6">
-            <p className="whitespace-pre-wrap">{content}</p>
+        <CardContent className="pt-3 sm:pt-6">
+          <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6">
+            <p className="whitespace-pre-wrap text-xs sm:text-sm">{content}</p>
           </div>
 
           {loading && (
-            <div className="flex flex-col items-center justify-center py-8 space-y-4">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Generating audio...</p>
+            <div className="flex flex-col items-center justify-center py-6 sm:py-8 space-y-3 sm:space-y-4">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+              <p className="text-xs sm:text-sm text-muted-foreground">Generating audio...</p>
             </div>
           )}
 
           {error && (
             <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4" />
+              <AlertDescription className="text-xs sm:text-sm">{error}</AlertDescription>
             </Alert>
           )}
 
           {loading && (
-            <div className="flex flex-col items-center justify-center py-8 space-y-4">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Generating audio...</p>
+            <div className="flex flex-col items-center justify-center py-6 sm:py-8 space-y-3 sm:space-y-4">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
+              <p className="text-xs sm:text-sm text-muted-foreground">Generating audio...</p>
             </div>
           )}
 
@@ -141,8 +141,8 @@ export default function PreviewStage({
               />
 
               <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                <AlertDescription className="text-xs sm:text-sm">
                   Your story will be anonymous. Both the audio and text will be preserved to share your truth, but your identity remains protected.
                 </AlertDescription>
               </Alert>
@@ -151,27 +151,29 @@ export default function PreviewStage({
         </CardContent>
       </Card>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
         <Button
           variant="outline"
-          size="lg"
+          size="default"
           onClick={onEdit}
           disabled={loading}
+          className="w-full sm:w-auto"
         >
-          <Edit3 className="w-4 h-4 mr-2" />
+          <Edit3 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
           Edit Story
         </Button>
         <Button
-          size="lg"
+          size="default"
           onClick={onComplete}
           disabled={loading || !!error}
+          className="w-full sm:w-auto"
         >
-          <Share2 className="w-4 h-4 mr-2" />
+          <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
           Publish Story
         </Button>
       </div>
 
-      <p className="text-center text-sm text-muted-foreground mt-6">
+      <p className="text-center text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6">
         By publishing, you're helping preserve our collective truth. Thank you for your courage.
       </p>
     </div>

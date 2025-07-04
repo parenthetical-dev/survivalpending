@@ -99,7 +99,7 @@ export default function SubmitStoryPage() {
             <h1 className="text-2xl">
               <Logo />
             </h1>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground mr-24 md:mr-32">
               {currentStage === 'write' && 'Step 1 of 4: Write'}
               {currentStage === 'refine' && 'Step 2 of 4: Refine'}
               {currentStage === 'voice' && 'Step 3 of 4: Voice'}

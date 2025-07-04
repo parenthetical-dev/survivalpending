@@ -87,15 +87,15 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
 
   return (
     <div className="container max-w-4xl mx-auto px-4">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">What's your story?</h2>
-        <p className="text-muted-foreground">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">What's your story?</h2>
+        <p className="text-sm md:text-base text-muted-foreground">
           Take your time. Every word matters.
         </p>
       </div>
 
       <Card className="p-0 overflow-hidden">
-        <div className="p-6 pb-4">
+        <div className="p-4 md:p-6 pb-3 md:pb-4">
           <Textarea
             ref={textareaRef}
             value={content}
@@ -137,13 +137,13 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               }
             }}
             placeholder="Start typing... Your words will become a voice for others to hear."
-            className="min-h-[400px] text-lg leading-relaxed border-0 focus:ring-0 resize-none"
+            className="min-h-[300px] md:min-h-[400px] text-base md:text-lg leading-relaxed border-0 focus:ring-0 resize-none"
             autoFocus
           />
         </div>
 
-        <div className="border-t bg-gray-50 dark:bg-gray-900 px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="border-t bg-gray-50 dark:bg-gray-900 px-4 md:px-6 py-3 md:py-4">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
             <div className="flex items-center gap-4">
               <Button
                 variant={showPrompts || showIdlePrompt ? "default" : "ghost"}
@@ -158,15 +158,15 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               </Button>
               
               {autoSaved && (
-                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
                   <Save className="w-3 h-3" />
                   Saved
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="text-xs md:text-sm text-muted-foreground">
                 <span className={cn(
                   "font-mono",
                   remainingChars < 100 && "text-orange-600",
@@ -177,7 +177,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
                 <span className="text-muted-foreground"> / {CHARACTER_LIMIT}</span>
               </div>
               
-              <div className="text-sm text-muted-foreground">
+              <div className="text-xs md:text-sm text-muted-foreground hidden sm:block">
                 ~90 seconds
               </div>
             </div>
@@ -205,14 +205,14 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
         />
       )}
 
-      <div className="mt-8 space-y-4">
-        <p className="text-center text-sm text-muted-foreground">
+      <div className="mt-6 md:mt-8 space-y-3 md:space-y-4">
+        <p className="text-center text-xs md:text-sm text-muted-foreground px-4">
           Your story will be transformed into audio to preserve your voice anonymously
         </p>
 
         <div className="flex justify-center">
           <Button
-            size="lg"
+            size="default"
             onClick={() => onComplete(content)}
             disabled={!canContinue}
           >

@@ -83,32 +83,37 @@ export default function SubmitStoryPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <QuickExitButton />
       
-      <div className="py-8">
-        <div className="container max-w-5xl mx-auto px-4 mb-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-center">Share Your Story</h1>
-            
-            <div className="max-w-2xl mx-auto">
-              <Progress value={progress} className="h-2" />
-              <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                <span className={currentStage === 'write' ? 'font-semibold text-primary' : ''}>
-                  Write
-                </span>
-                <span className={currentStage === 'refine' ? 'font-semibold text-primary' : ''}>
-                  Refine
-                </span>
-                <span className={currentStage === 'voice' ? 'font-semibold text-primary' : ''}>
-                  Voice
-                </span>
-                <span className={currentStage === 'preview' ? 'font-semibold text-primary' : ''}>
-                  Preview
-                </span>
-              </div>
+      <div className="py-4 md:py-8">
+        <div className="container max-w-5xl mx-auto px-4 mb-6 md:mb-8">
+          <div className="space-y-3 md:space-y-4">
+            <h1 className="text-2xl md:text-4xl font-bold text-center">Share Your Story</h1>
+          </div>
+        </div>
+
+        {/* Progress indicator moved to bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-4 z-40">
+          <div className="max-w-md md:max-w-2xl mx-auto">
+            <div className="flex justify-center mb-2">
+              <Progress value={progress} className="h-1.5 md:h-2 w-48 md:w-64" />
+            </div>
+            <div className="flex justify-between text-xs md:text-sm text-muted-foreground">
+              <span className={currentStage === 'write' ? 'font-semibold text-primary' : ''}>
+                Write
+              </span>
+              <span className={currentStage === 'refine' ? 'font-semibold text-primary' : ''}>
+                Refine
+              </span>
+              <span className={currentStage === 'voice' ? 'font-semibold text-primary' : ''}>
+                Voice
+              </span>
+              <span className={currentStage === 'preview' ? 'font-semibold text-primary' : ''}>
+                Preview
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="container max-w-5xl mx-auto px-4">
+        <div className="container max-w-5xl mx-auto px-4 pb-20">
           {currentStage === 'write' && (
             <WriteStage onComplete={handleWriteComplete} />
           )}

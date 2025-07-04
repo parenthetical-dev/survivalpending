@@ -125,41 +125,41 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
 
   const getVoiceIcon = (name: string) => {
     // Return different icons based on voice characteristics
-    if (['Sarah', 'Emily', 'Bella', 'Domi'].includes(name)) return <Heart className="w-4 h-4" />;
-    if (['Josh', 'Adam'].includes(name)) return <User className="w-4 h-4" />;
-    if (['Arnold'].includes(name)) return <Globe className="w-4 h-4" />;
-    return <Mic className="w-4 h-4" />;
+    if (['Sarah', 'Emily', 'Bella', 'Domi'].includes(name)) return <Heart className="w-3 h-3 sm:w-4 sm:h-4" />;
+    if (['Josh', 'Adam'].includes(name)) return <User className="w-3 h-3 sm:w-4 sm:h-4" />;
+    if (['Arnold'].includes(name)) return <Globe className="w-3 h-3 sm:w-4 sm:h-4" />;
+    return <Mic className="w-3 h-3 sm:w-4 sm:h-4" />;
   };
 
   const selectedVoiceData = VOICE_OPTIONS.find(v => v.voiceId === selectedVoice)!;
 
   return (
-    <div className="container max-w-3xl mx-auto px-4">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Choose your voice</h2>
-        <p className="text-muted-foreground">
+    <div className="container max-w-3xl mx-auto px-3 sm:px-4">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-3xl font-bold mb-2">Choose your voice</h2>
+        <p className="text-xs sm:text-base text-muted-foreground">
           Select a voice that feels right for your story. Each voice brings its own character.
         </p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Volume2 className="w-5 h-5" />
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
             Available Voices
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Click preview to hear each voice read your story's opening
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-3 sm:pt-6">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
-            <div className="grid gap-4">
+            <div className="space-y-3 sm:space-y-4">
               {VOICE_OPTIONS.map((voice) => (
                 <div
                   key={voice.voiceId}
                   className={cn(
-                    "relative rounded-lg border p-4 cursor-pointer transition-all hover:border-primary",
+                    "relative rounded-lg border p-3 sm:p-4 cursor-pointer transition-all hover:border-primary",
                     selectedVoice === voice.voiceId && "border-primary bg-primary/5"
                   )}
                   onClick={() => setSelectedVoice(voice.voiceId)}
@@ -168,7 +168,7 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
                     <RadioGroupItem value={voice.voiceId} className="mt-1" />
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label className="font-semibold flex items-center gap-2 cursor-pointer">
+                        <Label className="text-sm sm:text-base font-semibold flex items-center gap-1 sm:gap-2 cursor-pointer">
                           {getVoiceIcon(voice.name)}
                           {voice.name}
                         </Label>
@@ -176,7 +176,7 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
                           {voice.accent}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {voice.description}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -186,6 +186,7 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="text-xs sm:text-sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePreview(voice.voiceId);
@@ -197,7 +198,8 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
                       ) : (
                         <>
                           <Volume2 className="w-3 h-3 mr-1" />
-                          Preview
+                          <span className="hidden sm:inline">Preview</span>
+                          <span className="sm:hidden">Play</span>
                         </>
                       )}
                     </Button>
@@ -209,16 +211,17 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
         </CardContent>
       </Card>
 
-      <div className="mt-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
-        <p className="text-sm text-center text-muted-foreground">
+      <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+        <p className="text-xs sm:text-sm text-center text-muted-foreground">
           <strong>Note:</strong> All voices are AI-generated to protect your anonymity. 
           No human voice recordings are used or stored.
         </p>
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-6 sm:mt-8 flex justify-center">
         <Button
-          size="lg"
+          size="default"
+          className="w-full sm:w-auto"
           onClick={() => onComplete(selectedVoiceData)}
         >
           Continue to Preview

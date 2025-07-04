@@ -90,32 +90,32 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
 
   return (
     <div className="container max-w-4xl mx-auto px-4">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Let's make your story resonate</h2>
-        <p className="text-muted-foreground">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">Let's make your story resonate</h2>
+        <p className="text-sm md:text-base text-muted-foreground px-4">
           AI suggestions to enhance clarity and impact. Your voice remains authentic.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Your Story</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-base md:text-lg">Your Story</CardTitle>
+              <CardDescription className="text-xs md:text-sm">
                 {editing ? 'Edit directly or apply suggestions' : 'Original version'}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               {editing ? (
                 <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="min-h-[400px] text-base leading-relaxed"
+                  className="min-h-[300px] md:min-h-[400px] text-sm md:text-base leading-relaxed"
                 />
               ) : (
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <p className="whitespace-pre-wrap">{content}</p>
+                <div className="prose prose-xs md:prose-sm dark:prose-invert max-w-none">
+                  <p className="whitespace-pre-wrap text-sm md:text-base">{content}</p>
                 </div>
               )}
               
@@ -124,7 +124,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      <span className="text-xs md:text-sm font-medium text-blue-900 dark:text-blue-100">
                         AI Suggested Complete Rewrite
                       </span>
                     </div>
@@ -179,16 +179,16 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
 
         <div>
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
                 AI Suggestions
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs md:text-sm">
                 Optional enhancements for clarity and impact
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               {loading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
@@ -212,13 +212,13 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
                     <Card 
                       key={index}
                       className={cn(
-                        "p-4 cursor-pointer transition-all",
+                        "p-3 md:p-4 cursor-pointer transition-all",
                         appliedSuggestions.has(index) && "opacity-50"
                       )}
                     >
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl">{getSuggestionIcon(suggestion.type)}</span>
-                        <div className="flex-1 space-y-2">
+                      <div className="flex items-start gap-2 md:gap-3">
+                        <span className="text-lg md:text-2xl">{getSuggestionIcon(suggestion.type)}</span>
+                        <div className="flex-1 space-y-1.5 md:space-y-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary" className="text-xs">
                               {suggestion.type}
@@ -229,8 +229,8 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{suggestion.reason}</p>
-                          <div className="text-sm space-y-1">
+                          <p className="text-xs md:text-sm text-muted-foreground">{suggestion.reason}</p>
+                          <div className="text-xs md:text-sm space-y-1">
                             <div className="line-through opacity-60">{suggestion.original}</div>
                             <div className="font-medium">{suggestion.suggested}</div>
                           </div>
@@ -254,24 +254,26 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="mt-6 md:mt-8 flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
         <Button
           variant="outline"
-          size="lg"
+          size="default"
           onClick={onSkip}
+          className="w-full sm:w-auto"
         >
           <SkipForward className="w-4 h-4 mr-2" />
           Skip Refinement
         </Button>
         <Button
-          size="lg"
+          size="default"
           onClick={() => onComplete(content)}
+          className="w-full sm:w-auto"
         >
           Continue to Voice Selection
         </Button>
       </div>
 
-      <p className="text-center text-sm text-muted-foreground mt-4">
+      <p className="text-center text-xs md:text-sm text-muted-foreground mt-3 md:mt-4 px-4">
         These are just suggestions. Your authentic voice matters most.
       </p>
     </div>
