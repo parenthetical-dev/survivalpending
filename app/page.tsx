@@ -146,7 +146,7 @@ export default function HomePage() {
       </div>
 
         {/* Value Props - All on one card */}
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-gray-50 dark:bg-gray-900">
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
               <div className="text-center px-4 md:px-0">
@@ -177,7 +177,7 @@ export default function HomePage() {
         </div>
 
         {/* How It Works - All steps on one card */}
-        <div className="bg-gray-50 dark:bg-gray-800">
+        <div className="bg-white dark:bg-gray-800">
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
             <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16">How It Works</h3>
             
@@ -230,7 +230,7 @@ export default function HomePage() {
         </div>
 
         {/* CTA section */}
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-gray-50 dark:bg-gray-900">
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
             <div className="flex flex-col md:flex-row gap-4 justify-center">
               <Link href="/signup" className="w-full md:w-auto">
