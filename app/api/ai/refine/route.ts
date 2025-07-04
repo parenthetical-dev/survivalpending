@@ -29,39 +29,40 @@ export async function POST(request: NextRequest) {
 
     const completion = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1000,
+      max_tokens: 1500,
       temperature: 0.3,
       messages: [
         {
           role: 'user',
           content: `You are helping refine personal stories for an LGBTQ+ testimony platform. The stories will be converted to 90-second audio clips.
 
-Analyze this story and suggest 2-3 specific improvements for:
-1. Clarity - Make key moments clearer
-2. Impact - Strengthen emotional resonance
-3. Flow - Improve narrative structure
+Analyze this story and provide TWO options:
 
 Story:
 "${content}"
 
-Return suggestions in this JSON format:
+Return a response in this JSON format:
 {
+  "refinedVersion": "A complete refined version of the story with better flow and structure (only if significant restructuring would help)",
   "suggestions": [
     {
       "type": "clarity|impact|flow",
-      "original": "exact phrase from the story",
-      "suggested": "improved version",
+      "original": "exact phrase that exists in the story",
+      "suggested": "direct replacement phrase",
       "reason": "brief explanation"
     }
   ]
 }
 
-Important:
-- Preserve the authentic voice
-- Keep suggestions minimal and specific
-- Don't over-edit or sanitize emotions
-- Focus on moments that could be clearer or more impactful
-- Respect the 90-second audio constraint`
+CRITICAL RULES:
+- For "suggestions": ONLY suggest changes that work as direct find-and-replace
+- The "original" must be an EXACT phrase from the story that can be found and replaced
+- Do NOT suggest moving sentences or restructuring in the suggestions array
+- If the story needs restructuring, provide a complete "refinedVersion" instead
+- Keep the authentic voice - don't over-polish
+- Respect the 90-second constraint (about 1000 characters)
+- Don't sanitize emotions or difficult content
+- Maximum 3-4 suggestions that work as simple replacements`
         }
       ]
     });

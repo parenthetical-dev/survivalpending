@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { voicePreviewLimiter } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +21,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Check rate limit
+    const rateLimitResult = await voicePreviewLimiter.check(payload.userId);
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests. Please try again later.',
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          }
+        }
+      );
+    }
+
     // In development, return a dummy audio file
     if (process.env.NODE_ENV === 'development' && !process.env.ELEVENLABS_API_KEY) {
       // Return a simple beep sound as base64
@@ -35,29 +55,62 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': process.env.ELEVENLABS_API_KEY!,
-        },
-        body: JSON.stringify({
-          text: text.slice(0, 100), // Limit preview length
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5,
-          },
-        }),
-      }
-    );
+    // Retry logic for ElevenLabs API
+    let response;
+    let retries = 3;
+    let lastError;
 
-    if (!response.ok) {
-      console.error('ElevenLabs error:', await response.text());
-      throw new Error('Failed to generate audio');
+    while (retries > 0) {
+      try {
+        response = await fetch(
+          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+          {
+            method: 'POST',
+            headers: {
+              'Accept': 'audio/mpeg',
+              'Content-Type': 'application/json',
+              'xi-api-key': process.env.ELEVENLABS_API_KEY!,
+            },
+            body: JSON.stringify({
+              text: text.slice(0, 100), // Limit preview length
+              model_id: 'eleven_turbo_v2_5', // Updated to newer, faster model
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.5,
+                style: 0,
+                use_speaker_boost: true,
+              },
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('ElevenLabs error:', errorText);
+          
+          // Check for specific error codes
+          if (response.status === 429) {
+            // Rate limit - wait before retry
+            await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+            retries--;
+            lastError = new Error('Rate limit exceeded');
+            continue;
+          } else if (response.status === 401) {
+            throw new Error('Invalid API key');
+          } else if (response.status === 422) {
+            throw new Error('Invalid voice ID');
+          }
+          
+          throw new Error(`Failed to generate audio: ${errorText}`);
+        }
+        
+        break; // Success, exit loop
+      } catch (error) {
+        lastError = error;
+        retries--;
+        if (retries === 0) throw lastError;
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
 
     const audioBuffer = await response.arrayBuffer();

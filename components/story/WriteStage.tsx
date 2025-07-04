@@ -100,6 +100,42 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
             ref={textareaRef}
             value={content}
             onChange={(e) => handleContentChange(e.target.value)}
+            onPaste={(e) => {
+              // Explicitly allow paste and handle it
+              e.stopPropagation();
+              const pastedText = e.clipboardData.getData('text/plain');
+              const currentValue = e.currentTarget.value;
+              const selectionStart = e.currentTarget.selectionStart;
+              const selectionEnd = e.currentTarget.selectionEnd;
+              
+              const newValue = 
+                currentValue.substring(0, selectionStart) + 
+                pastedText + 
+                currentValue.substring(selectionEnd);
+              
+              if (newValue.length <= CHARACTER_LIMIT) {
+                e.preventDefault();
+                handleContentChange(newValue);
+                // Restore cursor position after paste
+                setTimeout(() => {
+                  if (textareaRef.current) {
+                    const newCursorPos = selectionStart + pastedText.length;
+                    textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+                  }
+                }, 0);
+              } else {
+                // If pasted content would exceed limit, truncate it
+                e.preventDefault();
+                const remainingSpace = CHARACTER_LIMIT - currentValue.length + (selectionEnd - selectionStart);
+                const truncatedPaste = pastedText.substring(0, Math.max(0, remainingSpace));
+                const truncatedValue = 
+                  currentValue.substring(0, selectionStart) + 
+                  truncatedPaste + 
+                  currentValue.substring(selectionEnd);
+                handleContentChange(truncatedValue);
+                toast.warning('Content was truncated to fit the character limit');
+              }
+            }}
             placeholder="Start typing... Your words will become a voice for others to hear."
             className="min-h-[400px] text-lg leading-relaxed border-0 focus:ring-0 resize-none"
             autoFocus

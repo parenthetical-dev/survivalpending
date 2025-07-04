@@ -74,7 +74,7 @@ const VOICE_OPTIONS: VoiceSettings[] = [
     style: 'Gentle delivery, perfect for vulnerable moments'
   },
   {
-    voiceId: 'EXAVITQu4vr4xnSDxMaL',
+    voiceId: 'ThT5KcBeYPX3keUQqHPh',
     name: 'Bella',
     description: 'Warm and supportive',
     accent: 'American',

@@ -69,5 +69,6 @@ export async function authenticateUser(username: string, password: string) {
     id: user.id,
     username: user.username,
     token: generateToken(user.id),
+    hasCompletedOnboarding: user.hasCompletedOnboarding,
   };
 }

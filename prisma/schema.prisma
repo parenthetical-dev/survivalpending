@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,46 +8,47 @@ datasource db {
 }
 
 model User {
-  id            String             @id @default(cuid())
-  username      String             @unique
-  passwordHash  String
-  createdAt     DateTime           @default(now())
-  lastLogin     DateTime?
-  isBanned      Boolean            @default(false)
-  demographics  UserDemographics?
-  stories       Story[]
-  interventions CrisisInterventionLog[]
+  id                     String                  @id @default(cuid())
+  username               String                  @unique
+  passwordHash           String
+  createdAt              DateTime                @default(now())
+  lastLogin              DateTime?
+  isBanned               Boolean                 @default(false)
+  hasCompletedOnboarding Boolean                 @default(false)
+  interventions          CrisisInterventionLog[]
+  stories                Story[]
+  demographics           UserDemographics?
 }
 
 model UserDemographics {
   id             String   @id @default(cuid())
   userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ageRange       String   // Required: 13-17, 18-24, 25-34, etc.
-  state          String   // Required: US state code
-  genderIdentity String?  // Optional
-  racialIdentity String?  // Optional
-  urbanicity     String?  // Optional: urban, suburban, rural
+  ageRange       String
+  state          String
+  genderIdentity String?
+  racialIdentity String?
+  urbanicity     String?
   createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Story {
-  id               String            @id @default(cuid())
+  id               String                  @id @default(cuid())
   userId           String
-  user             User              @relation(fields: [userId], references: [id])
-  contentText      String            @db.Text
-  contentSanitized String?           @db.Text
+  contentText      String
+  contentSanitized String?
   audioUrl         String?
-  audioJobId       String?           // ElevenLabs job ID for tracking
+  audioJobId       String?
   voiceId          String?
-  status           StoryStatus       @default(PENDING)
+  status           StoryStatus             @default(PENDING)
   moderationNotes  String?
-  sentimentFlags   Json?             // AI analysis results
-  createdAt        DateTime          @default(now())
+  sentimentFlags   Json?
+  createdAt        DateTime                @default(now())
   approvedAt       DateTime?
-  approvedBy       String?           // Admin ID
-  moderationLogs   ModerationLog[]
+  approvedBy       String?
   interventions    CrisisInterventionLog[]
+  moderationLogs   ModerationLog[]
+  user             User                    @relation(fields: [userId], references: [id])
 
   @@index([status, createdAt])
   @@index([userId])
@@ -59,26 +57,26 @@ model Story {
 model CrisisInterventionLog {
   id                String              @id @default(cuid())
   userId            String
-  user              User                @relation(fields: [userId], references: [id])
   storyId           String?
-  story             Story?              @relation(fields: [storyId], references: [id])
   triggerType       InterventionTrigger
   interventionShown Boolean             @default(true)
   resourcesClicked  String[]            @default([])
   timestamp         DateTime            @default(now())
+  story             Story?              @relation(fields: [storyId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
 
   @@index([userId, timestamp])
 }
 
 model ModerationLog {
-  id          String          @id @default(cuid())
+  id          String           @id @default(cuid())
   storyId     String
-  story       Story           @relation(fields: [storyId], references: [id])
   moderatorId String
-  moderator   Admin           @relation(fields: [moderatorId], references: [id])
   action      ModerationAction
   reason      String?
-  timestamp   DateTime        @default(now())
+  timestamp   DateTime         @default(now())
+  moderator   Admin            @relation(fields: [moderatorId], references: [id])
+  story       Story            @relation(fields: [storyId], references: [id])
 
   @@index([storyId, timestamp])
 }
@@ -92,7 +90,6 @@ model Admin {
   moderationLogs ModerationLog[]
 }
 
-// Enums
 enum StoryStatus {
   PENDING
   APPROVED

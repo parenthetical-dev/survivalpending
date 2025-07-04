@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       success: true,
       token: result.token,
       userId: result.id,
+      hasCompletedOnboarding: result.hasCompletedOnboarding,
     });
   } catch (error) {
     console.error('Login error:', error);

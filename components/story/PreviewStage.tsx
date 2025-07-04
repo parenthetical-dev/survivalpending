@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Volume2, 
@@ -19,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
+import VoiceWaveform from '@/components/audio/VoiceWaveform';
 
 interface PreviewStageProps {
   content: string;
@@ -39,16 +39,11 @@ export default function PreviewStage({
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     generateAudio();
     return () => {
-      if (audio) {
-        audio.pause();
-        audio.src = '';
-      }
-      if (audioUrl) {
+      if (audioUrl && audioUrl.startsWith('blob:')) {
         URL.revokeObjectURL(audioUrl);
       }
     };
@@ -72,23 +67,22 @@ export default function PreviewStage({
         throw new Error('Failed to generate audio');
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
+      let url: string;
+      
+      // Check if response is JSON (new format) or blob (fallback format)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        url = data.url;
+        setAudioUrl(url);
+      } else {
+        // Fallback: handle direct audio response
+        const blob = await response.blob();
+        url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+      }
 
-      // Create audio element
-      const audioElement = new Audio(url);
-      audioElement.addEventListener('loadedmetadata', () => {
-        setDuration(audioElement.duration);
-      });
-      audioElement.addEventListener('timeupdate', () => {
-        setCurrentTime(audioElement.currentTime);
-      });
-      audioElement.addEventListener('ended', () => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-      });
-      setAudio(audioElement);
+      // Audio will be handled by Howler
     } catch (err) {
       setError('Failed to generate audio. Please try again.');
       console.error('Audio generation error:', err);
@@ -98,23 +92,22 @@ export default function PreviewStage({
   };
 
   const togglePlayPause = () => {
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play();
-    }
     setIsPlaying(!isPlaying);
   };
 
   const restart = () => {
-    if (!audio) return;
-    audio.currentTime = 0;
     setCurrentTime(0);
-    if (isPlaying) {
-      audio.play();
-    }
+    setIsPlaying(true); // Will trigger seek to 0 and play
+  };
+  
+  const handleTimeUpdate = (current: number, total: number) => {
+    setCurrentTime(current);
+    setDuration(total);
+  };
+  
+  const handleEnd = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
   };
 
   const formatTime = (seconds: number) => {
@@ -173,7 +166,14 @@ export default function PreviewStage({
                   </span>
                 </div>
 
-                <Progress value={progress} className="mb-4" />
+                <VoiceWaveform 
+                  audioUrl={audioUrl}
+                  isPlaying={isPlaying}
+                  onPlayPause={setIsPlaying}
+                  onTimeUpdate={handleTimeUpdate}
+                  onEnd={handleEnd}
+                  className="mb-6"
+                />
 
                 <div className="flex items-center justify-center gap-4">
                   <Button
@@ -206,7 +206,7 @@ export default function PreviewStage({
               <Alert>
                 <CheckCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Your story will be anonymous. Only this audio will be shared, never your text or identity.
+                  Your story will be anonymous. Both the audio and text will be preserved to share your truth, but your identity remains protected.
                 </AlertDescription>
               </Alert>
             </div>

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
+import { generateVoiceAudio, uploadAudioToStorage } from '@/lib/voice-generation';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -63,12 +64,71 @@ Story: "${contentText}"`
         userId: payload.userId,
         contentText,
         contentSanitized: contentSanitized || contentText,
+        voiceId,
         sentimentFlags,
         status: 'PENDING',
-        // TODO: Generate and store audio URL from ElevenLabs
-        audioUrl: null,
+        audioUrl: null, // Will be updated after audio generation
       },
     });
+
+    // Generate audio for the story
+    let audioGenerationFailed = false;
+    try {
+      const textToGenerate = contentSanitized || contentText;
+      const audioResult = await generateVoiceAudio(
+        textToGenerate,
+        voiceId,
+        payload.userId,
+        true // Skip rate limit for story submission
+      );
+
+      if (audioResult.success) {
+        // Upload audio to storage if we have a buffer
+        let finalAudioUrl = audioResult.audioUrl;
+        
+        if (audioResult.audioBuffer) {
+          const uploadedUrl = await uploadAudioToStorage(
+            audioResult.audioBuffer,
+            story.id,
+            payload.userId,
+            voiceId
+          );
+          if (uploadedUrl) {
+            finalAudioUrl = uploadedUrl;
+          }
+        }
+
+        // Update the story with the audio URL
+        if (finalAudioUrl) {
+          await prisma.story.update({
+            where: { id: story.id },
+            data: { audioUrl: finalAudioUrl },
+          });
+        }
+      } else {
+        console.error('Audio generation failed:', audioResult.error);
+        audioGenerationFailed = true;
+        
+        // Update story with a flag indicating audio generation failed
+        await prisma.story.update({
+          where: { id: story.id },
+          data: { 
+            moderationNotes: `Audio generation failed: ${audioResult.error}` 
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error during audio generation:', error);
+      audioGenerationFailed = true;
+      
+      // Update story with error information
+      await prisma.story.update({
+        where: { id: story.id },
+        data: { 
+          moderationNotes: `Audio generation error: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        },
+      });
+    }
 
     // If crisis content detected, log it
     if (sentimentFlags.hasCrisisContent && sentimentFlags.riskLevel !== 'none') {
@@ -84,7 +144,8 @@ Story: "${contentText}"`
     return NextResponse.json({ 
       success: true,
       storyId: story.id,
-      hasCrisisContent: sentimentFlags.hasCrisisContent 
+      hasCrisisContent: sentimentFlags.hasCrisisContent,
+      audioGenerated: !audioGenerationFailed
     });
   } catch (error) {
     console.error('Story submission error:', error);

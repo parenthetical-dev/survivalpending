@@ -55,7 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('username', username);
     
     setUser({ id: data.userId, username });
-    router.push('/onboarding');
+    
+    // Route based on onboarding status
+    if (data.hasCompletedOnboarding) {
+      router.push('/dashboard');
+    } else {
+      router.push('/onboarding');
+    }
   };
 
   const signup = async (username: string, password: string, turnstileToken: string) => {

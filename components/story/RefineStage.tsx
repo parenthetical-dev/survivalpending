@@ -22,9 +22,16 @@ interface Suggestion {
   reason: string;
 }
 
+interface RefineResponse {
+  refinedVersion?: string;
+  suggestions: Suggestion[];
+}
+
 export default function RefineStage({ originalContent, onComplete, onSkip }: RefineStageProps) {
   const [content, setContent] = useState(originalContent);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [refinedVersion, setRefinedVersion] = useState<string | null>(null);
+  const [showRefinedVersion, setShowRefinedVersion] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [appliedSuggestions, setAppliedSuggestions] = useState<Set<number>>(new Set());
@@ -46,8 +53,11 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
 
       if (!response.ok) throw new Error('Failed to get suggestions');
 
-      const data = await response.json();
-      setSuggestions(data.suggestions);
+      const data: RefineResponse = await response.json();
+      setSuggestions(data.suggestions || []);
+      if (data.refinedVersion && data.refinedVersion !== originalContent) {
+        setRefinedVersion(data.refinedVersion);
+      }
     } catch (error) {
       toast.error('Failed to load suggestions. You can continue without them.');
       setSuggestions([]);
@@ -57,6 +67,12 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
   };
 
   const applySuggestion = (index: number, suggestion: Suggestion) => {
+    // Don't apply individual suggestions if using refined version
+    if (showRefinedVersion) {
+      toast.warning('Please revert to original before applying individual suggestions');
+      return;
+    }
+    
     const newContent = content.replace(suggestion.original, suggestion.suggested);
     setContent(newContent);
     setAppliedSuggestions(new Set([...appliedSuggestions, index]));
@@ -100,6 +116,42 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
               ) : (
                 <div className="prose prose-sm dark:prose-invert max-w-none">
                   <p className="whitespace-pre-wrap">{content}</p>
+                </div>
+              )}
+              
+              {refinedVersion && !editing && (
+                <div className="mt-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        AI Suggested Complete Rewrite
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant={showRefinedVersion ? "default" : "outline"}
+                      onClick={() => {
+                        if (!showRefinedVersion) {
+                          setContent(refinedVersion);
+                          setShowRefinedVersion(true);
+                          toast.success('Applied refined version');
+                        } else {
+                          setContent(originalContent);
+                          setShowRefinedVersion(false);
+                          setAppliedSuggestions(new Set());
+                          toast.info('Reverted to original');
+                        }
+                      }}
+                    >
+                      {showRefinedVersion ? 'Revert to Original' : 'Try This Version'}
+                    </Button>
+                  </div>
+                  {!showRefinedVersion && (
+                    <p className="text-xs text-muted-foreground">
+                      The AI has suggested a restructured version for better flow
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -146,9 +198,14 @@ export default function RefineStage({ originalContent, onComplete, onSkip }: Ref
                   ))}
                 </div>
               ) : suggestions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  Your story is already powerful as written!
-                </p>
+                <div className="text-center text-muted-foreground py-8">
+                  <p>Your story is already powerful as written!</p>
+                  {refinedVersion && (
+                    <p className="text-sm mt-2">
+                      Check the complete rewrite option on the left for structural improvements.
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-3">
                   {suggestions.map((suggestion, index) => (

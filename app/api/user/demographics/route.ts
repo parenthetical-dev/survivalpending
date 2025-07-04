@@ -64,6 +64,17 @@ export async function POST(request: NextRequest) {
         },
       });
     }
+    
+    // Mark onboarding as complete
+    try {
+      await prisma.user.update({
+        where: { id: payload.userId },
+        data: { hasCompletedOnboarding: true },
+      });
+    } catch (updateError) {
+      console.error('Failed to update onboarding status:', updateError);
+      // Continue anyway - demographics are saved
+    }
 
     return NextResponse.json({
       success: true,
@@ -71,8 +82,15 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Demographics save error:', error);
+    
+    // More detailed error response for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
     return NextResponse.json(
-      { error: 'Failed to save demographics' },
+      { 
+        error: 'Failed to save demographics',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }

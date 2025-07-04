@@ -20,7 +20,7 @@ export default function SubmitStoryPage() {
   const [currentStage, setCurrentStage] = useState<Stage>('write');
   const [storyContent, setStoryContent] = useState('');
   const [refinedContent, setRefinedContent] = useState('');
-  const [selectedVoice, setSelectedVoice] = useState('');
+  const [selectedVoice, setSelectedVoice] = useState<any>(null);
   const [audioUrl, setAudioUrl] = useState('');
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function SubmitStoryPage() {
         body: JSON.stringify({
           content: refinedContent,
           originalContent: storyContent,
-          voiceId: selectedVoice,
+          voiceId: selectedVoice?.voiceId,
         }),
       });
 
@@ -109,17 +109,19 @@ export default function SubmitStoryPage() {
         {currentStage === 'voice' && (
           <VoiceStage 
             content={refinedContent}
-            onVoiceSelected={handleVoiceSelected}
-            onBack={() => setCurrentStage('refine')}
+            onComplete={(voiceSettings) => {
+              setSelectedVoice(voiceSettings);
+              setCurrentStage('preview');
+            }}
           />
         )}
         
-        {currentStage === 'preview' && (
+        {currentStage === 'preview' && selectedVoice && (
           <PreviewStage 
             content={refinedContent}
-            voiceId={selectedVoice}
-            onSubmit={handleSubmit}
-            onBack={() => setCurrentStage('voice')}
+            voiceSettings={selectedVoice}
+            onComplete={handleSubmit}
+            onEdit={() => setCurrentStage('write')}
           />
         )}
       </div>

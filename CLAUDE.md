@@ -46,7 +46,7 @@
 
 ### Critical Features
 - ❌ ElevenLabs API integration (currently returns dummy audio in dev)
-- ❌ Cloud storage for audio files (Cloudflare R2 recommended)
+- ✅ Cloud storage for audio files (Vercel Blob implemented)
 - ❌ Homepage with 2-3 sample stories
 - ❌ Admin moderation portal
 - ❌ Crisis intervention flow (when high-risk content detected)
@@ -78,11 +78,9 @@ ANTHROPIC_API_KEY=    # For content refinement
 ELEVENLABS_API_KEY=   # For text-to-speech
 TURNSTILE_SECRET_KEY= # For captcha verification
 JWT_SECRET=           # For auth tokens
+BLOB_READ_WRITE_TOKEN=# For Vercel Blob storage
 
 # Production only:
-CLOUDFLARE_R2_ACCESS_KEY=
-CLOUDFLARE_R2_SECRET_KEY=
-CLOUDFLARE_R2_BUCKET=
 UPSTASH_REDIS_URL=
 UPSTASH_REDIS_TOKEN=
 ```
@@ -105,10 +103,9 @@ npx prisma studio # View database
 
 ## Next Steps Priority
 1. Set up ElevenLabs API key and test audio generation
-2. Implement cloud storage for audio files
-3. Build homepage with sample stories
-4. Add crisis intervention flow
-5. Deploy to production
+2. Build homepage with sample stories
+3. Add crisis intervention flow
+4. Deploy to production
 
 ## Notes for Future Development
 - The RefineStage AI should preserve authentic voice while improving clarity
