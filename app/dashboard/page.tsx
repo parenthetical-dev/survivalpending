@@ -87,39 +87,39 @@ export default function DashboardPage() {
       <QuickExitButton />
       
       {/* Header with Logo */}
-      <div className="container max-w-6xl mx-auto px-4 py-6">
-        <Logo />
+      <div className="container max-w-6xl mx-auto px-4 py-4 md:py-6">
+        <Logo className="text-xl md:text-2xl" />
       </div>
       
-      <div className="container max-w-6xl mx-auto px-4 pb-8">
+      <div className="container max-w-6xl mx-auto px-4 pb-6 md:pb-8">
         {/* Welcome Back Section */}
-        <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">
+        <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-4xl font-bold mb-2">
           Welcome back, {user?.username}
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-muted-foreground text-sm md:text-lg">
           Document your truth. Before they erase it.
         </p>
       </div>
 
       {/* Safety Reminder Alert */}
-      <Alert className="mb-8 border-orange-200 bg-orange-50 dark:bg-orange-950/20">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Safety Reminder</AlertTitle>
-        <AlertDescription>
+      <Alert className="mb-6 md:mb-8 border-orange-200 bg-orange-50 dark:bg-orange-950/20 p-3 md:p-4">
+        <AlertTriangle className="h-3 w-3 md:h-4 md:w-4" />
+        <AlertTitle className="text-sm md:text-base">Safety Reminder</AlertTitle>
+        <AlertDescription className="text-xs md:text-sm mt-1">
           For your protection, always browse in private/incognito mode and clear your history when done.
           You can quickly exit at any time by pressing ESC 3 times.
         </AlertDescription>
       </Alert>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* Quick Actions */}
         <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>What would you like to do?</CardTitle>
-            <CardDescription>Choose an action to continue</CardDescription>
+          <CardHeader className="pb-4 md:pb-6">
+            <CardTitle className="text-lg md:text-xl">What would you like to do?</CardTitle>
+            <CardDescription className="text-sm">Choose an action to continue</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 md:space-y-4 pt-0">
             <Button 
               size="lg" 
               className="w-full justify-between"
@@ -175,17 +175,17 @@ export default function DashboardPage() {
 
         {/* Your Impact */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-red-500" />
+          <CardHeader className="pb-4 md:pb-6">
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+              <Heart className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
               Your Impact
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="space-y-4">
               <div className="text-center">
-                <p className="text-5xl font-bold text-primary">{stories}</p>
-                <p className="text-base font-medium text-muted-foreground mt-2">
+                <p className="text-4xl md:text-5xl font-bold text-primary">{stories}</p>
+                <p className="text-sm md:text-base font-medium text-muted-foreground mt-1 md:mt-2">
                   {stories === 1 ? 'Story Documented' : 'Stories Documented'}
                 </p>
               </div>
@@ -205,22 +205,22 @@ export default function DashboardPage() {
 
       {/* Safety Tips */}
       <Card>
-        <CardHeader>
-          <CardTitle>Safety Tips</CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-4 md:pb-6">
+          <CardTitle className="text-lg md:text-xl">Safety Tips</CardTitle>
+          <CardDescription className="text-sm">
             Important reminders to keep you protected
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-4">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             {safetyTips.map((tip, index) => (
               <div key={index} className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <tip.icon className="w-5 h-5 text-primary mt-0.5" />
+                  <tip.icon className="w-4 h-4 md:w-5 md:h-5 text-primary mt-0.5" />
                 </div>
                 <div>
-                  <h4 className="font-medium mb-1">{tip.title}</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="font-medium text-sm md:text-base mb-0.5 md:mb-1">{tip.title}</h4>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     {tip.description}
                   </p>
                 </div>
@@ -231,34 +231,50 @@ export default function DashboardPage() {
       </Card>
 
         {/* Crisis Resources */}
-        <div className="mt-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-red-500" />
-            <p className="text-sm font-medium text-red-600 dark:text-red-400">
+        <div className="mt-6 md:mt-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2 md:mb-3">
+            <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 text-red-500" />
+            <p className="text-xs md:text-sm font-medium text-red-600 dark:text-red-400">
               Emergency? Dial 911
             </p>
           </div>
-          <p className="text-sm text-muted-foreground mb-2">
+          <p className="text-xs md:text-sm text-muted-foreground mb-2">
             If you're in crisis or need immediate support:
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <a 
-              href="https://translifeline.org" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Trans Lifeline: 877-565-8860
-            </a>
-            <span className="text-muted-foreground">•</span>
-            <a 
-              href="https://www.thetrevorproject.org" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Trevor Project: 1-866-488-7386
-            </a>
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-2 sm:gap-4 text-xs md:text-sm">
+            <div className="flex items-center justify-center gap-2">
+              <a 
+                href="https://translifeline.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Trans Lifeline:
+              </a>
+              <a 
+                href="tel:8775658860"
+                className="text-primary hover:underline font-mono"
+              >
+                877-565-8860
+              </a>
+            </div>
+            <span className="text-muted-foreground hidden sm:inline">•</span>
+            <div className="flex items-center justify-center gap-2">
+              <a 
+                href="https://www.thetrevorproject.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Trevor Project:
+              </a>
+              <a 
+                href="tel:18664887386"
+                className="text-primary hover:underline font-mono"
+              >
+                1-866-488-7386
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -267,8 +283,7 @@ export default function DashboardPage() {
         open={showShareModal}
         onClose={() => setShowShareModal(false)}
         onShare={() => {
-          // Refresh share count after sharing
-          setShares(prev => prev + 1);
+          // Could track sharing analytics here if needed
         }}
       />
     </div>
