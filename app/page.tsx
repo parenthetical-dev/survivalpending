@@ -106,12 +106,22 @@ export default function HomePage() {
                 </nav>
                 <div className="absolute bottom-8 left-8 right-8 space-y-4">
                   <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                    <a 
+                      href="https://app.termly.io/policy-viewer/policy.html?policyUUID=61228498-eb21-4048-bf3a-00a9518e88c3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                    >
                       Privacy
-                    </Link>
-                    <Link href="/terms" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                    </a>
+                    <a 
+                      href="https://app.termly.io/policy-viewer/policy.html?policyUUID=69f226cd-4d1f-4513-b13e-7b7060379aac"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                    >
                       Terms
-                    </Link>
+                    </a>
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-500">
                     <div className="flex items-center gap-2 flex-wrap">

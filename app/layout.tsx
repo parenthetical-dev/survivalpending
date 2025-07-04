@@ -49,12 +49,22 @@ export default function RootLayout({
                   <span>All Rights Reserved.</span>
                 </div>
                 <div className="flex items-center gap-6">
-                  <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                  <a 
+                    href="https://app.termly.io/policy-viewer/policy.html?policyUUID=61228498-eb21-4048-bf3a-00a9518e88c3" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                  >
                     Privacy Policy
-                  </Link>
-                  <Link href="/terms" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                  </a>
+                  <a 
+                    href="https://app.termly.io/policy-viewer/policy.html?policyUUID=69f226cd-4d1f-4513-b13e-7b7060379aac"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                  >
                     Terms of Service
-                  </Link>
+                  </a>
                 </div>
               </div>
             </footer>

@@ -21,7 +21,7 @@ interface WhatsThisModalProps {
 export function WhatsThisModal({ isOpen, onClose }: WhatsThisModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] sm:w-[90vw] max-w-5xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[90vw] lg:w-[90vw] xl:w-[85vw] max-w-7xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
         <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-1">
           <DialogHeader className="space-y-3 sm:space-y-4">
             <DialogTitle className="sr-only">About Survival Pending</DialogTitle>
