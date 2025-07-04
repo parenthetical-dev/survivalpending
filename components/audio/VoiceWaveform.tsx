@@ -23,7 +23,7 @@ export default function VoiceWaveform({
 }: VoiceWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const howlRef = useRef<Howl | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [waveformData, setWaveformData] = useState<number[]>([]);
 

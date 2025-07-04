@@ -32,7 +32,7 @@ export default function PrismaticWaveform({
   className 
 }: PrismaticWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
@@ -49,13 +49,13 @@ export default function PrismaticWaveform({
       // Check if audio element already has a source
       if (!(audioElement as any).audioSourceNode) {
         audioContextRef.current = new AudioContext();
-        analyserRef.current = audioContextRef.current.createAnalyser();
+        analyserRef.current = audioContextRef.current!.createAnalyser();
         analyserRef.current.fftSize = 512; // Higher for better frequency resolution
         analyserRef.current.smoothingTimeConstant = 0.85; // Smoother transitions
         
         sourceRef.current = audioContextRef.current.createMediaElementSource(audioElement);
         sourceRef.current.connect(analyserRef.current);
-        analyserRef.current.connect(audioContextRef.current.destination);
+        analyserRef.current.connect(audioContextRef.current!.destination);
         
         // Mark the audio element to prevent re-connection
         (audioElement as any).audioSourceNode = sourceRef.current;
@@ -64,11 +64,11 @@ export default function PrismaticWaveform({
         // Reuse existing audio context
         const existingSource = (audioElement as any).audioSourceNode;
         audioContextRef.current = existingSource.context;
-        analyserRef.current = audioContextRef.current.createAnalyser();
+        analyserRef.current = audioContextRef.current!.createAnalyser();
         analyserRef.current.fftSize = 512;
         analyserRef.current.smoothingTimeConstant = 0.85;
         existingSource.connect(analyserRef.current);
-        analyserRef.current.connect(audioContextRef.current.destination);
+        analyserRef.current.connect(audioContextRef.current!.destination);
       }
     } catch (error) {
       console.error('Audio context error:', error);

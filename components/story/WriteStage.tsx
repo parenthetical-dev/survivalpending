@@ -23,8 +23,8 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [showIdlePrompt, setShowIdlePrompt] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
-  const idleTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const idleTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const remainingChars = CHARACTER_LIMIT - content.length;
   const progress = (content.length / CHARACTER_LIMIT) * 100;

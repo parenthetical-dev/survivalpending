@@ -28,7 +28,7 @@ export default function ThreeWaveform({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const barsRef = useRef<THREE.Mesh[]>([]);
   const howlRef = useRef<Howl | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   

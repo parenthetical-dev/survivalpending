@@ -17,7 +17,7 @@ export default function DynamicWaveform({
   className 
 }: DynamicWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const [isSetup, setIsSetup] = useState(false);

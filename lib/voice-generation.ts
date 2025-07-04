@@ -40,7 +40,7 @@ export async function generateVoiceAudio(
         audioBuffer: Buffer.from(
           'UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=',
           'base64'
-        )
+        ).buffer as ArrayBuffer
       };
     }
 
@@ -100,7 +100,7 @@ export async function generateVoiceAudio(
         lastError = error;
         retries--;
         if (retries === 0) {
-          return { success: false, error: lastError?.message || 'Failed to generate audio' };
+          return { success: false, error: (lastError as any)?.message || 'Failed to generate audio' };
         }
         await new Promise(resolve => setTimeout(resolve, 500));
       }

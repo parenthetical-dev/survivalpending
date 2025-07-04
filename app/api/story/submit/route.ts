@@ -9,6 +9,12 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
+interface SentimentFlags {
+  hasCrisisContent?: boolean;
+  riskLevel?: 'none' | 'low' | 'medium' | 'high';
+  categories?: Array<'self-harm' | 'suicidal' | 'violence' | 'none'>;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -29,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Run sentiment analysis for crisis detection
-    let sentimentFlags = {};
+    let sentimentFlags: SentimentFlags = {};
     try {
       const sentimentResponse = await anthropic.messages.create({
         model: 'claude-3-5-sonnet-20241022',
@@ -54,7 +60,7 @@ Story: "${contentText}"`
         ? sentimentResponse.content[0].text 
         : '{}';
       
-      sentimentFlags = JSON.parse(responseText);
+      sentimentFlags = JSON.parse(responseText) as SentimentFlags;
     } catch (error) {
       console.error('Sentiment analysis error:', error);
     }
@@ -66,7 +72,7 @@ Story: "${contentText}"`
         contentText,
         contentSanitized: contentSanitized || contentText,
         voiceId,
-        sentimentFlags,
+        sentimentFlags: sentimentFlags as any, // Convert to Prisma Json type
         flaggedHighRisk: sentimentFlags?.riskLevel === 'high',
         flaggedCrisis: sentimentFlags?.hasCrisisContent === true,
         flaggedPositive: false, // This would need a separate analysis
@@ -135,7 +141,7 @@ Story: "${contentText}"`
     }
 
     // If crisis content detected, log it (intervention will be shown on frontend)
-    if (sentimentFlags.hasCrisisContent && sentimentFlags.riskLevel !== 'none') {
+    if (sentimentFlags?.hasCrisisContent && sentimentFlags?.riskLevel !== 'none') {
       await prisma.crisisInterventionLog.create({
         data: {
           userId: payload.userId,
@@ -166,7 +172,7 @@ Story: "${contentText}"`
     return NextResponse.json({ 
       success: true,
       storyId: story.id,
-      hasCrisisContent: sentimentFlags.hasCrisisContent,
+      hasCrisisContent: sentimentFlags?.hasCrisisContent || false,
       audioGenerated: !audioGenerationFailed
     });
   } catch (error) {

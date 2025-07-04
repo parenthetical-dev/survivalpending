@@ -102,7 +102,7 @@ export default function LoginForm() {
           ) : (
             <div className="flex justify-center pt-2">
               <Turnstile
-                sitekey="0x4AAAAAABjlVsWX1T32zuBH"
+                siteKey="0x4AAAAAABjlVsWX1T32zuBH"
                 onSuccess={(token) => setTurnstileToken(token)}
               />
             </div>

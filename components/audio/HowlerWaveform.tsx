@@ -23,7 +23,7 @@ export default function HowlerWaveform({
 }: HowlerWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const howlRef = useRef<Howl | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [bars] = useState(100);
   const [waveformData] = useState(() => {

@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const audioBuffer = await response.arrayBuffer();
+    const audioBuffer = await response!.arrayBuffer();
     
     return new NextResponse(audioBuffer, {
       headers: {

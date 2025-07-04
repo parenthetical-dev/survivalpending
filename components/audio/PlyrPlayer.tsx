@@ -63,10 +63,12 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
 
     const initPlyr = async () => {
       const Plyr = (await import('plyr')).default;
+      // @ts-ignore - CSS imports
       await import('plyr/dist/plyr.css');
+      // @ts-ignore - CSS imports
       await import('@/styles/plyr-custom.css');
       
-      plyrRef.current = new Plyr(audioRef.current, {
+      plyrRef.current = new Plyr(audioRef.current!, {
         controls: ['play', 'progress', 'current-time', 'duration', 'volume'],
         settings: [],
         keyboard: { focused: true, global: false }
