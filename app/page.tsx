@@ -67,11 +67,13 @@ export default function HomePage() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] px-8">
-                <SheetHeader className="mb-8">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] px-8 pt-12">
+                <div className="mb-8">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  <Logo className="text-2xl" />
-                </SheetHeader>
+                  <div className="flex justify-start">
+                    <Logo className="text-2xl" />
+                  </div>
+                </div>
                 <nav className="flex flex-col gap-3">
                   <a 
                     href="#"
