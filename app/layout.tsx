@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
+import Link from "next/link";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -29,7 +30,26 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} font-sans antialiased`}
       >
         <AuthProvider>
-          {children}
+          <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+            <main className="flex-1">
+              {children}
+            </main>
+            <footer className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+              <div className="px-24 py-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                <div>
+                  MMXXV All Rights Reserved.
+                </div>
+                <div className="flex items-center gap-6">
+                  <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                    Terms of Service
+                  </Link>
+                </div>
+              </div>
+            </footer>
+          </div>
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </body>
