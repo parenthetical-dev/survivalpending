@@ -1,6 +1,7 @@
 import LoginForm from '@/components/auth/LoginForm';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/ui/logo';
 import { ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
@@ -19,12 +20,12 @@ export default function LoginPage() {
 
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="w-full max-w-[450px] space-y-6">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Welcome Back
+          <div className="flex flex-col space-y-4 text-center">
+            <h1 className="text-3xl">
+              <Logo />
             </h1>
-            <p className="text-muted-foreground">
-              Your story continues here
+            <p className="text-lg text-muted-foreground">
+              Still here. Still documenting.
             </p>
           </div>
 
