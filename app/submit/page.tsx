@@ -9,6 +9,7 @@ import RefineStage from '@/components/story/RefineStage';
 import VoiceStage from '@/components/story/VoiceStage';
 import PreviewStage from '@/components/story/PreviewStage';
 import QuickExitButton from '@/components/safety/QuickExitButton';
+import CrisisInterventionModal from '@/components/safety/CrisisInterventionModal';
 import { toast } from 'sonner';
 
 const STAGES = ['write', 'refine', 'voice', 'preview'] as const;
@@ -22,6 +23,8 @@ export default function SubmitStoryPage() {
   const [refinedContent, setRefinedContent] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<any>(null);
   const [audioUrl, setAudioUrl] = useState('');
+  const [showCrisisModal, setShowCrisisModal] = useState(false);
+  const [crisisInterventionLogId, setCrisisInterventionLogId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -64,8 +67,21 @@ export default function SubmitStoryPage() {
         throw new Error('Failed to submit story');
       }
 
-      toast.success('Your story has been submitted for review.');
-      router.push('/dashboard');
+      const data = await response.json();
+      
+      // Clear the draft from localStorage after successful submission
+      localStorage.removeItem('draft_story');
+      
+      if (data.hasCrisisContent) {
+        // Show crisis intervention modal
+        setShowCrisisModal(true);
+        setCrisisInterventionLogId(data.storyId); // Store for tracking resource clicks
+      } else {
+        toast.success('Your story has been submitted for review.');
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
+      }
     } catch (error) {
       toast.error('Failed to submit story. Please try again.');
     }
@@ -125,6 +141,19 @@ export default function SubmitStoryPage() {
           />
         )}
       </div>
+      
+      <CrisisInterventionModal
+        open={showCrisisModal}
+        onClose={() => {
+          setShowCrisisModal(false);
+          toast.success('Your story has been submitted for review.');
+          router.push('/dashboard');
+        }}
+        onResourceClick={async (resource) => {
+          // TODO: Track which resources were clicked
+          console.log('Resource clicked:', resource);
+        }}
+      />
     </div>
   );
 }

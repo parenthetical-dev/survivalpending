@@ -134,15 +134,15 @@ Story: "${contentText}"`
       });
     }
 
-    // If crisis content detected, log it
+    // If crisis content detected, log it (intervention will be shown on frontend)
     if (sentimentFlags.hasCrisisContent && sentimentFlags.riskLevel !== 'none') {
       await prisma.crisisInterventionLog.create({
         data: {
           userId: payload.userId,
           storyId: story.id,
           triggerType: 'SENTIMENT_ANALYSIS',
-          interventionShown: true,
-          resourcesClicked: [], // Store riskLevel in sentiment flags instead
+          interventionShown: false, // Will be updated when actually shown
+          resourcesClicked: [],
         },
       });
     }

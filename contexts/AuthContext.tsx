@@ -89,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
+    localStorage.removeItem('draft_story'); // Clear any saved drafts
     setUser(null);
     router.push('/');
   };

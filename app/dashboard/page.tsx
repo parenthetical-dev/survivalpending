@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import QuickExitButton from '@/components/safety/QuickExitButton';
+import { Logo } from '@/components/ui/logo';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -26,13 +27,31 @@ export default function DashboardPage() {
   const [lastStoryDate, setLastStoryDate] = useState<string | null>(null);
 
   useEffect(() => {
-    // In a real app, fetch user's stories count and last story date
-    // For now, we'll use localStorage to check if they have any drafts
-    const draft = localStorage.getItem('draft_story');
-    if (draft) {
-      setStories(1);
+    // Fetch user's actual story count
+    const fetchStoryCount = async () => {
+      try {
+        const response = await fetch('/api/user/stories/count', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setStories(data.count);
+          if (data.lastStoryDate) {
+            setLastStoryDate(data.lastStoryDate);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch story count:', error);
+      }
+    };
+
+    if (user) {
+      fetchStoryCount();
     }
-  }, []);
+  }, [user]);
 
   const handleNewStory = () => {
     router.push('/submit');
@@ -61,16 +80,22 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="container max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <QuickExitButton />
       
-      {/* Welcome Back Section */}
-      <div className="mb-8">
+      {/* Header with Logo */}
+      <div className="container max-w-6xl mx-auto px-4 py-6">
+        <Logo />
+      </div>
+      
+      <div className="container max-w-6xl mx-auto px-4 pb-8">
+        {/* Welcome Back Section */}
+        <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">
           Welcome back, {user?.username}
         </h1>
         <p className="text-muted-foreground text-lg">
-          Your voice matters. Your truth is important.
+          Document your truth. Before they erase it.
         </p>
       </div>
 
@@ -185,29 +210,36 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Crisis Resources */}
-      <div className="mt-8 text-center">
-        <p className="text-sm text-muted-foreground mb-2">
-          If you're in crisis or need immediate support:
-        </p>
-        <div className="flex flex-wrap justify-center gap-4 text-sm">
-          <a 
-            href="https://translifeline.org" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            Trans Lifeline: 877-565-8860
-          </a>
-          <span className="text-muted-foreground">•</span>
-          <a 
-            href="https://www.thetrevorproject.org" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            Trevor Project: 1-866-488-7386
-          </a>
+        {/* Crisis Resources */}
+        <div className="mt-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <AlertTriangle className="w-4 h-4 text-red-500" />
+            <p className="text-sm font-medium text-red-600 dark:text-red-400">
+              Emergency? Dial 911
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            If you're in crisis or need immediate support:
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <a 
+              href="https://translifeline.org" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Trans Lifeline: 877-565-8860
+            </a>
+            <span className="text-muted-foreground">•</span>
+            <a 
+              href="https://www.thetrevorproject.org" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Trevor Project: 1-866-488-7386
+            </a>
+          </div>
         </div>
       </div>
     </div>
