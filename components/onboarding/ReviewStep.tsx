@@ -30,23 +30,23 @@ export default function ReviewStep({ data, onBack, onComplete }: ReviewStepProps
 
   return (
     <>
-      <CardHeader>
-        <CardTitle className="text-2xl">Ready to Share Your Story</CardTitle>
+      <CardHeader className="pb-4 md:pb-6">
+        <CardTitle className="text-xl md:text-2xl">Ready to Share Your Story</CardTitle>
         <CardDescription>
           Review your information and start documenting
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 md:space-y-6 pt-0">
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+          <AlertDescription className="text-xs md:text-sm text-green-800">
             You're in. Time to document your truth.
           </AlertDescription>
         </Alert>
 
         <div className="space-y-4">
-          <h3 className="font-semibold">Your Information</h3>
+          <h3 className="font-semibold text-sm md:text-base">Your Information</h3>
           
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b">
@@ -82,19 +82,19 @@ export default function ReviewStep({ data, onBack, onComplete }: ReviewStepProps
           </div>
         </div>
 
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 md:p-4">
+          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
             Remember: Complete anonymity. Edit anytime. Your story matters.
           </p>
         </div>
       </CardContent>
 
-      <CardFooter className="flex gap-2">
-        <Button variant="outline" onClick={onBack}>
+      <CardFooter className="flex gap-2 pt-4 md:pt-6">
+        <Button variant="outline" size="default" onClick={onBack}>
           <Edit className="w-4 h-4 mr-2" />
           Edit
         </Button>
-        <Button onClick={onComplete} className="flex-1">
+        <Button onClick={onComplete} className="flex-1" size="default">
           Document My Story
         </Button>
       </CardFooter>

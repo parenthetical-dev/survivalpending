@@ -44,15 +44,15 @@ export default function LoginForm() {
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-        <CardDescription className="text-center">
+      <CardHeader className="space-y-1 pb-4 md:pb-6">
+        <CardTitle className="text-xl md:text-2xl font-bold text-center">Welcome Back</CardTitle>
+        <CardDescription className="text-center text-sm md:text-base">
           Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
       
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4 pt-0">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
@@ -115,18 +115,19 @@ export default function LoginForm() {
           )}
         </CardContent>
 
-        <CardFooter className="flex-col space-y-4">
+        <CardFooter className="flex-col space-y-3 md:space-y-4 pt-4 md:pt-6">
           <Button
             type="submit"
             className="w-full"
+            size="default"
             disabled={loading || !turnstileToken}
           >
             {loading ? 'Logging in...' : 'Log In'}
           </Button>
 
-          <Alert>
+          <Alert className="py-3">
             <KeyRound className="h-4 w-4" />
-            <AlertDescription className="text-sm">
+            <AlertDescription className="text-xs md:text-sm ml-1">
               <strong>Remember:</strong> Your username and password cannot be recovered. 
               Keep them safe.
             </AlertDescription>

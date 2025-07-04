@@ -30,17 +30,17 @@ export default function DemographicsStep({ data, onChange, onNext, onBack }: Dem
 
   return (
     <>
-      <CardHeader>
-        <CardTitle className="text-2xl">Help Us Understand</CardTitle>
+      <CardHeader className="pb-4 md:pb-6">
+        <CardTitle className="text-xl md:text-2xl">Help Us Understand</CardTitle>
         <CardDescription>
           Help us show the breadth of who's affected. Your data builds our collective evidence.
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
-        <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-lg p-4 flex gap-3">
+      <CardContent className="space-y-4 md:space-y-6 pt-0">
+        <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 md:p-4 flex gap-3">
           <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-amber-900 dark:text-amber-100">
+          <p className="text-xs md:text-sm text-amber-900 dark:text-amber-100">
             Only age and state required. Skip anything else. Individual data never shared.
           </p>
         </div>
@@ -131,13 +131,14 @@ export default function DemographicsStep({ data, onChange, onNext, onBack }: Dem
         </div>
       </CardContent>
 
-      <CardFooter className="flex gap-2">
-        <Button variant="outline" onClick={onBack}>
+      <CardFooter className="flex gap-2 pt-4 md:pt-6">
+        <Button variant="outline" size="default" onClick={onBack}>
           Back
         </Button>
         <Button 
           onClick={onNext} 
           className="flex-1"
+          size="default"
           disabled={!canContinue}
         >
           Continue
