@@ -6,10 +6,18 @@ import Link from "next/link";
 import { useState } from "react";
 import { WhatsThisModal } from "@/components/WhatsThisModal";
 import { ScrollingStories } from "@/components/ScrollingStories";
-import { PenTool, Sparkles, Mic, Play } from "lucide-react";
+import { PenTool, Sparkles, Mic, Play, Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function HomePage() {
   const [showWhatsThisModal, setShowWhatsThisModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   return (
     <>
@@ -17,33 +25,108 @@ export default function HomePage() {
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pb-8 md:pb-16 pointer-events-none">
         <div className="px-4 md:px-24 py-4 md:py-6 flex justify-between items-center pointer-events-auto">
           <Logo className="text-xl md:text-2xl" />
-          <div className="flex items-center gap-2 md:gap-4">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setShowWhatsThisModal(true)}
-              className="hidden md:inline-flex"
             >
               What's This?
             </Button>
-            <Link href="/login" className="hidden md:inline">
+            <Link href="/login">
               <Button variant="outline" size="sm">
                 Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="text-xs md:text-sm">
-                <span className="hidden md:inline">Document Your Story</span>
-                <span className="md:hidden">Share Story</span>
+              <Button size="sm">
+                Document Your Story
               </Button>
             </Link>
             <Button 
               size="sm" 
-              className="bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 hidden lg:inline-flex"
+              className="bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
               disabled
             >
               Browse Stories (Coming Soon)
             </Button>
+          </div>
+          
+          {/* Mobile Navigation */}
+          <div className="flex md:hidden items-center gap-2">
+            <Link href="/signup">
+              <Button size="sm" className="text-xs">
+                Share Story
+              </Button>
+            </Link>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] px-8">
+                <SheetHeader className="mb-8">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <Logo className="text-2xl" />
+                </SheetHeader>
+                <nav className="flex flex-col gap-3">
+                  <a 
+                    href="#"
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowWhatsThisModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    What's This?
+                  </a>
+                  <Link 
+                    href="/login" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Document Your Story
+                  </Link>
+                  <span className="text-sm text-gray-400 dark:text-gray-600 py-2">
+                    Browse Stories (Coming Soon)
+                  </span>
+                </nav>
+                <div className="absolute bottom-8 left-8 right-8 space-y-4">
+                  <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+                    <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                      Privacy
+                    </Link>
+                    <Link href="/terms" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                      Terms
+                    </Link>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span>MMXXV</span>
+                      <span 
+                        className="inline-flex items-center font-black tracking-tight"
+                        style={{ fontFamily: 'Satoshi, sans-serif' }}
+                      >
+                        Survival Pending
+                        <span className="inline-block w-[2px] h-[0.6em] bg-current ml-[2px] animate-blink" />
+                      </span>
+                    </div>
+                    <div className="mt-1">All Rights Reserved.</div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
