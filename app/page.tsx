@@ -35,6 +35,13 @@ export default function HomePage() {
                 Document Your Story
               </Button>
             </Link>
+            <Button 
+              size="sm" 
+              className="bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
+              disabled
+            >
+              Browse Stories (Coming Soon)
+            </Button>
           </div>
         </div>
       </div>
