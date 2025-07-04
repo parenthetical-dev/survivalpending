@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify({
               text: text.slice(0, 100), // Limit preview length
-              model_id: 'eleven_turbo_v2_5', // Updated to newer, faster model
+              model_id: 'eleven_multilingual_v2', // Higher quality, more emotional model
               voice_settings: {
                 stability: 0.5,
                 similarity_boost: 0.5,
