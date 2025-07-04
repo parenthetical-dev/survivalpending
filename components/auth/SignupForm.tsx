@@ -13,6 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { RefreshCw, Shield, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export default function SignupForm() {
   const { signup } = useAuth();
   const [usernames, setUsernames] = useState<string[]>([]);
@@ -21,7 +23,7 @@ export default function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState(isDevelopment ? 'development-token' : '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loadingUsernames, setLoadingUsernames] = useState(true);
@@ -102,7 +104,7 @@ export default function SignupForm() {
                       <RadioGroupItem value={username} id={username} />
                       <Label 
                         htmlFor={username} 
-                        className="flex-1 cursor-pointer font-mono"
+                        className="flex-1 cursor-pointer font-mono text-sm"
                       >
                         {username}
                       </Label>
@@ -179,12 +181,20 @@ export default function SignupForm() {
             </div>
           </div>
 
-          <div className="flex justify-center pt-2">
-            <Turnstile
-              sitekey="0x4AAAAAABjlVsWX1T32zuBH"
-              onSuccess={(token) => setTurnstileToken(token)}
-            />
-          </div>
+          {isDevelopment ? (
+            <Alert className="bg-yellow-50 border-yellow-200">
+              <AlertDescription className="text-sm text-yellow-800">
+                Development mode: Captcha bypassed
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <div className="flex justify-center pt-2">
+              <Turnstile
+                sitekey="0x4AAAAAABjlVsWX1T32zuBH"
+                onSuccess={(token) => setTurnstileToken(token)}
+              />
+            </div>
+          )}
 
           {error && (
             <Alert variant="destructive">

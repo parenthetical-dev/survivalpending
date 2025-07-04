@@ -11,12 +11,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export default function LoginForm() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState(isDevelopment ? 'development-token' : '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -91,12 +93,20 @@ export default function LoginForm() {
             </div>
           </div>
 
-          <div className="flex justify-center pt-2">
-            <Turnstile
-              sitekey="0x4AAAAAABjlVsWX1T32zuBH"
-              onSuccess={(token) => setTurnstileToken(token)}
-            />
-          </div>
+          {isDevelopment ? (
+            <Alert className="bg-yellow-50 border-yellow-200">
+              <AlertDescription className="text-sm text-yellow-800">
+                Development mode: Captcha bypassed
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <div className="flex justify-center pt-2">
+              <Turnstile
+                sitekey="0x4AAAAAABjlVsWX1T32zuBH"
+                onSuccess={(token) => setTurnstileToken(token)}
+              />
+            </div>
+          )}
 
           {error && (
             <Alert variant="destructive">
