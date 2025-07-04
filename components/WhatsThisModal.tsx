@@ -24,6 +24,7 @@ export function WhatsThisModal({ isOpen, onClose }: WhatsThisModalProps) {
       <DialogContent className="sm:!max-w-5xl max-h-[90vh] flex flex-col p-0 overflow-hidden" style={{ width: '90vw', maxWidth: '1280px' }}>
         <div className="p-8 overflow-y-auto flex-1">
           <DialogHeader className="space-y-4">
+            <DialogTitle className="sr-only">About Survival Pending</DialogTitle>
             <Logo className="text-2xl" />
             <DialogDescription className="text-xl font-semibold">
               A living archive of LGBTQ+ resilience in real time.
