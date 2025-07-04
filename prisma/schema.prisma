@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String             @id @default(cuid())
+  username      String             @unique
+  passwordHash  String
+  createdAt     DateTime           @default(now())
+  lastLogin     DateTime?
+  isBanned      Boolean            @default(false)
+  demographics  UserDemographics?
+  stories       Story[]
+  interventions CrisisInterventionLog[]
+}
+
+model UserDemographics {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ageRange       String   // Required: 13-17, 18-24, 25-34, etc.
+  state          String   // Required: US state code
+  genderIdentity String?  // Optional
+  racialIdentity String?  // Optional
+  urbanicity     String?  // Optional: urban, suburban, rural
+  createdAt      DateTime @default(now())
+}
+
+model Story {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id])
+  contentText      String            @db.Text
+  contentSanitized String?           @db.Text
+  audioUrl         String?
+  audioJobId       String?           // ElevenLabs job ID for tracking
+  voiceId          String?
+  status           StoryStatus       @default(PENDING)
+  moderationNotes  String?
+  sentimentFlags   Json?             // AI analysis results
+  createdAt        DateTime          @default(now())
+  approvedAt       DateTime?
+  approvedBy       String?           // Admin ID
+  moderationLogs   ModerationLog[]
+  interventions    CrisisInterventionLog[]
+
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+model CrisisInterventionLog {
+  id                String              @id @default(cuid())
+  userId            String
+  user              User                @relation(fields: [userId], references: [id])
+  storyId           String?
+  story             Story?              @relation(fields: [storyId], references: [id])
+  triggerType       InterventionTrigger
+  interventionShown Boolean             @default(true)
+  resourcesClicked  String[]            @default([])
+  timestamp         DateTime            @default(now())
+
+  @@index([userId, timestamp])
+}
+
+model ModerationLog {
+  id          String          @id @default(cuid())
+  storyId     String
+  story       Story           @relation(fields: [storyId], references: [id])
+  moderatorId String
+  moderator   Admin           @relation(fields: [moderatorId], references: [id])
+  action      ModerationAction
+  reason      String?
+  timestamp   DateTime        @default(now())
+
+  @@index([storyId, timestamp])
+}
+
+model Admin {
+  id             String          @id @default(cuid())
+  username       String          @unique
+  passwordHash   String
+  permissions    String[]        @default(["moderate"])
+  createdAt      DateTime        @default(now())
+  moderationLogs ModerationLog[]
+}
+
+// Enums
+enum StoryStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+  QUARANTINED
+}
+
+enum InterventionTrigger {
+  SUBMISSION
+  VIEWING
+  SENTIMENT_ANALYSIS
+  KEYWORD_DETECTION
+  OTHER
+}
+
+enum ModerationAction {
+  APPROVE
+  REJECT
+  FLAG
+  QUARANTINE
+  REQUEST_EDIT
+  NOTE
+}
