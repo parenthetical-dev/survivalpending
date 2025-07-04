@@ -5,6 +5,7 @@ import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { useState } from "react";
 import { WhatsThisModal } from "@/components/WhatsThisModal";
+import { ScrollingStories } from "@/components/ScrollingStories";
 import { PenTool, Sparkles, Mic, Play } from "lucide-react";
 
 export default function HomePage() {
@@ -40,13 +41,14 @@ export default function HomePage() {
 
       {/* Main content sections */}
       {/* Hero Section - 2/3 height */}
-        <div className="h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-          <div className="max-w-6xl mx-auto px-4 text-center">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Document your truth. Before they erase it.
-            </h2>
-          </div>
+      <div className="h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
+        <ScrollingStories />
+        <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+            Document your truth. Before they erase it.
+          </h2>
         </div>
+      </div>
 
         {/* Value Props - All on one card */}
         <div className="bg-white dark:bg-gray-900">
