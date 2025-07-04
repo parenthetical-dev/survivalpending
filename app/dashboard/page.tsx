@@ -14,17 +14,20 @@ import {
   Users,
   Heart,
   ArrowRight,
-  LogOut
+  LogOut,
+  Share2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 import { Logo } from '@/components/ui/logo';
+import ShareModal from '@/components/share/ShareModal';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [stories, setStories] = useState<number>(0);
   const [lastStoryDate, setLastStoryDate] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     // Fetch user's actual story count
@@ -133,6 +136,19 @@ export default function DashboardPage() {
               size="lg" 
               variant="outline"
               className="w-full justify-between"
+              onClick={() => setShowShareModal(true)}
+            >
+              <div className="flex items-center gap-3">
+                <Share2 className="w-5 h-5" />
+                <span>Share the Word</span>
+              </div>
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+            
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="w-full justify-between"
               onClick={() => router.push('/stories')}
               disabled
             >
@@ -167,15 +183,19 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div>
-                <p className="text-3xl font-bold">{stories}</p>
-                <p className="text-sm text-muted-foreground">
-                  {stories === 1 ? 'Story shared' : 'Stories shared'}
+              <div className="text-center">
+                <p className="text-5xl font-bold text-primary">{stories}</p>
+                <p className="text-base font-medium text-muted-foreground mt-2">
+                  {stories === 1 ? 'Story Documented' : 'Stories Documented'}
                 </p>
               </div>
-              {stories === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Ready to share your first story? Your voice can help others feel less alone.
+              {stories === 0 ? (
+                <p className="text-sm text-muted-foreground text-center">
+                  Ready to share your first story? Your truth matters and deserves to be preserved.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center">
+                  Thank you for documenting your truth. Every story helps build our collective archive.
                 </p>
               )}
             </div>
@@ -242,6 +262,15 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      
+      <ShareModal
+        open={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onShare={() => {
+          // Refresh share count after sharing
+          setShares(prev => prev + 1);
+        }}
+      />
     </div>
   );
 }
