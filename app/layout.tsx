@@ -12,8 +12,28 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Survival Pending - Share Your Story",
-  description: "A safe space for LGBTQ+ individuals to share their stories anonymously",
+  title: "Survival Pending | Document Your Truth. Before They Erase It.",
+  description: "An anonymous platform for LGBTQ+ people to document their stories and experiences. Create an undeniable record of our lives, struggles, and resilience in this critical moment.",
+  openGraph: {
+    title: "Survival Pending | Document Your Truth. Before They Erase It.",
+    description: "An anonymous platform for LGBTQ+ people to document their stories and experiences. Create an undeniable record of our lives, struggles, and resilience in this critical moment.",
+    images: [
+      {
+        url: "/ogimage.png",
+        width: 1200,
+        height: 630,
+        alt: "Survival Pending | Document Your Truth. Before They Erase It.",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Survival Pending | Document Your Truth. Before They Erase It.",
+    description: "An anonymous platform for LGBTQ+ people to document their stories and experiences. Create an undeniable record of our lives, struggles, and resilience in this critical moment.",
+    images: ["/ogimage.png"],
+  },
 };
 
 export default function RootLayout({
