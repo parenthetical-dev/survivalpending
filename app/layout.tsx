@@ -31,11 +31,11 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} font-sans antialiased`}
       >
         <AuthProvider>
-          <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-            <main className="flex-1">
+          <div className="min-h-screen flex flex-col relative">
+            <main className="flex-grow bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pb-16">
               {children}
             </main>
-            <footer className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+            <footer className="fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 z-40">
               <div className="px-24 py-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
                   <span>MMXXV</span>

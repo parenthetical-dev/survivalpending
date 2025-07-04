@@ -11,7 +11,7 @@ export default function HomePage() {
   const [showWhatsThisModal, setShowWhatsThisModal] = useState(false);
   
   return (
-    <div>
+    <>
       {/* Header with gradient fade */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pb-16 pointer-events-none">
         <div className="px-24 py-6 flex justify-between items-center pointer-events-auto">
@@ -39,8 +39,7 @@ export default function HomePage() {
       </div>
 
       {/* Main content sections */}
-      <div>
-        {/* Hero Section - 2/3 height */}
+      {/* Hero Section - 2/3 height */}
         <div className="h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-6xl mx-auto px-4 text-center">
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
@@ -157,12 +156,11 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
       
       <WhatsThisModal 
         isOpen={showWhatsThisModal} 
         onClose={() => setShowWhatsThisModal(false)} 
       />
-    </div>
+    </>
   );
 }
