@@ -42,21 +42,24 @@ export async function generateUsername(): Promise<string> {
       max_tokens: 20,
     });
 
-    const username = completion.choices[0]?.message?.content?.trim().toLowerCase();
+    const baseUsername = completion.choices[0]?.message?.content?.trim().toLowerCase();
     
     // Validate format
-    if (username && /^[a-z]+_[a-z]+$/.test(username)) {
-      return username;
+    if (baseUsername && /^[a-z]+_[a-z]+$/.test(baseUsername)) {
+      // Add random 3-4 digit suffix for uniqueness
+      const suffix = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+      return `${baseUsername}_${suffix}`;
     }
     
     // Fallback to local generation if Groq fails or returns invalid format
     throw new Error('Invalid format from Groq');
     
   } catch (error) {
-    // Fallback to local generation
+    // Fallback to local generation with suffix
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    return `${adjective}_${noun}`;
+    const suffix = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+    return `${adjective}_${noun}_${suffix}`;
   }
 }
 

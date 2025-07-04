@@ -1,4 +1,9 @@
 export async function verifyTurnstileToken(token: string): Promise<boolean> {
+  // Skip verification in development
+  if (process.env.NODE_ENV === 'development' && token === 'development-token') {
+    return true;
+  }
+
   const secretKey = process.env.TURNSTILE_SECRET_KEY!;
   
   const formData = new FormData();
