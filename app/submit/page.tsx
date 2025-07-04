@@ -47,15 +47,15 @@ export default function SubmitStoryPage() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('/api/stories/submit', {
+      const response = await fetch('/api/story/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
-          content: refinedContent,
-          originalContent: storyContent,
+          contentText: storyContent,
+          contentSanitized: refinedContent,
           voiceId: selectedVoice?.voiceId,
         }),
       });

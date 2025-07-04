@@ -3,6 +3,7 @@ import { verifyToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
 import { generateVoiceAudio, uploadAudioToStorage } from '@/lib/voice-generation';
+import { syncStoryToSanity } from '@/lib/sanity-sync';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -66,6 +67,9 @@ Story: "${contentText}"`
         contentSanitized: contentSanitized || contentText,
         voiceId,
         sentimentFlags,
+        flaggedHighRisk: sentimentFlags?.riskLevel === 'high',
+        flaggedCrisis: sentimentFlags?.hasCrisisContent === true,
+        flaggedPositive: false, // This would need a separate analysis
         status: 'PENDING',
         audioUrl: null, // Will be updated after audio generation
       },
@@ -134,11 +138,29 @@ Story: "${contentText}"`
     if (sentimentFlags.hasCrisisContent && sentimentFlags.riskLevel !== 'none') {
       await prisma.crisisInterventionLog.create({
         data: {
+          userId: payload.userId,
           storyId: story.id,
-          riskLevel: sentimentFlags.riskLevel,
+          triggerType: 'SENTIMENT_ANALYSIS',
           interventionShown: true,
+          resourcesClicked: [], // Store riskLevel in sentiment flags instead
         },
       });
+    }
+
+    // Sync to Sanity for moderation
+    try {
+      // Fetch the story with user data for Sanity sync
+      const storyWithUser = await prisma.story.findUnique({
+        where: { id: story.id },
+        include: { user: true }
+      });
+
+      if (storyWithUser) {
+        await syncStoryToSanity(storyWithUser);
+      }
+    } catch (sanityError) {
+      console.error('Failed to sync story to Sanity:', sanityError);
+      // Don't fail the submission if Sanity sync fails
     }
 
     return NextResponse.json({ 

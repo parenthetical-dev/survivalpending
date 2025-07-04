@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
-import VoiceWaveform from '@/components/audio/VoiceWaveform';
+import PlyrPlayer from '@/components/audio/PlyrPlayer';
 
 interface PreviewStageProps {
   content: string;
@@ -37,8 +37,6 @@ export default function PreviewStage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
     generateAudio();
@@ -82,7 +80,7 @@ export default function PreviewStage({
         setAudioUrl(url);
       }
 
-      // Audio will be handled by Howler
+      // Audio is handled by Plyr
     } catch (err) {
       setError('Failed to generate audio. Please try again.');
       console.error('Audio generation error:', err);
@@ -91,32 +89,6 @@ export default function PreviewStage({
     }
   };
 
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const restart = () => {
-    setCurrentTime(0);
-    setIsPlaying(true); // Will trigger seek to 0 and play
-  };
-  
-  const handleTimeUpdate = (current: number, total: number) => {
-    setCurrentTime(current);
-    setDuration(total);
-  };
-  
-  const handleEnd = () => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div className="container max-w-3xl mx-auto px-4">
@@ -153,55 +125,20 @@ export default function PreviewStage({
             </Alert>
           )}
 
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-8 space-y-4">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Generating audio...</p>
+            </div>
+          )}
+
           {!loading && !error && audioUrl && (
             <div className="space-y-4">
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Volume2 className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Audio Preview</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                  </span>
-                </div>
-
-                <VoiceWaveform 
-                  audioUrl={audioUrl}
-                  isPlaying={isPlaying}
-                  onPlayPause={setIsPlaying}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnd={handleEnd}
-                  className="mb-6"
-                />
-
-                <div className="flex items-center justify-center gap-4">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={restart}
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={togglePlayPause}
-                    className="px-8"
-                  >
-                    {isPlaying ? (
-                      <>
-                        <Pause className="w-5 h-5 mr-2" />
-                        Pause
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5 mr-2" />
-                        Play
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <PlyrPlayer 
+                audioUrl={audioUrl}
+                onEnd={() => setIsPlaying(false)}
+                className="mb-4"
+              />
 
               <Alert>
                 <CheckCircle className="h-4 w-4" />

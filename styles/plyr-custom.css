@@ -1,0 +1,72 @@
+/* Custom Plyr styling to remove white background */
+.plyr {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.plyr audio {
+  display: none !important;
+}
+
+.plyr__controls {
+  background: transparent !important;
+  border: none !important;
+  padding: 10px !important;
+}
+
+.plyr--audio .plyr__controls {
+  background: transparent !important;
+  border: none !important;
+  color: currentColor !important;
+}
+
+.plyr--audio .plyr__control {
+  color: currentColor !important;
+}
+
+.plyr--audio .plyr__control:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.plyr--audio .plyr__control.plyr__tab-focus,
+.plyr--audio .plyr__control:hover,
+.plyr--audio .plyr__control[aria-expanded=true] {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: currentColor !important;
+}
+
+.plyr__progress__buffer,
+.plyr__progress__played,
+.plyr__volume__display {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.plyr--audio .plyr__progress__buffer {
+  color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.plyr--full-ui input[type=range] {
+  color: #666 !important;
+}
+
+.plyr__menu {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Time display */
+.plyr__time {
+  color: currentColor !important;
+}
+
+/* Remove all borders and shadows */
+.plyr audio,
+.plyr iframe,
+.plyr video {
+  background: transparent !important;
+}
+
+.plyr--audio .plyr__control.plyr__tab-focus,
+.plyr--audio .plyr__control:hover,
+.plyr--audio .plyr__control[aria-expanded=true] {
+  box-shadow: none !important;
+}

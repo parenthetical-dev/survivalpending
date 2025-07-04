@@ -43,6 +43,9 @@ model Story {
   status           StoryStatus             @default(PENDING)
   moderationNotes  String?
   sentimentFlags   Json?
+  flaggedHighRisk  Boolean                 @default(false)
+  flaggedCrisis    Boolean                 @default(false)
+  flaggedPositive  Boolean                 @default(false)
   createdAt        DateTime                @default(now())
   approvedAt       DateTime?
   approvedBy       String?
