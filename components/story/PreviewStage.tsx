@@ -37,6 +37,7 @@ export default function PreviewStage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     generateAudio();
@@ -108,7 +109,7 @@ export default function PreviewStage({
         </CardHeader>
         <CardContent className="pt-3 sm:pt-6">
           <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6">
-            <p className="whitespace-pre-wrap text-xs sm:text-sm">{content}</p>
+            <p className="whitespace-pre-wrap text-sm sm:text-base md:text-lg leading-relaxed">{content}</p>
           </div>
 
           {loading && (
@@ -164,12 +165,25 @@ export default function PreviewStage({
         </Button>
         <Button
           size="default"
-          onClick={onComplete}
-          disabled={loading || !!error}
+          onClick={async () => {
+            setIsSubmitting(true);
+            await onComplete();
+            setIsSubmitting(false);
+          }}
+          disabled={loading || !!error || isSubmitting}
           className="w-full sm:w-auto"
         >
-          <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-          Publish Story
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+              Publish Story
+            </>
+          )}
         </Button>
       </div>
 
