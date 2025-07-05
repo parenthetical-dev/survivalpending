@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Play, Pause, Clock, ArrowRight, Filter, X } from 'lucide-react';
+import { Play, Pause, Clock, ArrowRight, Filter, X, Map } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
@@ -13,9 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import StoriesMap from '@/components/StoriesMap';
 
 interface Story {
   _id: string;
+  storyId: string; // This is the database ID we need for filtering
   username: string;
   contentSanitized: string;
   audioUrl?: string;
@@ -23,6 +25,9 @@ interface Story {
   categories?: string[];
   voiceSettings?: {
     voiceName: string;
+  };
+  demographics?: {
+    state?: string;
   };
 }
 
@@ -248,7 +253,9 @@ export default function StoriesPage() {
     hasAudio: false,
     timeRange: 'all', // 'all', 'today', 'week', 'month'
     categories: [] as string[], // Selected categories
+    selectedState: null as string | null, // For geographic filtering
   });
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     fetchStories();
@@ -259,6 +266,12 @@ export default function StoriesPage() {
       const response = await fetch('/api/stories');
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched stories:', data.stories);
+        console.log('Stories with states:', data.stories.filter((s: any) => s.demographics?.state).map((s: any) => ({
+          id: s._id,
+          storyId: s.storyId,
+          state: s.demographics.state
+        })));
         setStories(data.stories);
       }
     } catch (error) {
@@ -321,6 +334,13 @@ export default function StoriesPage() {
       );
     }
     
+    // Apply state filter
+    if (filters.selectedState) {
+      filtered = filtered.filter(story => 
+        story.demographics?.state === filters.selectedState
+      );
+    }
+    
     // Apply sorting
     filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
@@ -345,7 +365,12 @@ export default function StoriesPage() {
       hasAudio: false,
       timeRange: 'all',
       categories: [],
+      selectedState: null,
     });
+  };
+
+  const handleStateSelect = (state: string | null) => {
+    setFilters(prev => ({ ...prev, selectedState: state }));
   };
 
   const displayStories = sortedAndFilteredStories();
@@ -369,7 +394,7 @@ export default function StoriesPage() {
                   <Button variant="outline" size="sm">
                     <Filter className="w-4 h-4 mr-2" />
                     Filter
-                    {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0) && (
+                    {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0 || filters.selectedState) && (
                       <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full" />
                     )}
                   </Button>
@@ -387,7 +412,17 @@ export default function StoriesPage() {
                 </DialogContent>
               </Dialog>
               
-              {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0) && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowMap(!showMap)}
+                className={showMap ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300' : ''}
+              >
+                <Map className="w-4 h-4 mr-2" />
+                {showMap ? 'Hide Map' : 'Show Map'}
+              </Button>
+              
+              {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0 || filters.selectedState) && (
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-1" />
                   Clear
@@ -408,6 +443,16 @@ export default function StoriesPage() {
             </div>
           </div>
         </div>
+
+        {/* Map Component */}
+        {showMap && (
+          <div className="mb-8">
+            <StoriesMap 
+              onStateSelect={handleStateSelect}
+              selectedState={filters.selectedState}
+            />
+          </div>
+        )}
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
