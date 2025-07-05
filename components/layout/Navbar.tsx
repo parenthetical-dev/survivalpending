@@ -38,7 +38,9 @@ export default function Navbar() {
       {/* Header with gradient fade */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pb-8 md:pb-16 pointer-events-none">
         <div className="px-4 md:px-24 py-4 md:py-6 flex justify-between items-center pointer-events-auto">
-          <Logo className="text-xl md:text-2xl" />
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <Logo className="text-xl md:text-2xl" />
+          </Link>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
@@ -119,7 +121,9 @@ export default function Navbar() {
                 <div className="mb-8 mt-12">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex justify-start">
-                    <Logo className="text-2xl" />
+                    <Link href="/" className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                      <Logo className="text-2xl" />
+                    </Link>
                   </div>
                 </div>
                 <nav className="flex flex-col gap-3">
