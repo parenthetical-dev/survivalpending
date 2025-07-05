@@ -8,7 +8,7 @@ import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
 import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
 import ShareModal from "@/components/share/ShareModal";
-import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users, Share2, ArrowLeft } from "lucide-react";
+import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users, Share2, ArrowLeft, Clock } from "lucide-react";
 import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
   Sheet,
@@ -26,37 +26,11 @@ export default function HomePage() {
   const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
-    // Initialize last story time to 2 hours ago if not set
-    const storedCount = localStorage.getItem('storyCount');
-    const storedTime = localStorage.getItem('lastStoryTime');
-    
-    if (storedCount) {
-      setStoryCount(parseInt(storedCount));
-    }
-    
-    if (storedTime) {
-      setLastStoryTime(new Date(storedTime));
-    } else {
-      // Set initial time to 2 hours ago
-      const twoHoursAgo = new Date();
-      twoHoursAgo.setHours(twoHoursAgo.getHours() - 2);
-      setLastStoryTime(twoHoursAgo);
-      localStorage.setItem('lastStoryTime', twoHoursAgo.toISOString());
-    }
-
-    // Listen for story submissions
-    const handleStorySubmit = () => {
-      const newCount = storyCount + 1;
-      const now = new Date();
-      setStoryCount(newCount);
-      setLastStoryTime(now);
-      localStorage.setItem('storyCount', newCount.toString());
-      localStorage.setItem('lastStoryTime', now.toISOString());
-    };
-
-    window.addEventListener('storySubmitted', handleStorySubmit);
-    return () => window.removeEventListener('storySubmitted', handleStorySubmit);
-  }, [storyCount]);
+    // Set initial time to 2 hours ago if no stories loaded yet
+    const twoHoursAgo = new Date();
+    twoHoursAgo.setHours(twoHoursAgo.getHours() - 2);
+    setLastStoryTime(twoHoursAgo);
+  }, []);
 
   // Fetch featured stories from Sanity
   useEffect(() => {
@@ -66,6 +40,12 @@ export default function HomePage() {
         if (response.ok) {
           const data = await response.json();
           setFeaturedStories(data.stories);
+          
+          // Update last story time from the most recent story
+          if (data.stories && data.stories.length > 0) {
+            const mostRecentStory = data.stories[0]; // Stories are ordered by createdAt desc
+            setLastStoryTime(new Date(mostRecentStory.createdAt));
+          }
         }
       } catch (error) {
         console.error('Error fetching featured stories:', error);
@@ -271,17 +251,18 @@ export default function HomePage() {
             A living, real-time archive of LGBTQ+ resilience in the United States.
           </p>
           <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm md:text-base text-gray-600 dark:text-gray-400">
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <span className="font-semibold">{storyCount}</span>
               <span>stories shared</span>
             </div>
-            <span className="hidden sm:inline text-gray-400 dark:text-gray-600">•</span>
+            <span className="hidden sm:inline text-gray-400 dark:text-gray-600">•</span> */}
             <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
               <span>Last story shared</span>
               <span className="font-semibold">{getTimeAgo(lastStoryTime)}</span>
             </div>
           </div>
-          <div className="mt-8 md:mt-10">
+          <div className="mt-6 md:mt-8">
             <Link href="/signup">
               <Button size="lg" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6">
                 Share Your Truth →
