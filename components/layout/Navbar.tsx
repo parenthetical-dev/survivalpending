@@ -1,12 +1,14 @@
 "use client";
 
-import SignupForm from '@/components/auth/SignupForm';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/ui/logo';
-import { ArrowLeft, Menu, Share2 } from 'lucide-react';
-import { useState } from 'react';
-import ShareModal from '@/components/share/ShareModal';
+import { Logo } from "@/components/ui/logo";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import ShareModal from "@/components/share/ShareModal";
+import { ArrowLeft, Menu, Share2, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import QuickExitButton from "@/components/safety/QuickExitButton";
 import {
   Sheet,
   SheetContent,
@@ -15,9 +17,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export default function SignupPage() {
+export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  
+  const isOnboarding = pathname === '/onboarding';
+  const isSubmit = pathname === '/submit';
+  const isLoggedIn = !!user;
+
+  const handleSignOut = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
     <>
@@ -28,38 +42,63 @@ export default function SignupPage() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/about">
-              <Button variant="ghost" size="sm">
+            {!isLoggedIn && (
+              <Link href="/about" className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 What's This?
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="outline" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm">
-                Document Your Story
-              </Button>
-            </Link>
-            <Link href="/stories">
+              </Link>
+            )}
+            
+            {!isLoggedIn && (
+              <Link href="/login">
+                <Button variant="default" size="sm">
+                  Login
+                </Button>
+              </Link>
+            )}
+            
+            {!isOnboarding && !isSubmit && (
+              <>
+                <Link href="/signup">
+                  <Button size="sm">
+                    Document Your Story
+                  </Button>
+                </Link>
+                <Link href="/stories">
+                  <Button 
+                    size="sm" 
+                    className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
+                  >
+                    Browse Stories
+                  </Button>
+                </Link>
+              </>
+            )}
+            
+            {isLoggedIn && (
               <Button 
-                size="sm" 
-                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
+                variant="secondary" 
+                size="sm"
+                onClick={handleSignOut}
+                className="flex items-center gap-2 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
               >
-                Browse Stories
+                <LogOut className="w-4 h-4" />
+                Sign Out Safely
               </Button>
-            </Link>
+            )}
+            
+            <QuickExitButton />
           </div>
           
           {/* Mobile Navigation */}
           <div className="flex md:hidden items-center gap-2">
-            <Link href="/signup">
-              <Button size="sm" className="text-xs">
-                Share Story
-              </Button>
-            </Link>
+            {!isOnboarding && !isSubmit && (
+              <Link href="/signup">
+                <Button size="sm" className="text-xs">
+                  Share Story
+                </Button>
+              </Link>
+            )}
+            <QuickExitButton />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
@@ -81,34 +120,60 @@ export default function SignupPage() {
                   </div>
                 </div>
                 <nav className="flex flex-col gap-3">
-                  <Link 
-                    href="/about"
-                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    What's This?
-                  </Link>
-                  <Link 
-                    href="/login" 
-                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link 
-                    href="/signup" 
-                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Document Your Story
-                  </Link>
-                  <Link 
-                    href="/stories" 
-                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Browse Stories
-                  </Link>
+                  {!isLoggedIn && (
+                    <Link 
+                      href="/about"
+                      className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      What's This?
+                    </Link>
+                  )}
+                  
+                  {isLoggedIn ? (
+                    <button 
+                      className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2 text-left flex items-center gap-2"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out Safely
+                    </button>
+                  ) : (
+                    <Link 
+                      href="/login" 
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button 
+                        variant="default"
+                        size="sm" 
+                        className="w-full"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  {!isOnboarding && !isSubmit && (
+                    <>
+                      <Link 
+                        href="/signup" 
+                        className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Document Your Story
+                      </Link>
+                      <Link 
+                        href="/stories" 
+                        className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Browse Stories
+                      </Link>
+                    </>
+                  )}
                   
                   {/* Divider */}
                   <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
@@ -185,24 +250,6 @@ export default function SignupPage() {
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <div className="w-full max-w-[450px] space-y-4 md:space-y-6">
-            <SignupForm />
-
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link 
-                href="/login" 
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                Log in
-              </Link>
-            </p>
           </div>
         </div>
       </div>

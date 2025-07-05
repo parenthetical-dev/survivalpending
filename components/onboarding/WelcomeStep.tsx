@@ -14,7 +14,7 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
       <CardHeader className="space-y-2 pb-4 md:pb-6">
         <CardTitle className="text-xl md:text-2xl">Welcome, {username}</CardTitle>
         <div className="text-base md:text-xl font-semibold text-muted-foreground">
-          Your survival is pending. Your story is not.
+          Your survival may be pending. Your story is not.
         </div>
       </CardHeader>
       

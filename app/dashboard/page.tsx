@@ -18,9 +18,9 @@ import {
   Share2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import QuickExitButton from '@/components/safety/QuickExitButton';
 import { Logo } from '@/components/ui/logo';
 import ShareModal from '@/components/share/ShareModal';
+import Navbar from '@/components/layout/Navbar';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -84,16 +84,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <QuickExitButton />
+      <Navbar />
       
-      {/* Header with Logo */}
-      <div className="container max-w-6xl mx-auto px-4 py-4 md:py-6">
-        <Logo className="text-xl md:text-2xl" />
-      </div>
-      
-      <div className="container max-w-6xl mx-auto px-4 pb-6 md:pb-8">
+      <div className="container max-w-6xl mx-auto px-4 pb-6 md:pb-8 pt-[60px] md:pt-[80px]">
         {/* Welcome Back Section */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-6 md:mb-8 pt-12 md:pt-16">
         <h1 className="text-2xl md:text-4xl font-bold mb-2">
           Welcome back, {user?.username}
         </h1>

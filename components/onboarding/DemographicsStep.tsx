@@ -41,7 +41,7 @@ export default function DemographicsStep({ data, onChange, onNext, onBack }: Dem
         <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 md:p-4 flex gap-3">
           <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <p className="text-xs md:text-sm text-amber-900 dark:text-amber-100">
-            Only age and state required. Skip anything else. Individual data never shared.
+            Only age and state required. Individual data never shared.
           </p>
         </div>
 

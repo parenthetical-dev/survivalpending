@@ -157,6 +157,14 @@ export default defineType({
       type: 'string',
       description: 'Admin/moderator who approved the story',
       readOnly: true
+    }),
+    defineField({
+      name: 'showOnHomepage',
+      title: 'Show on Homepage',
+      type: 'boolean',
+      description: 'Display this story on the homepage',
+      initialValue: false,
+      hidden: ({ document }) => document?.status !== 'approved'
     })
   ],
   preview: {
