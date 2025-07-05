@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
 import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
-import { PenTool, Sparkles, Mic, Play, Menu } from "lucide-react";
+import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users } from "lucide-react";
 import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
   Sheet,
@@ -252,24 +252,45 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
               <div className="text-center px-4 md:px-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Heart className="w-6 h-6 md:w-7 md:h-7 text-red-600 dark:text-red-400" />
+                </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Your Story Matters</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
                   Your experiences deserve to be witnessed. In times of change and challenge, personal stories become historical record. Your truth adds to our collective understanding.
                 </p>
+                <Link href="/why" className="inline-flex items-center gap-1 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 mt-4">
+                  See Why
+                  <span aria-hidden="true">→</span>
+                </Link>
               </div>
               
               <div className="text-center px-4 md:px-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Shield className="w-6 h-6 md:w-7 md:h-7 text-green-600 dark:text-green-400" />
+                </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Complete Safety</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
                   Share your story in a space designed with your privacy at the center. Anonymous, encrypted, and permanent—because some truths need protection to be told.
                 </p>
+                <Link href="/how" className="inline-flex items-center gap-1 text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 mt-4">
+                  See How
+                  <span aria-hidden="true">→</span>
+                </Link>
               </div>
               
               <div className="text-center px-4 md:px-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Users className="w-6 h-6 md:w-7 md:h-7 text-purple-600 dark:text-purple-400" />
+                </div>
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Collective Resilience</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
                   Every story shared strengthens our community's voice. Together, we're creating a living archive of how we navigate difficult times, support each other, and persist.
                 </p>
+                <Link href="/community" className="inline-flex items-center gap-1 text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 mt-4">
+                  Learn More
+                  <span aria-hidden="true">→</span>
+                </Link>
               </div>
             </div>
           </div>
