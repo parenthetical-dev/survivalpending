@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
 import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
-import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users } from "lucide-react";
+import ShareModal from "@/components/share/ShareModal";
+import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users, Share2 } from "lucide-react";
 import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
   Sheet,
@@ -22,6 +23,7 @@ export default function HomePage() {
   const [storyCount, setStoryCount] = useState(23);
   const [lastStoryTime, setLastStoryTime] = useState<Date | null>(null);
   const [featuredStories, setFeaturedStories] = useState<FeaturedStory[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     // Initialize last story time to 2 hours ago if not set
@@ -337,8 +339,32 @@ export default function HomePage() {
             <div className="text-center text-xs md:text-sm text-gray-600 dark:text-gray-400 pt-6 md:pt-8 px-4 md:px-0">
               <p>No email required. Complete anonymity. Your safety is our priority.</p>
             </div>
+
+            {/* Grow the Movement block */}
+            <div className="mt-12 md:mt-16 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 md:p-12 text-center">
+              <h3 className="text-xl md:text-2xl font-bold mb-4">Grow the Movement</h3>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
+                Help us reach those who need to know they're not alone. Every share connects someone to this community. Every new voice makes our archive stronger. Spread the word wherever you feel safe to do so.
+              </p>
+              <Button 
+                size="lg" 
+                className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6 bg-black hover:bg-gray-800 text-white"
+                onClick={() => setShowShareModal(true)}
+              >
+                <Share2 className="w-5 h-5 mr-2" />
+                Share the Platform
+              </Button>
+            </div>
           </div>
         </div>
+
+        <ShareModal
+          open={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          onShare={() => {
+            // Could track sharing analytics here if needed
+          }}
+        />
       
     </>
   );
