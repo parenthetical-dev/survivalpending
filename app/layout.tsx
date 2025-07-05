@@ -9,6 +9,8 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { GoogleAnalyticsWrapper } from "@/components/GoogleAnalyticsWrapper";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
+import { Mail, Code2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 
 const jetbrainsMono = JetBrains_Mono({
@@ -63,11 +65,11 @@ export default function RootLayout({
         <AuthProvider>
           <GoogleAnalyticsWrapper />
           <div className="min-h-screen flex flex-col relative">
-            <main className="flex-grow pb-0 md:pb-16">
+            <main className="flex-grow pb-0 lg:pb-16">
               {children}
             </main>
-            <footer className="hidden md:block fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 z-40">
-              <div className="px-24 py-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+            <footer className="hidden lg:block fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 z-40">
+              <div className="px-4 md:px-8 py-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
                   <span>MMXXV</span>
                   <span 
@@ -95,6 +97,18 @@ export default function RootLayout({
                     className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                   >
                     Terms of Service
+                  </a>
+                  <Link href="/developers">
+                    <Button variant="outline" size="sm" className="h-8 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600">
+                      <Code2 className="h-4 w-4 mr-2" />
+                      Developers
+                    </Button>
+                  </Link>
+                  <a href="mailto:contact@survivalpending.com">
+                    <Button variant="outline" size="sm" className="h-8 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Contact
+                    </Button>
                   </a>
                 </div>
               </div>
