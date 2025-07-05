@@ -75,16 +75,16 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
   const getStateColor = (geo: any) => {
     const stateId = geo.id;
     const stateAbbr = STATE_FIPS_TO_ABBR[stateId];
-    if (!stateAbbr) return '#374151'; // Darker gray for unknown
+    if (!stateAbbr) return '#e5e7eb'; // Lighter gray for unknown
     
     const state = stateData.find(s => s.state === stateAbbr);
-    if (!state || state.count === 0) return '#374151'; // Darker gray for no data
+    if (!state || state.count === 0) return '#e5e7eb'; // Lighter gray for no data
     
     const isSelected = selectedState === stateAbbr;
     const isHovered = hoveredState === stateAbbr;
     
     if (isSelected) {
-      return '#dc2626'; // Red for selected
+      return '#7c3aed'; // Purple for selected
     }
     
     // Create a gradient from powdery purple to saturated purple
@@ -164,7 +164,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
                     key={geo.rsmKey}
                     geography={geo}
                     fill={getStateColor(geo)}
-                    stroke="#374151"
+                    stroke="#d1d5db"
                     strokeWidth={0.5}
                     style={{
                       default: { outline: 'none' },
@@ -207,8 +207,8 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
             className="h-2 w-full rounded-full" 
             style={{
               background: stateData.length > 0 
-                ? 'linear-gradient(to right, #374151, hsl(280, 30%, 75%), hsl(280, 55%, 62%), hsl(280, 80%, 50%))'
-                : 'linear-gradient(to right, #374151, #374151)'
+                ? 'linear-gradient(to right, #e5e7eb, hsl(280, 30%, 75%), hsl(280, 55%, 62%), hsl(280, 80%, 50%))'
+                : 'linear-gradient(to right, #e5e7eb, #e5e7eb)'
             }}
           />
           
