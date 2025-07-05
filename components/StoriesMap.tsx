@@ -5,7 +5,8 @@ import {
   ComposableMap,
   Geographies,
   Geography,
-  ZoomableGroup
+  ZoomableGroup,
+  GeographyProps
 } from 'react-simple-maps';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -155,8 +156,8 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
       <div className="relative">
         <ComposableMap projection="geoAlbersUsa" className="w-full">
           <Geographies geography={geoUrl}>
-            {({ geographies }) =>
-              geographies.map((geo) => {
+            {({ geographies }: { geographies: any[] }) =>
+              geographies.map((geo: any) => {
                 const stateAbbr = STATE_FIPS_TO_ABBR[geo.id];
                 return (
                   <Geography
@@ -167,7 +168,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
                     strokeWidth={0.5}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', cursor: stateAbbr && stateData.find(s => s.state === stateAbbr)?.count > 0 ? 'pointer' : 'default' },
+                      hover: { outline: 'none', cursor: stateAbbr && (stateData.find(s => s.state === stateAbbr)?.count ?? 0) > 0 ? 'pointer' : 'default' },
                       pressed: { outline: 'none' }
                     }}
                     onMouseEnter={() => {
