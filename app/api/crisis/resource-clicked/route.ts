@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         storyId: storyId,
       },
       orderBy: {
-        createdAt: 'desc'
+        timestamp: 'desc'
       }
     });
 
@@ -51,8 +51,7 @@ export async function POST(request: NextRequest) {
         id: interventionLog.id
       },
       data: {
-        resourcesClicked: updatedResources,
-        updatedAt: new Date()
+        resourcesClicked: updatedResources
       }
     });
 

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         storyId: storyId,
       },
       orderBy: {
-        createdAt: 'desc'
+        timestamp: 'desc'
       }
     });
 
@@ -48,8 +48,7 @@ export async function POST(request: NextRequest) {
         id: interventionLog.id
       },
       data: {
-        interventionShown: true,
-        updatedAt: new Date()
+        interventionShown: true
       }
     });
 
