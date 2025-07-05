@@ -77,6 +77,22 @@ export default function SubmitStoryPage() {
         // Show crisis intervention modal
         setShowCrisisModal(true);
         setCrisisInterventionLogId(data.storyId); // Store for tracking resource clicks
+        
+        // Track that the intervention was shown
+        try {
+          await fetch('/api/crisis/intervention-shown', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({
+              storyId: data.storyId,
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to track intervention shown:', error);
+        }
       } else {
         toast.success('Your story has been submitted for review.');
         setTimeout(() => {
@@ -152,6 +168,25 @@ export default function SubmitStoryPage() {
         }}
         onResourceClick={async (resource) => {
           trackCrisisResource(resource, 'modal');
+          
+          // Also track in the database
+          if (crisisInterventionLogId) {
+            try {
+              await fetch('/api/crisis/resource-clicked', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({
+                  storyId: crisisInterventionLogId,
+                  resourceName: resource,
+                }),
+              });
+            } catch (error) {
+              console.error('Failed to track resource click:', error);
+            }
+          }
         }}
       />
     </div>
