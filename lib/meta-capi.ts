@@ -30,7 +30,6 @@ interface MetaServerEvent {
 const META_PIXEL_ID = process.env.META_PIXEL_ID || '';
 const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN || '';
 const META_API_VERSION = 'v21.0';
-const META_API_URL = `https://graph.facebook.com/${META_API_VERSION}/${META_PIXEL_ID}/events`;
 
 // Helper to hash PII data for Meta
 function hashData(data: string): string {
@@ -82,11 +81,22 @@ export async function sendMetaEvent(
   userId?: string,
   customData?: Record<string, any>
 ): Promise<void> {
+  console.log('[Meta CAPI] Attempting to send event:', eventName);
+  console.log('[Meta CAPI] Environment check:', {
+    hasPixelId: !!META_PIXEL_ID,
+    pixelId: META_PIXEL_ID,
+    hasAccessToken: !!META_ACCESS_TOKEN,
+    tokenPreview: META_ACCESS_TOKEN ? META_ACCESS_TOKEN.substring(0, 20) + '...' : 'not set'
+  });
+  
   // Skip if not configured
   if (!META_PIXEL_ID || !META_ACCESS_TOKEN) {
-    console.log('Meta CAPI not configured, skipping event:', eventName);
+    console.log('[Meta CAPI] Missing configuration, skipping event:', eventName);
     return;
   }
+  
+  const META_API_URL = `https://graph.facebook.com/${META_API_VERSION}/${META_PIXEL_ID}/events`;
+  console.log('[Meta CAPI] API URL:', META_API_URL);
   
   try {
     const eventData: MetaEventData = {
@@ -113,7 +123,16 @@ export async function sendMetaEvent(
     // Add test event code in development
     if (process.env.NODE_ENV === 'development' && process.env.META_TEST_EVENT_CODE) {
       serverEvent.test_event_code = process.env.META_TEST_EVENT_CODE;
+      console.log('[Meta CAPI] Using test event code:', process.env.META_TEST_EVENT_CODE);
     }
+    
+    const payload = {
+      ...serverEvent,
+      access_token: META_ACCESS_TOKEN,
+    };
+    
+    console.log('[Meta CAPI] Sending request to:', META_API_URL);
+    console.log('[Meta CAPI] Event data:', JSON.stringify(eventData, null, 2));
     
     // Send to Meta
     const response = await fetch(META_API_URL, {
@@ -121,18 +140,22 @@ export async function sendMetaEvent(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...serverEvent,
-        access_token: META_ACCESS_TOKEN,
-      }),
+      body: JSON.stringify(payload),
     });
     
+    const responseText = await response.text();
+    console.log('[Meta CAPI] Response status:', response.status);
+    console.log('[Meta CAPI] Response body:', responseText);
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Meta CAPI error:', errorData);
+      console.error('[Meta CAPI] Error response:', responseText);
     } else {
-      const result = await response.json();
-      console.log(`Meta CAPI event sent: ${eventName}`, result);
+      try {
+        const result = JSON.parse(responseText);
+        console.log(`[Meta CAPI] Success! Event sent: ${eventName}`, result);
+      } catch (e) {
+        console.log(`[Meta CAPI] Event sent but couldn't parse response: ${eventName}`);
+      }
     }
   } catch (error) {
     // Don't let tracking errors break the application
