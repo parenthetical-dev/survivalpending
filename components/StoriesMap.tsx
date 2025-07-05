@@ -74,10 +74,10 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
   const getStateColor = (geo: any) => {
     const stateId = geo.id;
     const stateAbbr = STATE_FIPS_TO_ABBR[stateId];
-    if (!stateAbbr) return '#e5e7eb'; // Gray for unknown
+    if (!stateAbbr) return '#374151'; // Darker gray for unknown
     
     const state = stateData.find(s => s.state === stateAbbr);
-    if (!state || state.count === 0) return '#e5e7eb'; // Gray for no data
+    if (!state || state.count === 0) return '#374151'; // Darker gray for no data
     
     const isSelected = selectedState === stateAbbr;
     const isHovered = hoveredState === stateAbbr;
@@ -86,14 +86,14 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
       return '#dc2626'; // Red for selected
     }
     
-    // Create a continuous gradient from light blue to dark blue
+    // Create a gradient from powdery purple to saturated purple
     // Using HSL for better color interpolation
-    const minHue = 210; // Light blue
-    const maxHue = 220; // Darker blue
-    const minSat = 70;
-    const maxSat = 90;
-    const minLight = 80;
-    const maxLight = 40;
+    const minHue = 280; // Purple hue
+    const maxHue = 280; // Keep same hue
+    const minSat = 30; // Low saturation (powdery)
+    const maxSat = 80; // High saturation (vibrant)
+    const minLight = 75; // Light (powdery)
+    const maxLight = 50; // Darker (saturated)
     
     // Use density (0-1) to interpolate
     const hue = minHue + (maxHue - minHue) * state.density;
@@ -138,24 +138,21 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2">Stories Across America</h3>
-        {selectedState && (
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Filtering by: {STATE_NAMES[selectedState]}
-            </p>
-            <button 
-              onClick={() => onStateSelect(null)}
-              className="text-xs text-blue-600 hover:text-blue-800 underline"
-            >
-              Clear filter
-            </button>
-          </div>
-        )}
-      </div>
+      {selectedState && (
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Filtering by: {STATE_NAMES[selectedState]}
+          </p>
+          <button 
+            onClick={() => onStateSelect(null)}
+            className="text-xs text-purple-600 hover:text-purple-800 underline"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border relative">
+      <div className="relative">
         <ComposableMap projection="geoAlbersUsa" className="w-full">
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
@@ -166,7 +163,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
                     key={geo.rsmKey}
                     geography={geo}
                     fill={getStateColor(geo)}
-                    stroke="#ffffff"
+                    stroke="#374151"
                     strokeWidth={0.5}
                     style={{
                       default: { outline: 'none' },
@@ -188,7 +185,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
         </ComposableMap>
         
         {hoveredState && (
-          <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded-lg text-sm pointer-events-none">
+          <div className="absolute bottom-4 left-4 bg-black bg-opacity-90 text-white px-3 py-2 rounded-lg text-sm pointer-events-none">
             {(() => {
               const info = getStateInfo(hoveredState);
               return `${info.name}: ${info.count} ${info.count === 1 ? 'story' : 'stories'}`;
@@ -197,30 +194,32 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
         )}
       </div>
       
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 max-w-xs">
         {/* Gradient Legend */}
-        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+        <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
           <span>Story Density</span>
-          <span>Click a state to filter stories</span>
         </div>
         
         <div className="relative">
           {/* Gradient bar */}
           <div 
-            className="h-3 w-full rounded-full" 
+            className="h-2 w-full rounded-full" 
             style={{
               background: stateData.length > 0 
-                ? 'linear-gradient(to right, #e5e7eb, hsl(210, 70%, 80%), hsl(215, 80%, 60%), hsl(220, 90%, 40%))'
-                : 'linear-gradient(to right, #e5e7eb, #e5e7eb)'
+                ? 'linear-gradient(to right, #374151, hsl(280, 30%, 75%), hsl(280, 55%, 62%), hsl(280, 80%, 50%))'
+                : 'linear-gradient(to right, #374151, #374151)'
             }}
           />
           
           {/* Labels */}
-          <div className="flex justify-between mt-1 text-xs text-gray-600 dark:text-gray-400">
+          <div className="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-500">
             <span>0</span>
-            <span>{Math.ceil(Math.max(...stateData.map(s => s.count), 1) / 2)}</span>
             <span>{Math.max(...stateData.map(s => s.count), 1)}</span>
           </div>
+        </div>
+        
+        <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+          Click a state to filter stories
         </div>
       </div>
     </div>
