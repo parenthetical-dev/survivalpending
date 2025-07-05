@@ -50,7 +50,10 @@ export default function Navbar() {
             
             {!isLoggedIn && (
               <Link href="/login">
-                <Button variant="default" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                >
                   Login
                 </Button>
               </Link>
@@ -147,7 +150,7 @@ export default function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Button 
-                        variant="default"
+                        variant="outline"
                         size="sm" 
                         className="w-full"
                       >
