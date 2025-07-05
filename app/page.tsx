@@ -278,17 +278,25 @@ export default function HomePage() {
         {/* How It Works - Dynamic animated version */}
         <div className="bg-white dark:bg-gray-800">
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
-            <h3 className="text-2xl md:text-3xl font-bold text-center mb-4">How It Works</h3>
-            <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12 md:mb-16">
+            <h3 className="text-xl md:text-3xl font-bold text-center mb-3 md:mb-4">How It Works</h3>
+            <p className="text-center text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8 md:mb-16 px-4 md:px-0">
               Share your story in four simple steps. Write your experience, optionally refine it with AI assistance, choose a voice for your testimony, and submit it anonymously to join others in our living archive.
             </p>
             <AnimatedHowItWorks />
           </div>
         </div>
 
-        {/* CTA section */}
-        <div className="bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
+        {/* CTA section with animated background */}
+        <div className="relative bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-hidden pb-0 md:pb-20">
+          <ScrollingStories />
+          <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-4 py-24 md:py-32">
+            <div className="text-center mb-8 md:mb-12">
+              <h3 className="text-xl md:text-3xl font-bold mb-3 md:mb-4">Your Story Is Waiting</h3>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4 md:px-0">
+                Every story shared makes us stronger. Every voice added makes us harder to silence. Your experiences matter, and this is your space to share them—safely, anonymously, permanently.
+              </p>
+            </div>
+
             <div className="flex flex-col md:flex-row gap-4 justify-center">
               <Link href="/signup" className="w-full md:w-auto">
                 <Button size="lg" className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6">

@@ -90,9 +90,9 @@ export function AnimatedHowItWorks() {
       title: 'Write Your Story',
       icon: <PenTool className="w-5 h-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4 h-[200px] flex flex-col justify-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <div className="min-h-[120px] text-sm leading-relaxed">
+            <div className="h-[120px] overflow-y-auto text-sm leading-relaxed">
               {typedText}
               {currentStage === 0 && typedText.length < sampleStory.length && (
                 <span className="inline-block w-0.5 h-4 bg-gray-900 dark:bg-gray-100 animate-blink ml-0.5" />
@@ -115,7 +115,7 @@ export function AnimatedHowItWorks() {
       title: 'Optional AI Refinement',
       icon: <Sparkles className="w-5 h-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4 h-[200px] flex flex-col justify-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2 mb-3">
               <RefreshCw className={cn("w-4 h-4", showRefinement ? "" : "animate-spin")} />
@@ -143,7 +143,7 @@ export function AnimatedHowItWorks() {
       title: 'Choose Your Voice',
       icon: <Mic className="w-5 h-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4 h-[200px] flex flex-col justify-center">
           <div className="grid grid-cols-2 gap-2">
             {['River', 'Sage', 'Sky', 'Phoenix'].map((voice) => (
               <button
@@ -203,7 +203,7 @@ export function AnimatedHowItWorks() {
       title: 'Share Anonymously',
       icon: <Send className="w-5 h-5" />,
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4 h-[200px] flex flex-col justify-center">
           <Button 
             className={cn(
               "w-full transition-all",
@@ -258,7 +258,7 @@ export function AnimatedHowItWorks() {
 
       {/* Stage content */}
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden h-[400px] flex flex-col">
           {/* Header */}
           <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
@@ -281,8 +281,10 @@ export function AnimatedHowItWorks() {
           </div>
 
           {/* Content */}
-          <div className="p-6">
-            {stages[currentStage].content}
+          <div className="p-6 flex-1 flex items-center">
+            <div className="w-full">
+              {stages[currentStage].content}
+            </div>
           </div>
         </div>
       </div>
