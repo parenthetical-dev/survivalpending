@@ -19,6 +19,7 @@ import {
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
 import PlyrPlayer from '@/components/audio/PlyrPlayer';
+import { trackStoryProgress } from '@/lib/analytics';
 
 interface PreviewStageProps {
   content: string;
@@ -167,6 +168,7 @@ export default function PreviewStage({
           size="default"
           onClick={async () => {
             setIsSubmitting(true);
+            trackStoryProgress('preview');
             await onComplete();
             setIsSubmitting(false);
           }}

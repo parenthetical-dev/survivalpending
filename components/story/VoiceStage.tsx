@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, Mic, User, Globe, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackStoryProgress } from '@/lib/analytics';
 
 interface VoiceStageProps {
   content: string;
@@ -222,7 +223,10 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
         <Button
           size="default"
           className="w-full sm:w-auto"
-          onClick={() => onComplete(selectedVoiceData)}
+          onClick={() => {
+            trackStoryProgress('voice');
+            onComplete(selectedVoiceData);
+          }}
         >
           Continue to Preview
         </Button>

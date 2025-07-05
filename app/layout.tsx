@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { MetaPixelWrapper } from "@/components/MetaPixelWrapper";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { GoogleAnalyticsWrapper } from "@/components/GoogleAnalyticsWrapper";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 
@@ -55,9 +57,11 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
+        <GoogleAnalytics />
         <Analytics/>
         {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
+          <GoogleAnalyticsWrapper />
           <div className="min-h-screen flex flex-col relative">
             <main className="flex-grow pb-0 md:pb-16">
               {children}

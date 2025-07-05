@@ -6,6 +6,7 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { X, Phone, MessageSquare, AlertCircle } from 'lucide-react';
+import { trackCrisisResource } from '@/lib/analytics';
 
 interface SafetyStepProps {
   onNext: () => void;
@@ -59,7 +60,11 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
                 <p className="text-xs md:text-sm text-muted-foreground">Peer support by and for trans people - Available 24/7</p>
               </div>
               <div className="flex gap-3">
-                <a href="tel:877-565-8860" className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800">
+                <a 
+                  href="tel:877-565-8860" 
+                  onClick={() => trackCrisisResource('Trans Lifeline Phone', 'onboarding')}
+                  className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                >
                   <Phone className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">877-565-8860</span>
                 </a>
@@ -72,15 +77,29 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
                 <p className="text-xs md:text-sm text-muted-foreground">Support for LGBTQ youth - Available 24/7</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <a href="https://chat.trvr.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800">
+                <a 
+                  href="https://chat.trvr.org/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  onClick={() => trackCrisisResource('Trevor Project Chat', 'onboarding')}
+                  className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                >
                   <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">Chat</span>
                 </a>
-                <a href="tel:1-866-488-7386" className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800">
+                <a 
+                  href="tel:1-866-488-7386" 
+                  onClick={() => trackCrisisResource('Trevor Project Phone', 'onboarding')}
+                  className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                >
                   <Phone className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">1-866-488-7386</span>
                 </a>
-                <a href="sms:678678" className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800">
+                <a 
+                  href="sms:678678" 
+                  onClick={() => trackCrisisResource('Trevor Project Text', 'onboarding')}
+                  className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                >
                   <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">Text 678678</span>
                 </a>

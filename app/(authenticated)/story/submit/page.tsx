@@ -9,6 +9,7 @@ import PreviewStage from '@/components/story/PreviewStage';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { trackStoryProgress } from '@/lib/analytics';
 
 type Stage = 'write' | 'refine' | 'voice' | 'preview';
 
@@ -31,10 +32,12 @@ export default function SubmitStoryPage() {
 
   const handleRefineComplete = (content: string) => {
     setRefinedContent(content);
+    trackStoryProgress('refine');
     setCurrentStage('voice');
   };
 
   const handleRefineSkip = () => {
+    trackStoryProgress('refine');
     setCurrentStage('voice');
   };
 

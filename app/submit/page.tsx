@@ -11,6 +11,7 @@ import PreviewStage from '@/components/story/PreviewStage';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 import CrisisInterventionModal from '@/components/safety/CrisisInterventionModal';
 import { toast } from 'sonner';
+import { trackCrisisResource } from '@/lib/analytics';
 
 const STAGES = ['write', 'refine', 'voice', 'preview'] as const;
 type Stage = typeof STAGES[number];
@@ -150,8 +151,7 @@ export default function SubmitStoryPage() {
           router.push('/dashboard');
         }}
         onResourceClick={async (resource) => {
-          // TODO: Track which resources were clicked
-          console.log('Resource clicked:', resource);
+          trackCrisisResource(resource, 'modal');
         }}
       />
     </div>

@@ -15,6 +15,7 @@ import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import SafetyStep from '@/components/onboarding/SafetyStep';
 import DemographicsStep from '@/components/onboarding/DemographicsStep';
 import ReviewStep from '@/components/onboarding/ReviewStep';
+import { trackEvent } from '@/lib/analytics';
 
 const TOTAL_STEPS = 5;
 
@@ -59,6 +60,9 @@ export default function OnboardingPage() {
       if (!response.ok) {
         throw new Error('Failed to save demographics');
       }
+
+      // Track onboarding completion
+      trackEvent('ONBOARDING_COMPLETE', 'USER');
 
       toast.success('Welcome to Survival Pending! You can now share your story.');
       router.push('/submit');

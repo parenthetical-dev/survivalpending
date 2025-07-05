@@ -95,6 +95,12 @@ export async function POST(request: NextRequest) {
     // Create user
     const { id, token } = await createUser(username, password);
     
+    // Track signup conversion
+    await trackStartTrial({
+      userId: id,
+      eventSourceUrl: request.headers.get('referer') || request.url,
+    });
+    
     return NextResponse.json({
       success: true,
       token,
