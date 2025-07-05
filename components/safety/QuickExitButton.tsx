@@ -44,7 +44,6 @@ export default function QuickExitButton() {
     <Button
       variant="destructive"
       size="sm"
-      className="fixed top-4 right-4 z-50"
       onClick={quickExit}
     >
       <X className="w-4 h-4 mr-1" />

@@ -10,9 +10,10 @@ import { toast } from 'sonner';
 interface CredentialsStepProps {
   username: string;
   onNext: () => void;
+  onBack: () => void;
 }
 
-export default function CredentialsStep({ username, onNext }: CredentialsStepProps) {
+export default function CredentialsStep({ username, onNext, onBack }: CredentialsStepProps) {
   const [downloaded, setDownloaded] = useState(false);
   const [copied, setCopied] = useState(false);
 

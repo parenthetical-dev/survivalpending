@@ -8,8 +8,9 @@ import WriteStage from '@/components/story/WriteStage';
 import RefineStage from '@/components/story/RefineStage';
 import VoiceStage from '@/components/story/VoiceStage';
 import PreviewStage from '@/components/story/PreviewStage';
-import QuickExitButton from '@/components/safety/QuickExitButton';
 import CrisisInterventionModal from '@/components/safety/CrisisInterventionModal';
+import Navbar from '@/components/layout/Navbar';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { trackCrisisResource } from '@/lib/analytics';
 
@@ -106,27 +107,26 @@ export default function SubmitStoryPage() {
 
   if (!user) return null;
 
+  const currentStageIndex = STAGES.indexOf(currentStage) + 1;
+  const progress = (currentStageIndex / STAGES.length) * 100;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <QuickExitButton />
+      <Navbar />
       
-      <div className="fixed top-0 left-0 right-0 bg-gray-50 dark:bg-gray-900 z-10">
-        <div className="container max-w-4xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl">
-              <Logo />
-            </h1>
-            <div className="text-sm text-muted-foreground mr-24 md:mr-32">
-              {currentStage === 'write' && 'Step 1 of 4: Write'}
-              {currentStage === 'refine' && 'Step 2 of 4: Refine'}
-              {currentStage === 'voice' && 'Step 3 of 4: Voice'}
-              {currentStage === 'preview' && 'Step 4 of 4: Preview'}
-            </div>
+      <div className="fixed top-[60px] md:top-[80px] left-0 right-0 bg-gray-50 dark:bg-gray-900 z-10">
+        <div className="container max-w-2xl mx-auto px-4 py-4">
+          <Progress value={progress} className="h-2 mb-2 [&>div]:bg-gray-900 dark:[&>div]:bg-gray-100" />
+          <div className="text-sm text-muted-foreground text-center">
+            {currentStage === 'write' && 'Step 1 of 4: Write'}
+            {currentStage === 'refine' && 'Step 2 of 4: Refine'}
+            {currentStage === 'voice' && 'Step 3 of 4: Voice'}
+            {currentStage === 'preview' && 'Step 4 of 4: Preview'}
           </div>
         </div>
       </div>
 
-      <div className="pt-24 pb-12">
+      <div className="pt-44 md:pt-52 pb-12">
         {currentStage === 'write' && (
           <WriteStage onComplete={handleWriteComplete} />
         )}
