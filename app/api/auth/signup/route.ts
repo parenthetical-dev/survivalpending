@@ -95,6 +95,9 @@ export async function POST(request: NextRequest) {
     // Create user
     const { id, token } = await createUser(username, password);
     
+    // Track signup conversion
+    await trackStartTrial(request, id);
+    
     return NextResponse.json({
       success: true,
       token,

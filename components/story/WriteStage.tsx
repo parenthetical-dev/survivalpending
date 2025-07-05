@@ -8,6 +8,7 @@ import { Lightbulb, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import StoryPrompts from './StoryPrompts';
 import { toast } from 'sonner';
+import { trackStoryProgress } from '@/lib/analytics';
 
 interface WriteStageProps {
   onComplete: (content: string) => void;
@@ -213,7 +214,10 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
         <div className="flex justify-center">
           <Button
             size="default"
-            onClick={() => onComplete(content)}
+            onClick={() => {
+              trackStoryProgress('write');
+              onComplete(content);
+            }}
             disabled={!canContinue}
           >
             Continue to Refine
