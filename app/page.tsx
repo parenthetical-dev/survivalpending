@@ -8,7 +8,7 @@ import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
 import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
 import ShareModal from "@/components/share/ShareModal";
-import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users, Share2 } from "lucide-react";
+import { PenTool, Sparkles, Mic, Play, Menu, Heart, Shield, Users, Share2, ArrowLeft } from "lucide-react";
 import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
   Sheet,
@@ -112,13 +112,14 @@ export default function HomePage() {
                 Document Your Story
               </Button>
             </Link>
-            <Button 
-              size="sm" 
-              className="bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
-              disabled
-            >
-              Browse Stories (Coming Soon)
-            </Button>
+            <Link href="/stories">
+              <Button 
+                size="sm" 
+                className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
+              >
+                Browse Stories
+              </Button>
+            </Link>
           </div>
           
           {/* Mobile Navigation */}
@@ -134,8 +135,15 @@ export default function HomePage() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] px-8 pt-12">
-                <div className="mb-8">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] px-8 pt-12" showClose={false}>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="absolute left-8 top-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-4"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Close</span>
+                </button>
+                <div className="mb-8 mt-12">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex justify-start">
                     <Logo className="text-2xl" />
@@ -163,9 +171,53 @@ export default function HomePage() {
                   >
                     Document Your Story
                   </Link>
-                  <span className="text-sm text-gray-400 dark:text-gray-600 py-2">
-                    Browse Stories (Coming Soon)
-                  </span>
+                  <Link 
+                    href="/stories" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Browse Stories
+                  </Link>
+                  
+                  {/* Divider */}
+                  <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
+                  
+                  {/* Value Prop Links */}
+                  <Link 
+                    href="/why" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    The Power of Being Witnessed
+                  </Link>
+                  <Link 
+                    href="/how" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Safety by Design
+                  </Link>
+                  <Link 
+                    href="/community" 
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Building Our Archive
+                  </Link>
+                  
+                  {/* Divider */}
+                  <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
+                  
+                  {/* Share Link */}
+                  <button
+                    className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2 text-left w-full"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setShowShareModal(true);
+                    }}
+                  >
+                    Grow the Movement
+                  </button>
                 </nav>
                 <div className="absolute bottom-8 left-8 right-8 space-y-4">
                   <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -327,13 +379,14 @@ export default function HomePage() {
                 </Button>
               </Link>
               
-              <Button 
-                size="lg" 
-                className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6 bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
-                disabled
-              >
-                Browse Stories (Coming Soon)
-              </Button>
+              <Link href="/stories" className="w-full md:w-auto">
+                <Button 
+                  size="lg" 
+                  className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6 bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
+                >
+                  Browse Stories
+                </Button>
+              </Link>
             </div>
 
             <div className="text-center text-xs md:text-sm text-gray-600 dark:text-gray-400 pt-6 md:pt-8 px-4 md:px-0">
