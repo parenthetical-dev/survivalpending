@@ -213,9 +213,9 @@ export default function HomePage() {
 
       {/* Main content sections */}
       {/* Hero Section - 2/3 height */}
-      <div className="h-[50vh] md:h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
+      <div className="min-h-[50vh] md:min-h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
         <ScrollingStories />
-        <div className="max-w-6xl mx-auto px-6 md:px-4 text-center relative z-10 pt-[25vh]">
+        <div className="max-w-6xl mx-auto px-6 md:px-4 text-center relative z-10 pt-[15vh] pb-[15vh] md:pt-[25vh] md:pb-[25vh]">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
             <span className="block md:inline">Document your truth.</span>{" "}
             <span className="block md:inline">Before they erase it.</span>
@@ -246,7 +246,7 @@ export default function HomePage() {
           <FeaturedStories 
             stories={featuredStories} 
             position="below"
-            showPlaceholders={true} // Always show placeholders when no stories
+            showPlaceholders={featuredStories.length === 0} // Only show placeholders when no stories
           />
         </div>
       </div>

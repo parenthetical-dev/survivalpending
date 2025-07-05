@@ -191,12 +191,6 @@ export function FeaturedStories({ stories, position = 'below', showPlaceholders 
               {story.contentSanitized}
             </p>
             
-            {story.voiceSettings?.voiceName && (
-              <div className="mt-3 text-xs text-gray-500 dark:text-gray-500">
-                Voice: {story.voiceSettings.voiceName}
-              </div>
-            )}
-            
             {story.audioUrl && (
               <AudioPlayer audioUrl={story.audioUrl} storyId={story._id} />
             )}
