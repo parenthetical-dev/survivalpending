@@ -18,32 +18,8 @@ interface Story {
 interface FeaturedStoriesProps {
   stories?: Story[];
   position?: 'above' | 'below';
-  showPlaceholders?: boolean;
 }
 
-// Placeholder stories for development/preview
-const placeholderStories: Story[] = [
-  {
-    _id: 'placeholder-1',
-    username: 'brave_phoenix_4823',
-    contentSanitized: "I came out to my family last week. It didn't go as planned. My dad hasn't spoken to me since, but my little sister secretly hugged me and whispered 'I love you no matter what.' That moment gave me hope. Even in the darkness, there's light. I'm documenting this because our stories matter, our love is real, and we deserve to exist openly.",
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Sample audio for demo
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-    voiceSettings: {
-      voiceName: 'Stella'
-    }
-  },
-  {
-    _id: 'placeholder-2',
-    username: 'resilient_oak_7391',
-    contentSanitized: "Twenty years of marriage, two kids, and I finally found the courage to be myself. Starting HRT next month at 47. My wife is my biggest supporter. My teens said 'We already knew, Mom. We love you.' I'm terrified and exhilarated. This is my truth: it's never too late to be who you really are. We're not going anywhere.",
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', // Sample audio for demo
-    createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(), // 7 hours ago
-    voiceSettings: {
-      voiceName: 'River'
-    }
-  }
-];
 
 function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -162,11 +138,9 @@ const progressFlagColors = [
   '#613915', // Brown
 ];
 
-export function FeaturedStories({ stories, position = 'below', showPlaceholders = false }: FeaturedStoriesProps) {
-  // Use placeholder stories if no stories provided or showPlaceholders is true
-  const displayStories = showPlaceholders || !stories || stories.length === 0 
-    ? placeholderStories 
-    : stories;
+export function FeaturedStories({ stories, position = 'below' }: FeaturedStoriesProps) {
+  // Only use provided stories
+  const displayStories = stories || [];
 
   const getTimeAgo = (date: string) => {
     const now = new Date();

@@ -62,9 +62,7 @@ export default function OnboardingPage() {
       }
 
       // Track completion
-      trackEvent('onboarding_completed', {
-        userId: user?.id,
-      });
+      trackEvent('ONBOARDING_COMPLETE', 'USER');
 
       toast.success('Welcome to Survival Pending!');
       router.push('/submit');

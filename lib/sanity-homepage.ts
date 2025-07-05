@@ -13,7 +13,7 @@ export interface FeaturedStory {
 
 export async function getHomepageFeaturedStories(): Promise<FeaturedStory[]> {
   try {
-    const query = `*[_type == "story" && status == "approved" && showOnHomepage == true] | order(createdAt desc)[0...2] {
+    const query = `*[_type == "story" && status == "approved" && showOnHomepage == true] | order(createdAt desc)[0...4] {
       _id,
       username,
       contentSanitized,

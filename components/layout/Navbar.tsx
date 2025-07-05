@@ -50,7 +50,7 @@ export default function Navbar() {
             
             {!isLoggedIn && (
               <Link href="/login">
-                <Button variant="outline" size="sm">
+                <Button variant="default" size="sm">
                   Login
                 </Button>
               </Link>
@@ -144,10 +144,15 @@ export default function Navbar() {
                   ) : (
                     <Link 
                       href="/login" 
-                      className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Login
+                      <Button 
+                        variant="default"
+                        size="sm" 
+                        className="w-full"
+                      >
+                        Login
+                      </Button>
                     </Link>
                   )}
                   
