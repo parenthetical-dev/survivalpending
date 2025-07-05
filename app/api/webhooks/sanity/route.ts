@@ -1,31 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { headers } from 'next/headers'
 import prisma from '@/lib/prisma'
-import crypto from 'crypto'
+import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'
+
+// Disable body parsing to get raw body for signature verification
+export const runtime = 'nodejs'
 
 // Sanity webhook secret (set in Sanity dashboard and env)
 const WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET
 
 export async function POST(req: NextRequest) {
   try {
-    // Verify webhook signature
+    // Get raw body as string for signature verification
     const body = await req.text()
-    const headersList = await headers()
-    const signature = headersList.get('sanity-webhook-signature')
+    const signature = req.headers.get(SIGNATURE_HEADER_NAME)
     
-    if (WEBHOOK_SECRET && signature) {
-      const computedSignature = crypto
-        .createHmac('sha256', WEBHOOK_SECRET)
-        .update(body)
-        .digest('hex')
+    // Verify webhook signature if secret is configured
+    if (WEBHOOK_SECRET) {
+      if (!signature) {
+        console.error('No signature header found')
+        return NextResponse.json({ error: 'No signature provided' }, { status: 401 })
+      }
       
-      if (computedSignature !== signature) {
+      // Use the @sanity/webhook package for verification
+      const isValid = await isValidSignature(body, signature, WEBHOOK_SECRET)
+      
+      if (!isValid) {
+        console.error('Invalid webhook signature')
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }
     }
     
+    // Parse the validated body
     const payload = JSON.parse(body)
-    const { _type, storyId, status, moderatorNotes, tags } = payload
+    const { _type, storyId, status, moderatorNotes } = payload
     
     // Only process story updates
     if (_type !== 'story' || !storyId) {

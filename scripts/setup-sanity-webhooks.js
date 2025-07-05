@@ -59,9 +59,9 @@ async function setupWebhooks() {
       httpMethod: 'POST',
       includeDrafts: false,
       headers: {
-        'Content-Type': 'application/json',
-        'sanity-webhook-signature': WEBHOOK_SECRET
+        'Content-Type': 'application/json'
       },
+      secret: WEBHOOK_SECRET,
       filter: '_type == "story"',
       projection: `{
         _type,
