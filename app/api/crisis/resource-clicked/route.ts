@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await verifyAuth(request);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const payload = verifyToken(token);
+    if (!payload) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     const { storyId, resourceName } = await request.json();
@@ -24,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Find the most recent crisis intervention log for this user and story
     const interventionLog = await prisma.crisisInterventionLog.findFirst({
       where: {
-        userId: user.id,
+        userId: payload.userId,
         storyId: storyId,
       },
       orderBy: {
