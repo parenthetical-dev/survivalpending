@@ -7,7 +7,15 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "sync": "node scripts/sync-cli.js",
+    "sync:status": "node scripts/sync-cli.js status",
+    "sync:dev": "node scripts/sync-cli.js sync --env development",
+    "sync:prod": "node scripts/sync-cli.js sync --env production",
+    "migrate:neon": "node scripts/prisma-migrate.js",
+    "migrate:neon:pg": "node scripts/neon-selective-migrate.js",
+    "webhooks:setup": "node scripts/setup-sanity-webhooks.js",
+    "sanity:sync-datasets": "node scripts/sanity-dataset-sync.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
@@ -52,6 +60,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.0.1",
     "embla-carousel-react": "^8.6.0",
     "groq-sdk": "^0.26.0",
     "howler": "^2.2.4",
