@@ -3,10 +3,10 @@ import { sanityClient } from '@/lib/sanity';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     const query = `*[_type == "story" && _id == $id && status == "approved"][0] {
       _id,
