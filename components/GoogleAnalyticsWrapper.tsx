@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 declare global {
@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export function GoogleAnalyticsWrapper() {
+function GoogleAnalyticsTracking() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -28,6 +28,14 @@ export function GoogleAnalyticsWrapper() {
   }, [pathname, searchParams, GA_MEASUREMENT_ID]);
 
   return null;
+}
+
+export function GoogleAnalyticsWrapper() {
+  return (
+    <Suspense fallback={null}>
+      <GoogleAnalyticsTracking />
+    </Suspense>
+  );
 }
 
 export function trackGAEvent(
