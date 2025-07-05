@@ -121,7 +121,7 @@ export default function Navbar() {
                 <div className="mb-8 mt-12">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex justify-start">
-                    <Link href="/" className="hover:opacity-80 transition-opacity" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/" className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                       <Logo className="text-2xl" />
                     </Link>
                   </div>
