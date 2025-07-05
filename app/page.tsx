@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { WhatsThisModal } from "@/components/WhatsThisModal";
 import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
 import { PenTool, Sparkles, Mic, Play, Menu } from "lucide-react";
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/sheet";
 
 export default function HomePage() {
-  const [showWhatsThisModal, setShowWhatsThisModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [storyCount, setStoryCount] = useState(23);
   const [lastStoryTime, setLastStoryTime] = useState<Date | null>(null);
@@ -96,13 +94,11 @@ export default function HomePage() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowWhatsThisModal(true)}
-            >
-              What's This?
-            </Button>
+            <Link href="/about">
+              <Button variant="ghost" size="sm">
+                What's This?
+              </Button>
+            </Link>
             <Link href="/login">
               <Button variant="outline" size="sm">
                 Login
@@ -143,17 +139,13 @@ export default function HomePage() {
                   </div>
                 </div>
                 <nav className="flex flex-col gap-3">
-                  <a 
-                    href="#"
+                  <Link 
+                    href="/about"
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowWhatsThisModal(true);
-                      setMobileMenuOpen(false);
-                    }}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     What's This?
-                  </a>
+                  </Link>
                   <Link 
                     href="/login" 
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
@@ -258,24 +250,21 @@ export default function HomePage() {
               <div className="text-center px-4 md:px-0">
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Your Story Matters</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
-                  In this moment of unprecedented attacks on LGBTQ+ existence, your story matters. 
-                  Your truth is evidence. Your voice is proof.
+                  Your experiences deserve to be witnessed. In times of change and challenge, personal stories become historical record. Your truth adds to our collective understanding.
                 </p>
               </div>
               
               <div className="text-center px-4 md:px-0">
                 <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Complete Safety</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
-                  This is a safe space to document what you're experiencing right now — 
-                  anonymously, securely, permanently.
+                  Share your story in a space designed with your privacy at the center. Anonymous, encrypted, and permanent—because some truths need protection to be told.
                 </p>
               </div>
               
               <div className="text-center px-4 md:px-0">
-                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Collective Resistance</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Collective Resilience</h3>
                 <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
-                  Every story shared here becomes part of an undeniable record. A collective 
-                  testimony that we are here, we survived this, and we will not be erased.
+                  Every story shared strengthens our community's voice. Together, we're creating a living archive of how we navigate difficult times, support each other, and persist.
                 </p>
               </div>
             </div>
@@ -360,10 +349,6 @@ export default function HomePage() {
           </div>
         </div>
       
-      <WhatsThisModal 
-        isOpen={showWhatsThisModal} 
-        onClose={() => setShowWhatsThisModal(false)} 
-      />
     </>
   );
 }
