@@ -35,8 +35,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Run sentiment analysis for crisis detection
+    // Run sentiment analysis for crisis detection and get categories
     let sentimentFlags: SentimentFlags = {};
+    let storyCategories: string[] = ['Identity']; // Default fallback
+    
+    try {
+      // Get story categories using the categorization API
+      const categorizeResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ai/categorize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: contentText })
+      });
+      
+      if (categorizeResponse.ok) {
+        const categorizeData = await categorizeResponse.json();
+        storyCategories = categorizeData.categories || ['Identity'];
+      }
+    } catch (error) {
+      console.error('Categorization error:', error);
+    }
+
     try {
       const sentimentResponse = await anthropic.messages.create({
         model: 'claude-3-5-sonnet-20241022',
@@ -163,7 +181,7 @@ Story: "${contentText}"`
       });
 
       if (storyWithUser) {
-        await syncStoryToSanity(storyWithUser);
+        await syncStoryToSanity(storyWithUser, storyCategories);
       }
     } catch (sanityError) {
       console.error('Failed to sync story to Sanity:', sanityError);

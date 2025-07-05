@@ -1,7 +1,10 @@
 import { sanityClient } from './sanity'
 import { Story } from '@prisma/client'
 
-export async function syncStoryToSanity(story: Story & { user?: { username: string } }) {
+export async function syncStoryToSanity(
+  story: Story & { user?: { username: string } }, 
+  categories?: string[]
+) {
   try {
     // Check if story already exists in Sanity
     const existingStory = await sanityClient.fetch(
@@ -24,7 +27,7 @@ export async function syncStoryToSanity(story: Story & { user?: { username: stri
         positiveResilience: story.flaggedPositive
       },
       createdAt: story.createdAt.toISOString(),
-      categories: [], // To be filled by moderators
+      categories: categories || [], // AI-generated categories or empty
       tags: [] // To be filled by moderators
     }
 

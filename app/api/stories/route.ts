@@ -9,6 +9,7 @@ export async function GET() {
       contentSanitized,
       audioUrl,
       createdAt,
+      categories,
       "voiceSettings": {
         "voiceName": voiceId
       }

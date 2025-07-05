@@ -2,10 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Play, Pause, Clock, ArrowRight } from 'lucide-react';
+import { Play, Pause, Clock, ArrowRight, Filter, X } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface Story {
   _id: string;
@@ -13,10 +20,25 @@ interface Story {
   contentSanitized: string;
   audioUrl?: string;
   createdAt: string;
+  categories?: string[];
   voiceSettings?: {
     voiceName: string;
   };
 }
+
+// Predefined story categories
+const STORY_CATEGORIES = [
+  'Coming Out',
+  'Identity',
+  'Family',
+  'Relationships',
+  'Discrimination',
+  'Healthcare',
+  'Work/School',
+  'Community',
+  'Resilience',
+  'Support'
+];
 
 // Progress Pride flag colors for the gradient
 const progressFlagColors = [
@@ -31,6 +53,87 @@ const progressFlagColors = [
   '#FFFFFF', // White
   '#613915', // Brown
 ];
+
+function FilterModal({ 
+  filters, 
+  onApply, 
+  onClear, 
+  onClose
+}: { 
+  filters: any; 
+  onApply: (filters: any) => void; 
+  onClear: () => void; 
+  onClose: () => void; 
+}) {
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  const handleApply = () => {
+    onApply(localFilters);
+  };
+
+  const handleCategoryToggle = (category: string) => {
+    const newCategories = localFilters.categories.includes(category)
+      ? localFilters.categories.filter((c: string) => c !== category)
+      : [...localFilters.categories, category];
+    setLocalFilters({ ...localFilters, categories: newCategories });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <label className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            checked={localFilters.hasAudio}
+            onChange={(e) => setLocalFilters({ ...localFilters, hasAudio: e.target.checked })}
+            className="rounded"
+          />
+          <span className="text-sm">Stories with audio only</span>
+        </label>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-2">Time Range</label>
+        <select
+          value={localFilters.timeRange}
+          onChange={(e) => setLocalFilters({ ...localFilters, timeRange: e.target.value })}
+          className="w-full p-2 border rounded-md bg-white dark:bg-gray-800 dark:border-gray-600"
+        >
+          <option value="all">All time</option>
+          <option value="today">Today</option>
+          <option value="week">Past week</option>
+          <option value="month">Past month</option>
+        </select>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-3">Categories</label>
+        <div className="max-h-32 overflow-y-auto space-y-2">
+          {STORY_CATEGORIES.map((category) => (
+            <label key={category} className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                checked={localFilters.categories.includes(category)}
+                onChange={() => handleCategoryToggle(category)}
+                className="rounded"
+              />
+              <span className="text-sm">{category}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex gap-3 pt-4">
+        <Button onClick={handleApply} className="flex-1">
+          Apply Filters
+        </Button>
+        <Button variant="outline" onClick={onClear}>
+          Clear All
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -139,6 +242,13 @@ export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [filters, setFilters] = useState({
+    hasAudio: false,
+    timeRange: 'all', // 'all', 'today', 'week', 'month'
+    categories: [] as string[], // Selected categories
+  });
 
   useEffect(() => {
     fetchStories();
@@ -177,6 +287,69 @@ export default function StoriesPage() {
     return text.slice(0, maxLength).trim() + '...';
   };
 
+  const sortedAndFilteredStories = () => {
+    let filtered = [...stories];
+    
+    // Apply filters
+    if (filters.hasAudio) {
+      filtered = filtered.filter(story => story.audioUrl);
+    }
+    
+    if (filters.timeRange !== 'all') {
+      const now = new Date();
+      const cutoffDate = new Date();
+      
+      switch (filters.timeRange) {
+        case 'today':
+          cutoffDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          cutoffDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          cutoffDate.setMonth(now.getMonth() - 1);
+          break;
+      }
+      
+      filtered = filtered.filter(story => new Date(story.createdAt) >= cutoffDate);
+    }
+    
+    // Apply category filter
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter(story => 
+        story.categories && story.categories.some(category => filters.categories.includes(category))
+      );
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    
+    return filtered;
+  };
+
+  const toggleSort = () => {
+    setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest');
+  };
+
+  const applyFilters = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setShowFilterModal(false);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      hasAudio: false,
+      timeRange: 'all',
+      categories: [],
+    });
+  };
+
+  const displayStories = sortedAndFilteredStories();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
@@ -187,6 +360,53 @@ export default function StoriesPage() {
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Voices creating an undeniable chorus. Each one different. All of them true. Together, impossible to ignore.
           </p>
+          
+          {/* Filter and Sort Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-6">
+            <div className="flex gap-3">
+              <Dialog open={showFilterModal} onOpenChange={setShowFilterModal}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                    {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0) && (
+                      <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full" />
+                    )}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Filter Stories</DialogTitle>
+                  </DialogHeader>
+                  <FilterModal 
+                    filters={filters} 
+                    onApply={applyFilters} 
+                    onClear={clearFilters}
+                    onClose={() => setShowFilterModal(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+              
+              {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0) && (
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  <X className="w-4 h-4 mr-1" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Sort:</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleSort}
+                className="min-w-[80px]"
+              >
+                {sortOrder === 'newest' ? 'Newest' : 'Oldest'}
+              </Button>
+            </div>
+          </div>
         </div>
 
         {loading ? (
@@ -205,16 +425,24 @@ export default function StoriesPage() {
               </div>
             ))}
           </div>
-        ) : stories.length === 0 ? (
+        ) : displayStories.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No stories yet. Be the first to share.</p>
-            <Link href="/signup" className="mt-4 inline-block">
-              <Button>Share Your Story</Button>
-            </Link>
+            <p className="text-gray-600 dark:text-gray-400">
+              {stories.length === 0 ? "No stories yet. Be the first to share." : "No stories match your filters."}
+            </p>
+            {stories.length === 0 ? (
+              <Link href="/signup" className="mt-4 inline-block">
+                <Button>Share Your Story</Button>
+              </Link>
+            ) : (
+              <Button variant="outline" onClick={clearFilters} className="mt-4">
+                Clear Filters
+              </Button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {stories.map((story, index) => {
+            {displayStories.map((story, index) => {
               const color = progressFlagColors[index % progressFlagColors.length];
               
               return (
@@ -237,7 +465,7 @@ export default function StoriesPage() {
                     className="w-full relative overflow-hidden"
                     style={{ 
                       height: '48px',
-                      background: `linear-gradient(90deg, ${color}15, ${color}40, ${color}15)`,
+                      backgroundImage: `linear-gradient(90deg, ${color}15, ${color}40, ${color}15)`,
                       backgroundSize: '200% 100%',
                       animation: 'gradientMove 15s linear infinite'
                     }}
