@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ScrollingStories } from "@/components/ScrollingStories";
 import { FeaturedStories } from "@/components/FeaturedStories";
+import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
 import { PenTool, Sparkles, Mic, Play, Menu } from "lucide-react";
 import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
@@ -232,6 +233,9 @@ export default function HomePage() {
                 Share Your Truth →
               </Button>
             </Link>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              No email required. Complete anonymity. Your safety is our priority.
+            </p>
           </div>
           
           {/* Featured Stories Below Hero Content */}
@@ -271,56 +275,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* How It Works - All steps on one card */}
+        {/* How It Works - Dynamic animated version */}
         <div className="bg-white dark:bg-gray-800">
           <div className="max-w-6xl mx-auto px-6 md:px-4 py-16 md:py-24">
-            <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16">How It Works</h3>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              {/* Step 1 */}
-              <div className="text-center">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <PenTool className="w-6 h-6 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h4 className="text-base md:text-xl font-bold mb-2">1. Write</h4>
-                <p className="text-xs md:text-base text-gray-700 dark:text-gray-300 px-2 md:px-0">
-                  Share your story. 1000 characters. Complete anonymity.
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div className="text-center">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-purple-600 dark:text-purple-400" />
-                </div>
-                <h4 className="text-base md:text-xl font-bold mb-2">2. Refine</h4>
-                <p className="text-xs md:text-base text-gray-700 dark:text-gray-300 px-2 md:px-0">
-                  Optional AI help to clarify your message.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div className="text-center">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <Mic className="w-6 h-6 md:w-8 md:h-8 text-green-600 dark:text-green-400" />
-                </div>
-                <h4 className="text-base md:text-xl font-bold mb-2">3. Voice</h4>
-                <p className="text-xs md:text-base text-gray-700 dark:text-gray-300 px-2 md:px-0">
-                  Choose from 8 AI voices. No human recordings.
-                </p>
-              </div>
-
-              {/* Step 4 */}
-              <div className="text-center">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <Play className="w-6 h-6 md:w-8 md:h-8 text-orange-600 dark:text-orange-400" />
-                </div>
-                <h4 className="text-base md:text-xl font-bold mb-2">4. Publish</h4>
-                <p className="text-xs md:text-base text-gray-700 dark:text-gray-300 px-2 md:px-0">
-                  Preview and share. Forever preserved.
-                </p>
-              </div>
-            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-center mb-4">How It Works</h3>
+            <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12 md:mb-16">
+              Share your story in four simple steps. Write your experience, optionally refine it with AI assistance, choose a voice for your testimony, and submit it anonymously to join others in our living archive.
+            </p>
+            <AnimatedHowItWorks />
           </div>
         </div>
 
