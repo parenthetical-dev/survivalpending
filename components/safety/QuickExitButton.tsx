@@ -2,6 +2,12 @@
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { X } from 'lucide-react';
 
 export default function QuickExitButton() {
@@ -41,13 +47,22 @@ export default function QuickExitButton() {
   };
 
   return (
-    <Button
-      variant="destructive"
-      size="sm"
-      onClick={quickExit}
-    >
-      <X className="w-4 h-4 mr-1" />
-      ESC
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={quickExit}
+          >
+            <X className="w-4 h-4 mr-1" />
+            ESC
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Click to immediately leave this page.</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
