@@ -152,6 +152,16 @@ export default function HomePage() {
             <span className="block md:inline">Document your truth.</span>{" "}
             <span className="block md:inline">Before they erase it.</span>
           </h2>
+          <p className="mt-6 md:mt-8 text-lg md:text-xl text-gray-700 dark:text-gray-300">
+            A living, real-time archive of LGBTQ+ resilience in the United States.
+          </p>
+          <div className="mt-4 md:mt-6 flex justify-center">
+            <img 
+              src="/pflag.png" 
+              alt="PFLAG" 
+              className="h-8 md:h-10 w-auto opacity-70 dark:opacity-50"
+            />
+          </div>
         </div>
       </div>
 
