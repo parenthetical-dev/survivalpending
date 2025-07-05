@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { MetaPixelWrapper } from "@/components/MetaPixelWrapper";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -41,6 +42,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const metaPixelId = process.env.META_PIXEL_ID;
+  
   return (
     <html lang="en">
       <head>
@@ -50,6 +53,7 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
+        {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
           <div className="min-h-screen flex flex-col relative">
             <main className="flex-grow pb-0 md:pb-16">

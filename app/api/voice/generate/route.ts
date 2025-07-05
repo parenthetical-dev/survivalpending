@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { generateVoiceAudio } from '@/lib/voice-generation';
+import { trackInitiateCheckout } from '@/lib/meta-capi';
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,6 +55,9 @@ export async function POST(request: NextRequest) {
 
     // Return the audio buffer if available
     if (result.audioBuffer) {
+      // Track that user has reached the preview stage
+      await trackInitiateCheckout(request, payload.userId, 'preview');
+      
       return new NextResponse(result.audioBuffer, {
         headers: {
           'Content-Type': 'audio/mpeg',

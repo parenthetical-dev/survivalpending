@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
+import { trackInitiateCheckout } from '@/lib/meta-capi';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -74,6 +75,10 @@ CRITICAL RULES:
     // Parse the JSON response
     try {
       const parsed = JSON.parse(responseText);
+      
+      // Track that user has entered the refine stage
+      await trackInitiateCheckout(request, payload.userId, 'refine');
+      
       return NextResponse.json(parsed);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);

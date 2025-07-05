@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import Anthropic from '@anthropic-ai/sdk';
 import { generateVoiceAudio, uploadAudioToStorage } from '@/lib/voice-generation';
 import { syncStoryToSanity } from '@/lib/sanity-sync';
+import { trackPurchase } from '@/lib/meta-capi';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -168,6 +169,9 @@ Story: "${contentText}"`
       console.error('Failed to sync story to Sanity:', sanityError);
       // Don't fail the submission if Sanity sync fails
     }
+
+    // Track story submission with Meta CAPI
+    await trackPurchase(request, payload.userId, story.id, sentimentFlags);
 
     return NextResponse.json({ 
       success: true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { voicePreviewLimiter } from '@/lib/rate-limit';
+import { trackInitiateCheckout } from '@/lib/meta-capi';
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,6 +115,9 @@ export async function POST(request: NextRequest) {
     }
 
     const audioBuffer = await response!.arrayBuffer();
+    
+    // Track that user has entered the voice stage
+    await trackInitiateCheckout(request, payload.userId, 'voice');
     
     return new NextResponse(audioBuffer, {
       headers: {

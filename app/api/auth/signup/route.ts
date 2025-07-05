@@ -3,6 +3,7 @@ import { createUser } from '@/lib/auth';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { generateMultipleUsernames } from '@/lib/username-generator';
 import prisma from '@/lib/prisma';
+import { trackStartTrial } from '@/lib/meta-capi';
 
 export async function GET() {
   try {
