@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { verifyToken } from '@/lib/auth';
+import { trackStartTrial } from '@/lib/meta-capi';
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,6 +76,13 @@ export async function POST(request: NextRequest) {
       console.error('Failed to update onboarding status:', updateError);
       // Continue anyway - demographics are saved
     }
+
+    // Track onboarding completion with Meta CAPI
+    await trackStartTrial(request, payload.userId, {
+      ageRange,
+      state,
+      urbanicity
+    });
 
     return NextResponse.json({
       success: true,
