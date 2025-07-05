@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { MetaPixelWrapper } from "@/components/MetaPixelWrapper";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
+
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -53,6 +55,7 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
+        <Analytics/>
         {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
           <div className="min-h-screen flex flex-col relative">
