@@ -62,23 +62,7 @@ export default function RootLayout({
         {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
           <GoogleAnalyticsWrapper />
-          {/* Progress Pride Flag Bar */}
-          <div className="fixed top-0 left-0 right-0 h-1 z-50 flex">
-            {/* Classic rainbow stripes */}
-            <div className="flex-1 bg-[#e40303]" /> {/* Red */}
-            <div className="flex-1 bg-[#ff8c00]" /> {/* Orange */}
-            <div className="flex-1 bg-[#ffed00]" /> {/* Yellow */}
-            <div className="flex-1 bg-[#008026]" /> {/* Green */}
-            <div className="flex-1 bg-[#004cff]" /> {/* Blue */}
-            <div className="flex-1 bg-[#750787]" /> {/* Purple */}
-            {/* Progress chevron colors */}
-            <div className="flex-1 bg-[#5bcefa]" /> {/* Light blue (trans) */}
-            <div className="flex-1 bg-[#f5a9b8]" /> {/* Pink (trans) */}
-            <div className="flex-1 bg-white" /> {/* White (trans) */}
-            <div className="flex-1 bg-[#784F17]" /> {/* Brown */}
-            <div className="flex-1 bg-black" /> {/* Black */}
-          </div>
-          <div className="min-h-screen flex flex-col relative pt-1">
+          <div className="min-h-screen flex flex-col relative">
             <main className="flex-grow pb-0 md:pb-16">
               {children}
             </main>

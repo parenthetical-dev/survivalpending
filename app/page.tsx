@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WhatsThisModal } from "@/components/WhatsThisModal";
 import { ScrollingStories } from "@/components/ScrollingStories";
+import { FeaturedStories } from "@/components/FeaturedStories";
 import { PenTool, Sparkles, Mic, Play, Menu } from "lucide-react";
+import type { FeaturedStory } from "@/lib/sanity-homepage";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +20,72 @@ import {
 export default function HomePage() {
   const [showWhatsThisModal, setShowWhatsThisModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [storyCount, setStoryCount] = useState(23);
+  const [lastStoryTime, setLastStoryTime] = useState<Date | null>(null);
+  const [featuredStories, setFeaturedStories] = useState<FeaturedStory[]>([]);
+
+  useEffect(() => {
+    // Initialize last story time to 2 hours ago if not set
+    const storedCount = localStorage.getItem('storyCount');
+    const storedTime = localStorage.getItem('lastStoryTime');
+    
+    if (storedCount) {
+      setStoryCount(parseInt(storedCount));
+    }
+    
+    if (storedTime) {
+      setLastStoryTime(new Date(storedTime));
+    } else {
+      // Set initial time to 2 hours ago
+      const twoHoursAgo = new Date();
+      twoHoursAgo.setHours(twoHoursAgo.getHours() - 2);
+      setLastStoryTime(twoHoursAgo);
+      localStorage.setItem('lastStoryTime', twoHoursAgo.toISOString());
+    }
+
+    // Listen for story submissions
+    const handleStorySubmit = () => {
+      const newCount = storyCount + 1;
+      const now = new Date();
+      setStoryCount(newCount);
+      setLastStoryTime(now);
+      localStorage.setItem('storyCount', newCount.toString());
+      localStorage.setItem('lastStoryTime', now.toISOString());
+    };
+
+    window.addEventListener('storySubmitted', handleStorySubmit);
+    return () => window.removeEventListener('storySubmitted', handleStorySubmit);
+  }, [storyCount]);
+
+  // Fetch featured stories from Sanity
+  useEffect(() => {
+    async function fetchFeaturedStories() {
+      try {
+        const response = await fetch('/api/featured-stories');
+        if (response.ok) {
+          const data = await response.json();
+          setFeaturedStories(data.stories);
+        }
+      } catch (error) {
+        console.error('Error fetching featured stories:', error);
+      }
+    }
+    fetchFeaturedStories();
+  }, []);
+
+  const getTimeAgo = (date: Date | null) => {
+    if (!date) return '';
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days} day${days === 1 ? '' : 's'} ago`;
+    if (hours > 0) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    return 'just now';
+  };
   
   return (
     <>
@@ -147,7 +215,7 @@ export default function HomePage() {
       {/* Hero Section - 2/3 height */}
       <div className="h-[50vh] md:h-[66vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
         <ScrollingStories />
-        <div className="max-w-6xl mx-auto px-6 md:px-4 text-center relative z-10">
+        <div className="max-w-6xl mx-auto px-6 md:px-4 text-center relative z-10 pt-[25vh]">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
             <span className="block md:inline">Document your truth.</span>{" "}
             <span className="block md:inline">Before they erase it.</span>
@@ -155,13 +223,31 @@ export default function HomePage() {
           <p className="mt-6 md:mt-8 text-lg md:text-xl text-gray-700 dark:text-gray-300">
             A living, real-time archive of LGBTQ+ resilience in the United States.
           </p>
-          <div className="mt-4 md:mt-6 flex justify-center">
-            <img 
-              src="/pflag.png" 
-              alt="PFLAG" 
-              className="h-8 md:h-10 w-auto opacity-70 dark:opacity-50"
-            />
+          <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm md:text-base text-gray-600 dark:text-gray-400">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">{storyCount}</span>
+              <span>stories shared</span>
+            </div>
+            <span className="hidden sm:inline text-gray-400 dark:text-gray-600">•</span>
+            <div className="flex items-center gap-2">
+              <span>Last story shared</span>
+              <span className="font-semibold">{getTimeAgo(lastStoryTime)}</span>
+            </div>
           </div>
+          <div className="mt-8 md:mt-10">
+            <Link href="/signup">
+              <Button size="lg" className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6">
+                Share Your Truth →
+              </Button>
+            </Link>
+          </div>
+          
+          {/* Featured Stories Below Hero Content */}
+          <FeaturedStories 
+            stories={featuredStories} 
+            position="below"
+            showPlaceholders={true} // Always show placeholders when no stories
+          />
         </div>
       </div>
 
