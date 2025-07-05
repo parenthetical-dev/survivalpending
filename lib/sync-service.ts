@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import { sanityClient } from './sanity'
-import { Story, ModerationLog } from '@prisma/client'
+import { Story, ModerationLog, StoryStatus } from '@prisma/client'
 
 interface SyncOptions {
   environment: 'development' | 'production'
@@ -31,7 +31,7 @@ export class SyncService {
     try {
       // Get all stories from Neon
       const whereClause = includeRejected ? {} : {
-        status: { not: 'REJECTED' }
+        status: { not: StoryStatus.REJECTED }
       }
       
       const stories = await prisma.story.findMany({
@@ -128,7 +128,7 @@ export class SyncService {
             
             // Update story in Neon with Sanity data
             const updateData: any = {
-              status: sanityStory.status?.toUpperCase() || 'PENDING',
+              status: (sanityStory.status?.toUpperCase() || 'PENDING') as StoryStatus,
               moderationNotes: sanityStory.moderatorNotes
             }
             
@@ -185,8 +185,8 @@ export class SyncService {
       sanityClient
         .config({ dataset: this.sanityDataset })
         .fetch(`count(*[_type == "story"])`),
-      prisma.story.count({ where: { status: 'PENDING' } }),
-      prisma.story.count({ where: { status: 'APPROVED' } })
+      prisma.story.count({ where: { status: StoryStatus.PENDING } }),
+      prisma.story.count({ where: { status: StoryStatus.APPROVED } })
     ])
     
     return {
