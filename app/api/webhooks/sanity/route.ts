@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import crypto from 'crypto'
 
 // Sanity webhook secret (set in Sanity dashboard and env)
@@ -10,7 +10,8 @@ export async function POST(req: NextRequest) {
   try {
     // Verify webhook signature
     const body = await req.text()
-    const signature = headers().get('sanity-webhook-signature')
+    const headersList = await headers()
+    const signature = headersList.get('sanity-webhook-signature')
     
     if (WEBHOOK_SECRET && signature) {
       const computedSignature = crypto
@@ -45,22 +46,18 @@ export async function POST(req: NextRequest) {
     const updateData: any = {}
     
     if (status && ['approved', 'rejected', 'pending'].includes(status)) {
-      updateData.moderationStatus = status
+      updateData.status = status.toUpperCase() as any
       
       if (status === 'approved') {
         updateData.approvedAt = new Date()
-      } else if (status === 'rejected') {
-        updateData.rejectedAt = new Date()
       }
     }
     
     if (moderatorNotes !== undefined) {
-      updateData.moderatorNotes = moderatorNotes
+      updateData.moderationNotes = moderatorNotes
     }
     
-    if (tags && Array.isArray(tags)) {
-      updateData.tags = tags
-    }
+    // Note: tags and categories are stored in Sanity only, not in Neon
     
     // Update the story
     await prisma.story.update({
@@ -69,15 +66,18 @@ export async function POST(req: NextRequest) {
     })
     
     // Log moderation action if status changed
-    if (status && status !== story.moderationStatus) {
-      await prisma.moderationLog.create({
-        data: {
-          storyId,
-          action: status === 'approved' ? 'APPROVE' : status === 'rejected' ? 'REJECT' : 'REVIEW',
-          moderatorId: payload.moderatorId || 'sanity-webhook',
-          notes: moderatorNotes || `Status changed to ${status} via Sanity`
-        }
-      })
+    if (status && status.toUpperCase() !== story.status) {
+      // Only log if we have a valid moderator ID (admin)
+      if (payload.moderatorId) {
+        await prisma.moderationLog.create({
+          data: {
+            storyId,
+            action: status === 'approved' ? 'APPROVE' : status === 'rejected' ? 'REJECT' : 'NOTE',
+            moderatorId: payload.moderatorId,
+            reason: moderatorNotes || `Status changed to ${status} via Sanity`
+          }
+        })
+      }
     }
     
     console.log(`Story ${storyId} updated from Sanity: ${status}`)
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       message: `Story ${storyId} updated`,
-      status: updateData.moderationStatus 
+      status: updateData.status 
     })
     
   } catch (error) {

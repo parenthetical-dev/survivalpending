@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import { sanityClient } from './sanity'
 import { Story, ModerationLog } from '@prisma/client'
 
@@ -15,9 +15,9 @@ export class SyncService {
   
   constructor(environment: 'development' | 'production' = 'development') {
     this.environment = environment
-    this.sanityDataset = environment === 'production' 
-      ? process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
-      : process.env.NEXT_PUBLIC_SANITY_DATASET_DEV || 'development'
+    // Use NODE_ENV if available, otherwise use parameter
+    const env = process.env.NODE_ENV === 'production' ? 'production' : environment
+    this.sanityDataset = env === 'production' ? 'production' : 'development'
   }
   
   /**
@@ -31,7 +31,7 @@ export class SyncService {
     try {
       // Get all stories from Neon
       const whereClause = includeRejected ? {} : {
-        moderationStatus: { not: 'rejected' }
+        status: { not: 'REJECTED' }
       }
       
       const stories = await prisma.story.findMany({
@@ -57,7 +57,7 @@ export class SyncService {
             contentSanitized: story.contentSanitized || story.contentText,
             voiceId: story.voiceId,
             audioUrl: story.audioUrl,
-            status: story.moderationStatus || 'pending',
+            status: story.status.toLowerCase() || 'pending',
             sentimentFlags: {
               highRisk: story.flaggedHighRisk,
               crisisContent: story.flaggedCrisis,
@@ -65,10 +65,9 @@ export class SyncService {
             },
             createdAt: story.createdAt.toISOString(),
             approvedAt: story.approvedAt?.toISOString(),
-            rejectedAt: story.rejectedAt?.toISOString(),
-            moderatorNotes: story.moderatorNotes,
-            tags: story.tags || [],
-            categories: story.categories || []
+            moderatorNotes: story.moderationNotes,
+            tags: [],
+            categories: []
           }
         }))
         
@@ -129,18 +128,12 @@ export class SyncService {
             
             // Update story in Neon with Sanity data
             const updateData: any = {
-              moderationStatus: sanityStory.status || 'pending',
-              moderatorNotes: sanityStory.moderatorNotes,
-              tags: sanityStory.tags || [],
-              categories: sanityStory.categories || []
+              status: sanityStory.status?.toUpperCase() || 'PENDING',
+              moderationNotes: sanityStory.moderatorNotes
             }
             
             if (sanityStory.status === 'approved' && sanityStory.approvedAt) {
               updateData.approvedAt = new Date(sanityStory.approvedAt)
-            }
-            
-            if (sanityStory.status === 'rejected' && sanityStory.rejectedAt) {
-              updateData.rejectedAt = new Date(sanityStory.rejectedAt)
             }
             
             await prisma.story.update({
@@ -192,8 +185,8 @@ export class SyncService {
       sanityClient
         .config({ dataset: this.sanityDataset })
         .fetch(`count(*[_type == "story"])`),
-      prisma.story.count({ where: { moderationStatus: 'pending' } }),
-      prisma.story.count({ where: { moderationStatus: 'approved' } })
+      prisma.story.count({ where: { status: 'PENDING' } }),
+      prisma.story.count({ where: { status: 'APPROVED' } })
     ])
     
     return {

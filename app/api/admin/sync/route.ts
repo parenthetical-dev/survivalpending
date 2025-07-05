@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { devSyncService, prodSyncService } from '@/lib/sync-service'
-import { verifyJWT } from '@/lib/auth'
+import { verifyToken } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Verify JWT and check if user is admin
-    const payload = await verifyJWT(token)
+    const payload = verifyToken(token)
     if (!payload) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Sync API error:', error)
     return NextResponse.json(
-      { error: 'Sync failed', details: error.message },
+      { error: 'Sync failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
-    const payload = await verifyJWT(token)
+    const payload = verifyToken(token)
     if (!payload) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
