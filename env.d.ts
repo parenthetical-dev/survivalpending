@@ -13,7 +13,6 @@ declare namespace NodeJS {
     
     // Pirsch Analytics
     PIRSCH_ACCESS_TOKEN?: string;
-    NEXT_PUBLIC_PIRSCH_ACCESS_TOKEN?: string;
     
     // Production only
     UPSTASH_REDIS_URL?: string;
