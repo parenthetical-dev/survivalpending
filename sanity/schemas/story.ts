@@ -27,7 +27,7 @@ export default defineType({
       type: 'text',
       description: 'Original story content',
       readOnly: true,
-      validation: Rule => Rule.required().max(1000)
+      validation: Rule => Rule.required().max(2000)
     }),
     defineField({
       name: 'contentSanitized',
