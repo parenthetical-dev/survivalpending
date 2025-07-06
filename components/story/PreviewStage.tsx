@@ -97,7 +97,7 @@ export default function PreviewStage({
 
 
   return (
-    <div className="container max-w-3xl mx-auto px-3 sm:px-4">
+    <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
       <ProgressDots currentStep={4} />
       
       <Card className="mb-4 sm:mb-6 p-0 overflow-hidden">
@@ -106,7 +106,7 @@ export default function PreviewStage({
           title="Review & Submit"
           description="Preview your story before sharing"
         />
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-4 sm:p-6 pt-3 sm:pt-4">
           <div className="mb-4">
             <h3 className="text-base sm:text-lg font-semibold">Your Story</h3>
             <p className="text-xs sm:text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export default function PreviewStage({
           </div>
           
           <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-            <p className="whitespace-pre-wrap text-sm sm:text-base md:text-lg leading-relaxed">{content}</p>
+            <p className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">{content}</p>
           </div>
 
           {loading && (

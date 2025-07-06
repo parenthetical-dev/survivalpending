@@ -84,7 +84,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
   };
 
   return (
-    <div className="container max-w-4xl mx-auto px-4">
+    <div className="container max-w-full md:max-w-6xl mx-auto px-4">
       <ProgressDots currentStep={2} />
       
       <Card className="mb-6 p-0 overflow-hidden">

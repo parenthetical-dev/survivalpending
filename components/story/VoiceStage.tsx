@@ -138,7 +138,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
   const selectedVoiceData = VOICE_OPTIONS.find(v => v.voiceId === selectedVoice)!;
 
   return (
-    <div className="container max-w-3xl mx-auto px-3 sm:px-4">
+    <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
       <ProgressDots currentStep={3} />
       
       <Card className="p-0 overflow-hidden">
@@ -149,7 +149,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
         />
         <CardContent className="p-4 sm:p-6">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {VOICE_OPTIONS.map((voice) => (
                 <div
                   key={voice.voiceId}

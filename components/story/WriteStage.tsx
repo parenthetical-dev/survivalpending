@@ -89,16 +89,18 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
   const canContinue = content.trim().length >= 50; // Minimum 50 chars
 
   return (
-    <div className="container max-w-4xl mx-auto px-4">
+    <div className="container max-w-full md:max-w-6xl mx-auto px-4">
       <ProgressDots currentStep={1} />
       
-      <Card className="p-0 overflow-hidden">
-        <StepHeader
-          currentStep={1}
-          title="Write Your Story"
-          description="Share your experience in your own words"
-        />
-        <div className="p-4 md:p-6 pb-3 md:pb-4">
+      <div className="flex gap-6">
+        <div className="flex-1">
+          <Card className="p-0 overflow-hidden">
+            <StepHeader
+              currentStep={1}
+              title="Write Your Story"
+              description="Share your experience in your own words"
+            />
+            <div className="p-4 md:p-6 pb-3 md:pb-4">
           <Textarea
             ref={textareaRef}
             value={content}
@@ -197,34 +199,49 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               )}
               style={{ width: `${progress}%` }}
             />
+              </div>
+            </div>
+          </Card>
+
+          {/* Mobile: Show prompts below */}
+          {showPrompts && (
+            <div className="md:hidden">
+              <StoryPrompts 
+                onSelectPrompt={handlePromptSelect}
+                onClose={() => setShowPrompts(false)}
+              />
+            </div>
+          )}
+
+          <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
+            <p className="text-center text-xs md:text-sm text-muted-foreground px-4">
+              Your story will be transformed into audio to preserve your voice anonymously
+            </p>
+
+            <div className="flex justify-center">
+              <Button
+                size="default"
+                onClick={() => {
+                  trackStoryProgress('write');
+                  onComplete(content);
+                }}
+                disabled={!canContinue}
+              >
+                Continue to Refine
+              </Button>
+            </div>
           </div>
         </div>
-      </Card>
 
-      {showPrompts && (
-        <StoryPrompts 
-          onSelectPrompt={handlePromptSelect}
-          onClose={() => setShowPrompts(false)}
-        />
-      )}
-
-      <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
-        <p className="text-center text-xs md:text-sm text-muted-foreground px-4">
-          Your story will be transformed into audio to preserve your voice anonymously
-        </p>
-
-        <div className="flex justify-center">
-          <Button
-            size="default"
-            onClick={() => {
-              trackStoryProgress('write');
-              onComplete(content);
-            }}
-            disabled={!canContinue}
-          >
-            Continue to Refine
-          </Button>
-        </div>
+        {/* Desktop: Show prompts on the right */}
+        {showPrompts && (
+          <div className="hidden md:block md:w-96">
+            <StoryPrompts 
+              onSelectPrompt={handlePromptSelect}
+              onClose={() => setShowPrompts(false)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
