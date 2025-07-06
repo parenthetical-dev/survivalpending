@@ -18,8 +18,9 @@ export function middleware(request: NextRequest) {
   );
 
   if (isProtectedRoute) {
-    // In a real app, you'd verify the JWT token here
-    // For now, we'll just check if a token exists in the cookie
+    // Check if token exists in cookies
+    // Note: Full JWT verification happens in API routes since Edge Runtime
+    // doesn't support the crypto modules needed for JWT verification
     const token = request.cookies.get('token');
     
     if (!token) {

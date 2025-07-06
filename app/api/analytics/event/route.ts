@@ -13,10 +13,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Get client info from request
-    const url = request.headers.get('referer') || '';
+    const referer = request.headers.get('referer');
+    const origin = request.headers.get('origin') || 'https://survivalpending.com';
+    const url = referer || `${origin}/`;
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
                request.headers.get('x-real-ip') || 
-               'unknown';
+               '127.0.0.1';
     const userAgent = request.headers.get('user-agent') || '';
     const acceptLanguage = request.headers.get('accept-language') || '';
 

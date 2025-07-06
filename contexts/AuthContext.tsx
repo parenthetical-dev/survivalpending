@@ -26,15 +26,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check for existing session
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
-    const username = localStorage.getItem('username');
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setUser({ id: data.user.id, username: data.user.username });
+          
+          // Update localStorage to keep in sync
+          localStorage.setItem('userId', data.user.id);
+          localStorage.setItem('username', data.user.username);
+        } else {
+          // Clear any stale localStorage data
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('username');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    if (token && userId && username) {
-      setUser({ id: userId, username });
-    }
-    
-    setLoading(false);
+    checkAuth();
   }, []);
 
   const login = async (username: string, password: string, turnstileToken: string) => {
@@ -85,7 +100,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/onboarding');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // Clear server-side cookie
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
+    // Clear client-side storage
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
