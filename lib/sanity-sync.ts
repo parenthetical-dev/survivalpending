@@ -5,12 +5,21 @@ export async function syncStoryToSanity(
   story: Story & { user?: { username: string } }, 
   categories?: string[]
 ) {
+  console.log('[Sanity Sync] Starting sync for story:', {
+    storyId: story.id,
+    username: story.user?.username,
+    dataset: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+    hasToken: !!process.env.SANITY_API_WRITE_TOKEN
+  });
+  
   try {
     // Check if story already exists in Sanity
+    console.log('[Sanity Sync] Checking for existing story...');
     const existingStory = await sanityClient.fetch(
       `*[_type == "story" && storyId == $storyId][0]`,
       { storyId: story.id }
     )
+    console.log('[Sanity Sync] Existing story found:', !!existingStory)
 
     const storyDocument = {
       _type: 'story',
@@ -33,17 +42,28 @@ export async function syncStoryToSanity(
 
     if (existingStory) {
       // Update existing document
-      return await sanityClient
+      console.log('[Sanity Sync] Updating existing document:', existingStory._id);
+      const result = await sanityClient
         .patch(existingStory._id)
         .set(storyDocument)
         .commit()
+      console.log('[Sanity Sync] Update successful:', result._id);
+      return result;
     } else {
       // Create new document
-      return await sanityClient.create(storyDocument)
+      console.log('[Sanity Sync] Creating new document...');
+      const result = await sanityClient.create(storyDocument);
+      console.log('[Sanity Sync] Create successful:', result._id);
+      return result;
     }
   } catch (error) {
-    console.error('Error syncing story to Sanity:', error)
-    throw error
+    console.error('[Sanity Sync] Error syncing story to Sanity:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      dataset: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_API_PROJECT_ID
+    });
+    throw error;
   }
 }
 
