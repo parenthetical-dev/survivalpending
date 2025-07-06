@@ -102,6 +102,7 @@ export default function SubmitStoryPage() {
               originalContent={storyContent}
               onComplete={handleRefineComplete}
               onSkip={handleRefineSkip}
+              onBack={() => setCurrentStage('write')}
             />
           )}
           
@@ -109,6 +110,7 @@ export default function SubmitStoryPage() {
             <VoiceStage 
               content={refinedContent}
               onComplete={handleVoiceComplete}
+              onBack={() => setCurrentStage('refine')}
             />
           )}
           
@@ -118,6 +120,7 @@ export default function SubmitStoryPage() {
               voiceSettings={voiceSettings}
               onComplete={handlePublish}
               onEdit={handleEdit}
+              onBack={() => setCurrentStage('voice')}
             />
           )}
         </div>

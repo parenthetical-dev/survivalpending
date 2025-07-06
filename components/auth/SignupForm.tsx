@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw, Shield, Eye, EyeOff } from 'lucide-react';
+import { RefreshCw, Shield, Eye, EyeOff, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -27,10 +27,26 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loadingUsernames, setLoadingUsernames] = useState(true);
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    length: false,
+    uppercase: false,
+    number: false,
+    special: false
+  });
 
   useEffect(() => {
     fetchUsernames();
   }, []);
+
+  useEffect(() => {
+    // Check password requirements
+    setPasswordRequirements({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    });
+  }, [password]);
 
   const fetchUsernames = async () => {
     setLoadingUsernames(true);
@@ -61,8 +77,28 @@ export default function SignupForm() {
       return;
     }
 
+    // Validate password requirements
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
     if (password.length < 8) {
       setError('Password must be at least 8 characters');
+      return;
+    }
+    
+    if (!hasUppercase) {
+      setError('Password must contain at least one uppercase letter');
+      return;
+    }
+    
+    if (!hasNumber) {
+      setError('Password must contain at least one number');
+      return;
+    }
+    
+    if (!hasSpecial) {
+      setError('Password must contain at least one special character');
       return;
     }
 
@@ -127,7 +163,7 @@ export default function SignupForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
-                placeholder="At least 8 characters"
+                placeholder="Create a strong password"
               />
               <Button
                 type="button"
@@ -143,6 +179,26 @@ export default function SignupForm() {
                 )}
               </Button>
             </div>
+            {password && (
+              <div className="mt-2 space-y-1 text-xs">
+                <div className={`flex items-center gap-1 ${passwordRequirements.length ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
+                  {passwordRequirements.length ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>At least 8 characters</span>
+                </div>
+                <div className={`flex items-center gap-1 ${passwordRequirements.uppercase ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
+                  {passwordRequirements.uppercase ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>One uppercase letter</span>
+                </div>
+                <div className={`flex items-center gap-1 ${passwordRequirements.number ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
+                  {passwordRequirements.number ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>One number</span>
+                </div>
+                <div className={`flex items-center gap-1 ${passwordRequirements.special ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
+                  {passwordRequirements.special ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  <span>One special character (!@#$%^&*)</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
