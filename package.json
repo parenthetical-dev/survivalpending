@@ -15,7 +15,21 @@
     "migrate:neon": "node scripts/prisma-migrate.js",
     "migrate:neon:pg": "node scripts/neon-selective-migrate.js",
     "webhooks:setup": "node scripts/setup-sanity-webhooks.js",
-    "sanity:sync-datasets": "node scripts/sanity-dataset-sync.js"
+    "sanity:sync-datasets": "node scripts/sanity-dataset-sync.js",
+    "db:clear": "node scripts/clear-database.js",
+    "db:clear:prod": "node scripts/clear-database.js --prod",
+    "sanity:clear": "node scripts/clear-sanity.js",
+    "sanity:clear:prod": "node scripts/clear-sanity.js --dataset=production",
+    "db:reset": "./scripts/reset-all-data.sh",
+    "db:reset:prod": "./scripts/reset-all-data.sh --prod",
+    "db:examples": "node scripts/create-example-stories.js",
+    "db:add-stories": "node scripts/add-example-stories.js",
+    "db:approve-stories": "node scripts/approve-example-stories.js",
+    "db:clear:prod-pg": "node scripts/clear-prod-database.js",
+    "db:add-stories:prod": "node scripts/add-prod-example-stories.js",
+    "db:approve-stories:prod": "node scripts/approve-prod-example-stories.js",
+    "db:generate-audio": "node scripts/generate-story-audio.js",
+    "db:generate-audio:prod": "node scripts/generate-story-audio.js --prod"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
