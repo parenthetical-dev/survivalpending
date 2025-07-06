@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RefreshCw, Shield, Eye, EyeOff, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackEvent } from '@/lib/analytics';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -66,6 +67,11 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Track signup attempt
+    trackEvent('SIGNUP_START', 'USER', {
+      hasUsername: !!selectedUsername
+    });
 
     if (!turnstileToken) {
       setError('Please complete the verification');
@@ -105,9 +111,21 @@ export default function SignupForm() {
     setLoading(true);
     try {
       await signup(selectedUsername, password, turnstileToken);
+      
+      // Track successful signup
+      trackEvent('SIGNUP_COMPLETE', 'USER', {
+        usernameGenerated: true
+      });
+      
       toast.success('Account created! Welcome to Survival Pending.');
     } catch (err: any) {
       setError(err.message);
+      
+      // Track signup failure
+      trackEvent('SIGNUP_FAILED', 'USER', {
+        error: err.message
+      });
+      
       toast.error(err.message);
       setLoading(false);
     }
@@ -140,7 +158,10 @@ export default function SignupForm() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  onClick={fetchUsernames}
+                  onClick={() => {
+                    trackEvent('USERNAME_REGENERATED', 'USER');
+                    fetchUsernames();
+                  }}
                   className="h-10 w-10"
                   title="Get new username"
                 >

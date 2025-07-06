@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackEvent } from '@/lib/analytics';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -34,9 +35,22 @@ export default function LoginForm() {
     setLoading(true);
     try {
       await login(username, password, turnstileToken);
+      
+      // Track successful login
+      trackEvent('LOGIN_SUCCESS', 'USER', {
+        method: 'password'
+      });
+      
       toast.success('Welcome back! You\'ve successfully logged in.');
     } catch (err: any) {
       setError(err.message);
+      
+      // Track failed login
+      trackEvent('LOGIN_FAILED', 'USER', {
+        error: err.message,
+        method: 'password'
+      });
+      
       toast.error(err.message);
       setLoading(false);
     }

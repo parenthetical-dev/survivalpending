@@ -10,6 +10,7 @@ import StepHeader from './StepHeader';
 import ProgressDots from './ProgressDots';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { trackEvent } from '@/lib/analytics';
 
 interface RefineStageProps {
   originalContent: string;
@@ -40,6 +41,8 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
   const [appliedSuggestions, setAppliedSuggestions] = useState<Set<number>>(new Set());
 
   useEffect(() => {
+    // Track refine stage start
+    trackEvent('STORY_REFINE_START', 'STORY');
     fetchSuggestions();
   }, []);
 
@@ -71,6 +74,13 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
     const newContent = content.replace(suggestion.original, suggestion.suggested);
     setContent(newContent);
     setAppliedSuggestions(new Set([...appliedSuggestions, index]));
+    
+    // Track individual suggestion applied
+    trackEvent('STORY_REFINE_APPLIED', 'STORY', {
+      suggestionType: suggestion.type,
+      suggestionIndex: index
+    });
+    
     toast.success('Suggestion applied');
   };
 
@@ -135,11 +145,25 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                         if (!showRefinedVersion) {
                           setContent(refinedVersion);
                           setShowRefinedVersion(true);
+                          
+                          // Track complete rewrite applied
+                          trackEvent('STORY_REFINE_APPLIED', 'STORY', {
+                            suggestionType: 'complete_rewrite',
+                            action: 'applied'
+                          });
+                          
                           toast.success('Applied refined version');
                         } else {
                           setContent(originalContent);
                           setShowRefinedVersion(false);
                           setAppliedSuggestions(new Set());
+                          
+                          // Track revert to original
+                          trackEvent('STORY_REFINE_APPLIED', 'STORY', {
+                            suggestionType: 'complete_rewrite',
+                            action: 'reverted'
+                          });
+                          
                           toast.info('Reverted to original');
                         }
                       }}
@@ -268,7 +292,14 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
         <Button
           variant="outline"
           size="default"
-          onClick={onSkip}
+          onClick={() => {
+            // Track skip refinement
+            trackEvent('STORY_REFINE_SKIPPED', 'STORY', {
+              suggestionsCount: suggestions.length,
+              hadRefinedVersion: !!refinedVersion
+            });
+            onSkip();
+          }}
           className="w-full sm:w-auto"
         >
           <SkipForward className="w-4 h-4 mr-2" />
@@ -276,7 +307,16 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
         </Button>
         <Button
           size="default"
-          onClick={() => onComplete(content)}
+          onClick={() => {
+            // Track refine complete (not skipped)
+            trackEvent('STORY_REFINE_COMPLETE', 'STORY', {
+              appliedSuggestionsCount: appliedSuggestions.size,
+              totalSuggestions: suggestions.length,
+              usedCompleteRewrite: showRefinedVersion,
+              editedManually: content !== originalContent && !showRefinedVersion
+            });
+            onComplete(content);
+          }}
           className="w-full sm:w-auto"
         >
           Continue to Voice Selection
