@@ -8,7 +8,7 @@ import VoiceStage, { VoiceSettings } from '@/components/story/VoiceStage';
 import PreviewStage from '@/components/story/PreviewStage';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 import { toast } from 'sonner';
-import { trackStoryProgress } from '@/lib/analytics';
+import { trackStoryProgress, trackEvent } from '@/lib/analytics';
 
 type Stage = 'write' | 'refine' | 'voice' | 'preview';
 
@@ -67,6 +67,13 @@ export default function SubmitStoryPage() {
 
       toast.success('Your story has been submitted');
       
+      // Track submission success
+      trackStoryProgress('submit', {
+        usedRefinement: refinedContent !== storyContent,
+        voiceId: voiceSettings?.voiceId || 'unknown',
+        contentLength: refinedContent.length
+      });
+      
       // Clear local storage
       localStorage.removeItem('draft_story');
       
@@ -77,6 +84,13 @@ export default function SubmitStoryPage() {
       router.push('/story/success');
     } catch (error) {
       console.error('Submit error:', error);
+      
+      // Track submission failure
+      trackEvent('STORY_SUBMIT_FAILED', 'STORY', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stage: 'submit'
+      });
+      
       toast.error('Failed to submit story. Please try again.');
     }
   };

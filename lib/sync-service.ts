@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 import { sanityClient } from './sanity'
-import { Story, ModerationLog, StoryStatus } from '@prisma/client'
+import { StoryStatus } from '@prisma/client'
 
 interface SyncOptions {
   environment: 'development' | 'production'
@@ -66,6 +66,7 @@ export class SyncService {
             createdAt: story.createdAt.toISOString(),
             approvedAt: story.approvedAt?.toISOString(),
             moderatorNotes: story.moderationNotes,
+            showOnHomepage: story.showOnHomepage,
             tags: [],
             categories: []
           }
@@ -129,7 +130,8 @@ export class SyncService {
             // Update story in Neon with Sanity data
             const updateData: any = {
               status: (sanityStory.status?.toUpperCase() || 'PENDING') as StoryStatus,
-              moderationNotes: sanityStory.moderatorNotes
+              moderationNotes: sanityStory.moderatorNotes,
+              showOnHomepage: sanityStory.showOnHomepage || false
             }
             
             if (sanityStory.status === 'approved' && sanityStory.approvedAt) {

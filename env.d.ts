@@ -10,7 +10,10 @@ declare namespace NodeJS {
     META_PIXEL_ID?: string;
     META_ACCESS_TOKEN?: string;
     META_TEST_EVENT_CODE?: string;
-    NEXT_PUBLIC_GA_MEASUREMENT_ID?: string;
+    
+    // Pirsch Analytics
+    PIRSCH_ACCESS_TOKEN?: string;
+    NEXT_PUBLIC_PIRSCH_ACCESS_TOKEN?: string;
     
     // Production only
     UPSTASH_REDIS_URL?: string;

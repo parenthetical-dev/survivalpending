@@ -10,7 +10,7 @@ import { Volume2, Mic, User, Globe, Heart } from 'lucide-react';
 import StepHeader from './StepHeader';
 import ProgressDots from './ProgressDots';
 import { cn } from '@/lib/utils';
-import { trackStoryProgress } from '@/lib/analytics';
+import { trackStoryProgress, trackEvent } from '@/lib/analytics';
 
 interface VoiceStageProps {
   content: string;
@@ -148,7 +148,14 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
           description="Select a voice for your audio testimony"
         />
         <CardContent className="p-4 sm:p-6">
-          <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
+          <RadioGroup value={selectedVoice} onValueChange={(value) => {
+            setSelectedVoice(value);
+            const voice = VOICE_OPTIONS.find(v => v.voiceId === value);
+            trackEvent('STORY_VOICE_SELECTED', 'STORY', {
+              voiceId: value,
+              voiceName: voice?.name || 'unknown'
+            });
+          }}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {VOICE_OPTIONS.map((voice) => (
                 <div
@@ -224,7 +231,10 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
               size="default"
               className="w-full sm:w-auto"
               onClick={() => {
-                trackStoryProgress('voice');
+                trackStoryProgress('voice', {
+                  selectedVoiceId: selectedVoice,
+                  selectedVoiceName: selectedVoiceData.name
+                });
                 onComplete(selectedVoiceData);
               }}
             >

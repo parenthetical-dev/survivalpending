@@ -11,7 +11,7 @@ import WelcomeStep from '@/components/onboarding/WelcomeStep';
 import SafetyStep from '@/components/onboarding/SafetyStep';
 import DemographicsStep from '@/components/onboarding/DemographicsStep';
 import ReviewStep from '@/components/onboarding/ReviewStep';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, trackOnboardingStep } from '@/lib/analytics';
 import ShareModal from '@/components/share/ShareModal';
 
 const TOTAL_STEPS = 5;
@@ -31,13 +31,23 @@ export default function OnboardingPage() {
 
   const progress = (currentStep / TOTAL_STEPS) * 100;
 
-  // Scroll to top when step changes
+  // Scroll to top when step changes and track progress
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Track onboarding step view
+    const stepNames = ['welcome', 'credentials', 'safety', 'demographics', 'review'];
+    if (currentStep > 0 && currentStep <= TOTAL_STEPS) {
+      trackOnboardingStep(currentStep, stepNames[currentStep - 1]);
+    }
   }, [currentStep]);
 
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS) {
+      // Track step completion
+      const stepNames = ['welcome', 'credentials', 'safety', 'demographics', 'review'];
+      trackOnboardingStep(currentStep, stepNames[currentStep - 1], true);
+      
       setCurrentStep(currentStep + 1);
     }
   };
@@ -67,7 +77,12 @@ export default function OnboardingPage() {
       }
 
       // Track completion
-      trackEvent('ONBOARDING_COMPLETE', 'USER');
+      trackEvent('ONBOARDING_COMPLETE', 'USER', {
+        providedDemographics: !!(demographicData.ageRange || demographicData.state || demographicData.genderIdentity || demographicData.racialIdentity || demographicData.urbanicity)
+      });
+      
+      // Mark onboarding as complete in localStorage
+      localStorage.setItem('onboardingComplete', 'true');
 
       toast.success('Welcome to Survival Pending!');
       router.push('/submit');

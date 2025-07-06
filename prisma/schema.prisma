@@ -46,6 +46,7 @@ model Story {
   flaggedHighRisk  Boolean                 @default(false)
   flaggedCrisis    Boolean                 @default(false)
   flaggedPositive  Boolean                 @default(false)
+  showOnHomepage   Boolean                 @default(false)
   createdAt        DateTime                @default(now())
   approvedAt       DateTime?
   approvedBy       String?
@@ -55,6 +56,7 @@ model Story {
 
   @@index([status, createdAt])
   @@index([userId])
+  @@index([showOnHomepage, status, createdAt])
 }
 
 model CrisisInterventionLog {

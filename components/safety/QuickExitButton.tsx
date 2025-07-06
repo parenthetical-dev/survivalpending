@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { X } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 export default function QuickExitButton() {
   useEffect(() => {
@@ -25,7 +26,18 @@ export default function QuickExitButton() {
         }, 1000);
 
         if (escapeCount >= 3) {
-          quickExit();
+          // Track keyboard trigger separately
+          trackEvent('QUICK_EXIT_USED', 'SAFETY', {
+            trigger: 'keyboard',
+            page: window.location.pathname
+          });
+          
+          // Clear any sensitive data
+          localStorage.removeItem('draft_story');
+          sessionStorage.clear();
+          
+          // Replace current page in history and redirect
+          window.location.replace('https://www.google.com');
         }
       }
     };
@@ -38,6 +50,12 @@ export default function QuickExitButton() {
   }, []);
 
   const quickExit = () => {
+    // Track the quick exit usage
+    trackEvent('QUICK_EXIT_USED', 'SAFETY', {
+      trigger: 'button',
+      page: window.location.pathname
+    });
+    
     // Clear any sensitive data
     localStorage.removeItem('draft_story');
     sessionStorage.clear();

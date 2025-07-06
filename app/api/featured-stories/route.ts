@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getHomepageFeaturedStories } from '@/lib/sanity-homepage';
+import { getFeaturedStories } from '@/lib/featured-stories';
 
 export async function GET() {
   try {
-    const stories = await getHomepageFeaturedStories();
+    const stories = await getFeaturedStories();
     return NextResponse.json({ stories });
   } catch (error) {
     console.error('Error fetching featured stories:', error);

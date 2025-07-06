@@ -10,7 +10,7 @@ import StoryPrompts from './StoryPrompts';
 import StepHeader from './StepHeader';
 import ProgressDots from './ProgressDots';
 import { toast } from 'sonner';
-import { trackStoryProgress } from '@/lib/analytics';
+import { trackStoryProgress, trackEvent } from '@/lib/analytics';
 
 interface WriteStageProps {
   onComplete: (content: string) => void;
@@ -40,6 +40,12 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
       saveTimeoutRef.current = setTimeout(() => {
         localStorage.setItem('draft_story', content);
         setAutoSaved(true);
+        
+        // Track draft save
+        trackEvent('STORY_DRAFT_SAVED', 'STORY', {
+          contentLength: content.length,
+          progress: Math.round((content.length / CHARACTER_LIMIT) * 100)
+        });
       }, 1000);
     }
 
@@ -47,6 +53,9 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
   }, [content]);
 
   useEffect(() => {
+    // Track story start
+    trackStoryProgress('start');
+    
     // Load draft if exists
     const draft = localStorage.getItem('draft_story');
     if (draft) {
@@ -61,6 +70,11 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
     if (!content && !showPrompts) {
       idleTimeoutRef.current = setTimeout(() => {
         setShowIdlePrompt(true);
+        
+        // Track idle prompt shown
+        trackEvent('STORY_IDLE_PROMPT_SHOWN', 'STORY', {
+          timeIdle: IDLE_PROMPT_DELAY / 1000 // in seconds
+        });
       }, IDLE_PROMPT_DELAY);
     }
 
@@ -222,7 +236,10 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               <Button
                 size="default"
                 onClick={() => {
-                  trackStoryProgress('write');
+                  trackStoryProgress('write', {
+                    contentLength: content.length,
+                    usedPrompts: showPrompts
+                  });
                   onComplete(content);
                 }}
                 disabled={!canContinue}

@@ -3,11 +3,10 @@ import { JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 import { MetaPixelWrapper } from "@/components/MetaPixelWrapper";
-import { GoogleAnalytics } from "@/components/GoogleAnalytics";
-import { GoogleAnalyticsWrapper } from "@/components/GoogleAnalyticsWrapper";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import FooterSection from "@/components/layout/FooterSection";
+import AnalyticsInitializer from "@/components/AnalyticsInitializer";
 
 
 const jetbrainsMono = JetBrains_Mono({
@@ -56,11 +55,10 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
-        <GoogleAnalytics />
         <Analytics/>
+        <AnalyticsInitializer />
         {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
-          <GoogleAnalyticsWrapper />
           <div className="min-h-screen flex flex-col relative">
             <main className="flex-grow pb-0 lg:pb-16">
               {children}
