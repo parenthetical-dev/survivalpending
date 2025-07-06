@@ -14,7 +14,9 @@ import {
   AlertTriangle,
   Pause,
   Play,
-  RotateCcw
+  RotateCcw,
+  Shield,
+  Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
@@ -147,12 +149,21 @@ export default function PreviewStage({
                 className="mb-4"
               />
 
-              <Alert>
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                <AlertDescription className="text-xs sm:text-sm">
-                  Your story will be anonymous. Both the audio and text will be preserved to share your truth, but your identity remains protected.
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-3">
+                <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
+                  <AlertDescription className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+                    <strong>Your identity is protected.</strong> Your story will be published with your anonymous username only. No personal information will ever be revealed.
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+                  <Info className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
+                  <AlertDescription className="text-xs sm:text-sm text-amber-800 dark:text-amber-200">
+                    <strong>Important:</strong> Once published, stories cannot be deleted to preserve the historical record. However, your anonymity is guaranteed—only your anonymous username will ever be shown.
+                  </AlertDescription>
+                </Alert>
+              </div>
             </div>
           )}
         </CardContent>
@@ -194,9 +205,14 @@ export default function PreviewStage({
         </Button>
       </div>
 
-      <p className="text-center text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6">
-        By publishing, you're helping preserve our collective truth. Thank you for your courage.
-      </p>
+      <div className="text-center mt-4 sm:mt-6 space-y-2">
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          By publishing, you're helping preserve our collective truth. Thank you for your courage.
+        </p>
+        <p className="text-xs text-muted-foreground/70">
+          Your story will be permanently archived for historical preservation.
+        </p>
+      </div>
     </div>
   );
 }
