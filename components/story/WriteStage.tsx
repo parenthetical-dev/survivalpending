@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Lightbulb, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import StoryPrompts from './StoryPrompts';
+import StepHeader from './StepHeader';
+import ProgressDots from './ProgressDots';
 import { toast } from 'sonner';
 import { trackStoryProgress } from '@/lib/analytics';
 
@@ -88,14 +90,14 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
 
   return (
     <div className="container max-w-4xl mx-auto px-4">
-      <div className="text-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold mb-2">What's your story?</h2>
-        <p className="text-sm md:text-base text-muted-foreground">
-          Take your time. Every word matters.
-        </p>
-      </div>
-
+      <ProgressDots currentStep={1} />
+      
       <Card className="p-0 overflow-hidden">
+        <StepHeader
+          currentStep={1}
+          title="Write Your Story"
+          description="Share your experience in your own words"
+        />
         <div className="p-4 md:p-6 pb-3 md:pb-4">
           <Textarea
             ref={textareaRef}
@@ -137,8 +139,8 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
                 toast.warning('Content was truncated to fit the character limit');
               }
             }}
-            placeholder="Start typing... Your words will become a voice for others to hear."
-            className="min-h-[300px] md:min-h-[400px] text-base md:text-lg leading-relaxed border-0 focus:ring-0 resize-none"
+            placeholder="Start typing your story here... Take your time. Every word matters."
+            className="min-h-[250px] md:min-h-[350px] text-base md:text-lg leading-relaxed border-0 focus:ring-0 resize-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
             autoFocus
           />
         </div>
@@ -206,7 +208,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
         />
       )}
 
-      <div className="mt-6 md:mt-8 space-y-3 md:space-y-4">
+      <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
         <p className="text-center text-xs md:text-sm text-muted-foreground px-4">
           Your story will be transformed into audio to preserve your voice anonymously
         </p>

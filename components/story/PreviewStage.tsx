@@ -19,6 +19,8 @@ import {
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
 import PlyrPlayer from '@/components/audio/PlyrPlayer';
+import StepHeader from './StepHeader';
+import ProgressDots from './ProgressDots';
 import { trackStoryProgress } from '@/lib/analytics';
 
 interface PreviewStageProps {
@@ -26,13 +28,15 @@ interface PreviewStageProps {
   voiceSettings: VoiceSettings;
   onComplete: () => void;
   onEdit: () => void;
+  onBack: () => void;
 }
 
 export default function PreviewStage({ 
   content, 
   voiceSettings, 
   onComplete, 
-  onEdit 
+  onEdit,
+  onBack
 }: PreviewStageProps) {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,22 +98,23 @@ export default function PreviewStage({
 
   return (
     <div className="container max-w-3xl mx-auto px-3 sm:px-4">
-      <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-3xl font-bold mb-2">Preview your story</h2>
-        <p className="text-xs sm:text-base text-muted-foreground">
-          Listen to how your story sounds. Make sure you're happy before publishing.
-        </p>
-      </div>
-
-      <Card className="mb-4 sm:mb-6">
-        <CardHeader className="pb-3 sm:pb-6">
-          <CardTitle className="text-base sm:text-lg">Your Story</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-3 sm:pt-6">
-          <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6">
+      <ProgressDots currentStep={4} />
+      
+      <Card className="mb-4 sm:mb-6 p-0 overflow-hidden">
+        <StepHeader
+          currentStep={4}
+          title="Review & Submit"
+          description="Preview your story before sharing"
+        />
+        <CardContent className="p-4 sm:p-6">
+          <div className="mb-4">
+            <h3 className="text-base sm:text-lg font-semibold">Your Story</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
+            </p>
+          </div>
+          
+          <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
             <p className="whitespace-pre-wrap text-sm sm:text-base md:text-lg leading-relaxed">{content}</p>
           </div>
 

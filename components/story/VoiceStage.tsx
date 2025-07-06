@@ -7,12 +7,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Volume2, Mic, User, Globe, Heart } from 'lucide-react';
+import StepHeader from './StepHeader';
+import ProgressDots from './ProgressDots';
 import { cn } from '@/lib/utils';
 import { trackStoryProgress } from '@/lib/analytics';
 
 interface VoiceStageProps {
   content: string;
   onComplete: (voiceSettings: VoiceSettings) => void;
+  onBack: () => void;
 }
 
 export interface VoiceSettings {
@@ -83,7 +86,7 @@ const VOICE_OPTIONS: VoiceSettings[] = [
   }
 ];
 
-export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
+export default function VoiceStage({ content, onComplete, onBack }: VoiceStageProps) {
   const [selectedVoice, setSelectedVoice] = useState<string>(VOICE_OPTIONS[0].voiceId);
   const [previewLoading, setPreviewLoading] = useState<string | null>(null);
 
@@ -136,24 +139,15 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
 
   return (
     <div className="container max-w-3xl mx-auto px-3 sm:px-4">
-      <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-3xl font-bold mb-2">Choose your voice</h2>
-        <p className="text-xs sm:text-base text-muted-foreground">
-          Select a voice that feels right for your story. Each voice brings its own character.
-        </p>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-3 sm:pb-6">
-          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-            <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            Available Voices
-          </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Click preview to hear each voice read your story's opening
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-3 sm:pt-6">
+      <ProgressDots currentStep={3} />
+      
+      <Card className="p-0 overflow-hidden">
+        <StepHeader
+          currentStep={3}
+          title="Choose Your Voice"
+          description="Select a voice for your audio testimony"
+        />
+        <CardContent className="p-4 sm:p-6">
           <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice}>
             <div className="space-y-3 sm:space-y-4">
               {VOICE_OPTIONS.map((voice) => (
@@ -209,28 +203,36 @@ export default function VoiceStage({ content, onComplete }: VoiceStageProps) {
               ))}
             </div>
           </RadioGroup>
+          
+          <div className="mt-6 p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <p className="text-xs sm:text-sm text-center text-muted-foreground">
+              <strong>Note:</strong> All voices are AI-generated to protect your anonymity. 
+              No human voice recordings are used or stored.
+            </p>
+          </div>
+          
+          <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+            <Button
+              variant="ghost"
+              size="default"
+              className="w-full sm:w-auto"
+              onClick={onBack}
+            >
+              Back
+            </Button>
+            <Button
+              size="default"
+              className="w-full sm:w-auto"
+              onClick={() => {
+                trackStoryProgress('voice');
+                onComplete(selectedVoiceData);
+              }}
+            >
+              Continue to Preview
+            </Button>
+          </div>
         </CardContent>
       </Card>
-
-      <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
-        <p className="text-xs sm:text-sm text-center text-muted-foreground">
-          <strong>Note:</strong> All voices are AI-generated to protect your anonymity. 
-          No human voice recordings are used or stored.
-        </p>
-      </div>
-
-      <div className="mt-6 sm:mt-8 flex justify-center">
-        <Button
-          size="default"
-          className="w-full sm:w-auto"
-          onClick={() => {
-            trackStoryProgress('voice');
-            onComplete(selectedVoiceData);
-          }}
-        >
-          Continue to Preview
-        </Button>
-      </div>
     </div>
   );
 }

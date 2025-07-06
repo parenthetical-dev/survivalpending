@@ -89,40 +89,32 @@ export default function SignupForm() {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-3 md:space-y-4 pt-0">
           <div className="space-y-2">
-            <Label htmlFor="username">Choose Your Username</Label>
+            <Label htmlFor="username">Your Username</Label>
             {loadingUsernames ? (
-              <div className="space-y-2">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-10 w-full" />
-                ))}
-              </div>
+              <Skeleton className="h-10 w-full" />
             ) : (
-              <>
-                <RadioGroup value={selectedUsername} onValueChange={setSelectedUsername}>
-                  {usernames.map((username) => (
-                    <div key={username} className="flex items-center space-x-2 p-1.5 md:p-2 rounded hover:bg-gray-50">
-                      <RadioGroupItem value={username} id={username} />
-                      <Label 
-                        htmlFor={username} 
-                        className="flex-1 cursor-pointer font-mono text-xs md:text-sm"
-                      >
-                        {username}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+              <div className="flex gap-2">
+                <Input
+                  id="username"
+                  value={selectedUsername}
+                  disabled
+                  className="flex-1 font-mono text-sm bg-gray-50 dark:bg-gray-800 cursor-not-allowed"
+                />
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={fetchUsernames}
-                  className="w-full mt-2"
+                  className="h-10 w-10"
+                  title="Get new username"
                 >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Show different options
+                  <RefreshCw className="w-4 h-4" />
                 </Button>
-              </>
+              </div>
             )}
+            <p className="text-xs text-muted-foreground">
+              This anonymous username will be your only identifier
+            </p>
           </div>
 
           <div className="space-y-2">
