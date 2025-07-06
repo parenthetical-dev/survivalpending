@@ -293,7 +293,7 @@ export default function Navbar() {
                 <div className="absolute bottom-8 left-8 right-8 space-y-4">
                   {/* Developer and Contact buttons */}
                   <div className="flex gap-3">
-                    <Link href="/developers" onClick={() => setMobileMenuOpen(false)} className="flex-1">
+                    <Link href="/developer" onClick={() => setMobileMenuOpen(false)} className="flex-1">
                       <Button variant="outline" size="sm" className="w-full h-10 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600">
                         <Code2 className="h-4 w-4 mr-2" />
                         Developers
