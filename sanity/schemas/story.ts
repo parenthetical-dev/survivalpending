@@ -163,7 +163,6 @@ export default defineType({
       title: 'Show on Homepage',
       type: 'boolean',
       description: 'Display this story on the homepage',
-      initialValue: false,
       hidden: ({ document }) => document?.status !== 'approved'
     })
   ],
