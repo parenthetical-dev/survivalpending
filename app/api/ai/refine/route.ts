@@ -74,7 +74,30 @@ CRITICAL RULES:
     
     // Parse the JSON response
     try {
-      const parsed = JSON.parse(responseText);
+      // First, try to extract JSON from the response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error('No JSON found in AI response');
+        return NextResponse.json({ suggestions: [] });
+      }
+      
+      // Clean the extracted JSON to handle control characters within string values
+      let cleanedJson = jsonMatch[0];
+      
+      // Function to properly escape control characters in JSON string values
+      cleanedJson = cleanedJson.replace(/"([^"]*)"/g, (_match, p1) => {
+        // Escape control characters within the string value
+        const escaped = p1
+          .replace(/\\/g, '\\\\') // Escape backslashes first
+          .replace(/"/g, '\\"') // Escape quotes
+          .replace(/\n/g, '\\n') // Escape newlines
+          .replace(/\r/g, '\\r') // Escape carriage returns
+          .replace(/\t/g, '\\t') // Escape tabs
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); // Remove other control characters
+        return `"${escaped}"`;
+      });
+      
+      const parsed = JSON.parse(cleanedJson);
       
       // Track that user has entered the refine stage
       await trackInitiateCheckout(request, payload.userId, 'refine');
@@ -82,6 +105,7 @@ CRITICAL RULES:
       return NextResponse.json(parsed);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
+      console.error('Response text:', responseText);
       return NextResponse.json({ suggestions: [] });
     }
 
