@@ -5,6 +5,7 @@ export const ANALYTICS_EVENTS = {
   // User lifecycle events
   SIGNUP_START: 'signup_start',
   SIGNUP_COMPLETE: 'signup_complete',
+  SIGNUP_FAILED: 'signup_failed',
   LOGIN_SUCCESS: 'login_success',
   LOGIN_FAILED: 'login_failed',
   LOGOUT: 'logout',
