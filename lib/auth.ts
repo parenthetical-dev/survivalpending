@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from './prisma';
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'development-secret';
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);

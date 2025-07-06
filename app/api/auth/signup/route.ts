@@ -122,11 +122,22 @@ export async function POST(request: NextRequest) {
     // Track signup conversion
     await trackStartTrial(request, id);
     
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       token,
       userId: id,
     });
+    
+    // Set token as HTTP-only cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+    
+    return response;
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(
