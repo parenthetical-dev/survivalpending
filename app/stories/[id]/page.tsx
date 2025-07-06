@@ -8,6 +8,20 @@ import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import ShareModal from '@/components/share/ShareModal';
 
+// Progress Pride flag colors for the gradient (matching stories page)
+const progressFlagColors = [
+  '#E40303', // Red
+  '#FF8C00', // Orange
+  '#FFED00', // Yellow
+  '#008026', // Green
+  '#24408E', // Blue
+  '#732982', // Purple
+  '#5BCEFA', // Light Blue
+  '#F5A9B8', // Pink
+  '#FFFFFF', // White
+  '#613915', // Brown
+];
+
 interface Story {
   _id: string;
   username: string;
@@ -158,7 +172,7 @@ export default function StoryPage() {
       <div className="container max-w-4xl mx-auto px-4 pt-[80px] md:pt-[100px] pb-12">
         <div className="mb-8">
           <Link href="/stories">
-            <Button variant="ghost" size="sm" className="mb-4">
+            <Button variant="ghost" size="default" className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Stories
             </Button>
@@ -171,21 +185,37 @@ export default function StoryPage() {
               <Clock className="w-3 h-3" />
               <span>{getTimeAgo(story.createdAt)}</span>
             </div>
-            {story.voiceSettings?.voiceName && (
-              <>
-                <span>•</span>
-                <span>Voice: {story.voiceSettings.voiceName}</span>
-              </>
-            )}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 md:p-12">
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-              {story.contentSanitized}
-            </p>
-          </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+          <style jsx>{`
+            @keyframes gradientMove {
+              0% {
+                background-position: 0% 50%;
+              }
+              100% {
+                background-position: 200% 50%;
+              }
+            }
+          `}</style>
+          {/* Animated gradient rectangle using consistent color based on story ID */}
+          <div 
+            className="w-full relative overflow-hidden"
+            style={{ 
+              height: '48px',
+              backgroundImage: `linear-gradient(90deg, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}15, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}40, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}15)`,
+              backgroundSize: '200% 100%',
+              animation: 'gradientMove 15s linear infinite'
+            }}
+            aria-hidden="true"
+          />
+          <div className="p-8 md:p-12">
+            <div className="prose prose-base dark:prose-invert max-w-none">
+              <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                {story.contentSanitized}
+              </p>
+            </div>
 
           {story.audioUrl && (
             <div className="mt-8 bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
@@ -235,6 +265,7 @@ export default function StoryPage() {
                 Share Platform
               </Button>
             </div>
+          </div>
           </div>
         </div>
       </div>
