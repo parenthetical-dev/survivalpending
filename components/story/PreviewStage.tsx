@@ -14,11 +14,15 @@ import {
   AlertTriangle,
   Pause,
   Play,
-  RotateCcw
+  RotateCcw,
+  Shield,
+  Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
 import PlyrPlayer from '@/components/audio/PlyrPlayer';
+import StepHeader from './StepHeader';
+import ProgressDots from './ProgressDots';
 import { trackStoryProgress } from '@/lib/analytics';
 
 interface PreviewStageProps {
@@ -26,13 +30,15 @@ interface PreviewStageProps {
   voiceSettings: VoiceSettings;
   onComplete: () => void;
   onEdit: () => void;
+  onBack: () => void;
 }
 
 export default function PreviewStage({ 
   content, 
   voiceSettings, 
   onComplete, 
-  onEdit 
+  onEdit,
+  onBack
 }: PreviewStageProps) {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,24 +99,25 @@ export default function PreviewStage({
 
 
   return (
-    <div className="container max-w-3xl mx-auto px-3 sm:px-4">
-      <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-3xl font-bold mb-2">Preview your story</h2>
-        <p className="text-xs sm:text-base text-muted-foreground">
-          Listen to how your story sounds. Make sure you're happy before publishing.
-        </p>
-      </div>
-
-      <Card className="mb-4 sm:mb-6">
-        <CardHeader className="pb-3 sm:pb-6">
-          <CardTitle className="text-base sm:text-lg">Your Story</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
-            Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-3 sm:pt-6">
-          <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6">
-            <p className="whitespace-pre-wrap text-sm sm:text-base md:text-lg leading-relaxed">{content}</p>
+    <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
+      <ProgressDots currentStep={4} />
+      
+      <Card className="mb-4 sm:mb-6 p-0 overflow-hidden">
+        <StepHeader
+          currentStep={4}
+          title="Review & Submit"
+          description="Preview your story before sharing"
+        />
+        <CardContent className="p-4 sm:p-6 pt-3 sm:pt-4">
+          <div className="mb-4">
+            <h3 className="text-base sm:text-lg font-semibold">Your Story</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
+            </p>
+          </div>
+          
+          <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">{content}</p>
           </div>
 
           {loading && (
@@ -142,12 +149,21 @@ export default function PreviewStage({
                 className="mb-4"
               />
 
-              <Alert>
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                <AlertDescription className="text-xs sm:text-sm">
-                  Your story will be anonymous. Both the audio and text will be preserved to share your truth, but your identity remains protected.
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-3">
+                <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400" />
+                  <AlertDescription className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+                    <strong>Your identity is protected.</strong> Your story will be published with your anonymous username only. No personal information will ever be revealed.
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+                  <Info className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
+                  <AlertDescription className="text-xs sm:text-sm text-amber-800 dark:text-amber-200">
+                    <strong>Important:</strong> Once published, stories cannot be deleted to preserve the historical record. However, your anonymity is guaranteed—only your anonymous username will ever be shown.
+                  </AlertDescription>
+                </Alert>
+              </div>
             </div>
           )}
         </CardContent>
@@ -189,9 +205,14 @@ export default function PreviewStage({
         </Button>
       </div>
 
-      <p className="text-center text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6">
-        By publishing, you're helping preserve our collective truth. Thank you for your courage.
-      </p>
+      <div className="text-center mt-4 sm:mt-6 space-y-2">
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          By publishing, you're helping preserve our collective truth. Thank you for your courage.
+        </p>
+        <p className="text-xs text-muted-foreground/70">
+          Your story will be permanently archived for historical preservation.
+        </p>
+      </div>
     </div>
   );
 }

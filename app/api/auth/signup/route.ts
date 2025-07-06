@@ -92,6 +92,30 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Check for uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Password must contain at least one uppercase letter' },
+        { status: 400 }
+      );
+    }
+    
+    // Check for number
+    if (!/[0-9]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Password must contain at least one number' },
+        { status: 400 }
+      );
+    }
+    
+    // Check for special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return NextResponse.json(
+        { error: 'Password must contain at least one special character' },
+        { status: 400 }
+      );
+    }
+    
     // Create user
     const { id, token } = await createUser(username, password);
     

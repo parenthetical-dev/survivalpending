@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
@@ -30,6 +30,11 @@ export default function OnboardingPage() {
   });
 
   const progress = (currentStep / TOTAL_STEPS) * 100;
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentStep]);
 
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS) {
@@ -106,10 +111,10 @@ export default function OnboardingPage() {
     <>
       <Navbar />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 md:pt-20">
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)] p-4">
           <div className="w-full max-w-2xl">
-            <div className="mb-8 mt-16">
+            <div className="mb-8">
               <Progress value={progress} className="h-2" />
               <p className="text-sm text-muted-foreground text-center mt-2">
                 Step {currentStep} of {TOTAL_STEPS}

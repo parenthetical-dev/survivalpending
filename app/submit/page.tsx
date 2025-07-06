@@ -10,7 +10,6 @@ import VoiceStage from '@/components/story/VoiceStage';
 import PreviewStage from '@/components/story/PreviewStage';
 import CrisisInterventionModal from '@/components/safety/CrisisInterventionModal';
 import Navbar from '@/components/layout/Navbar';
-import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { trackCrisisResource } from '@/lib/analytics';
 
@@ -33,6 +32,11 @@ export default function SubmitStoryPage() {
       router.push('/login');
     }
   }, [user, router]);
+
+  // Scroll to top when stage changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentStage]);
 
   const handleWriteComplete = (content: string) => {
     setStoryContent(content);
@@ -107,26 +111,11 @@ export default function SubmitStoryPage() {
 
   if (!user) return null;
 
-  const currentStageIndex = STAGES.indexOf(currentStage) + 1;
-  const progress = (currentStageIndex / STAGES.length) * 100;
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      
-      <div className="fixed top-[60px] md:top-[80px] left-0 right-0 bg-gray-50 dark:bg-gray-900 z-10">
-        <div className="container max-w-2xl mx-auto px-4 py-4">
-          <Progress value={progress} className="h-2 mb-2 [&>div]:bg-gray-900 dark:[&>div]:bg-gray-100" />
-          <div className="text-sm text-muted-foreground text-center">
-            {currentStage === 'write' && 'Step 1 of 4: Write'}
-            {currentStage === 'refine' && 'Step 2 of 4: Refine'}
-            {currentStage === 'voice' && 'Step 3 of 4: Voice'}
-            {currentStage === 'preview' && 'Step 4 of 4: Preview'}
-          </div>
-        </div>
-      </div>
 
-      <div className="pt-44 md:pt-52 pb-12">
+      <div className="pt-20 md:pt-24 pb-12">
         {currentStage === 'write' && (
           <WriteStage onComplete={handleWriteComplete} />
         )}
@@ -136,6 +125,7 @@ export default function SubmitStoryPage() {
             originalContent={storyContent}
             onComplete={handleRefineComplete}
             onSkip={() => setCurrentStage('voice')}
+            onBack={() => setCurrentStage('write')}
           />
         )}
         
@@ -146,6 +136,7 @@ export default function SubmitStoryPage() {
               setSelectedVoice(voiceSettings);
               setCurrentStage('preview');
             }}
+            onBack={() => setCurrentStage('refine')}
           />
         )}
         
@@ -155,6 +146,7 @@ export default function SubmitStoryPage() {
             voiceSettings={selectedVoice}
             onComplete={handleSubmit}
             onEdit={() => setCurrentStage('write')}
+            onBack={() => setCurrentStage('voice')}
           />
         )}
       </div>

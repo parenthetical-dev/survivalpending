@@ -38,7 +38,7 @@ export default function Navbar() {
       {/* Header with gradient fade */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pb-8 md:pb-16 pointer-events-none">
         <div className="px-4 md:px-12 py-4 md:py-6 flex justify-between items-center pointer-events-auto">
-          <Link href="/" className="hover:opacity-80 transition-opacity">
+          <Link href={isLoggedIn ? "/dashboard" : "/"} className="hover:opacity-80 transition-opacity">
             <Logo className="text-xl md:text-2xl" />
           </Link>
           
@@ -47,6 +47,17 @@ export default function Navbar() {
             {!isLoggedIn && (
               <Link href="/about" className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 What's This?
+              </Link>
+            )}
+            
+            {isLoggedIn && (
+              <Link href="/dashboard">
+                <Button 
+                  size="sm"
+                  className="bg-purple-400/30 hover:bg-purple-400/40 dark:bg-purple-600/30 dark:hover:bg-purple-600/40 text-purple-900 dark:text-purple-100"
+                >
+                  Dashboard
+                </Button>
               </Link>
             )}
             
@@ -63,11 +74,13 @@ export default function Navbar() {
             
             {!isOnboarding && !isSubmit && (
               <>
-                <Link href="/signup">
-                  <Button size="sm">
-                    Document Your Story
-                  </Button>
-                </Link>
+                {!isLoggedIn && (
+                  <Link href="/signup">
+                    <Button size="sm">
+                      Document Your Story
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/stories">
                   <Button 
                     size="sm" 
@@ -122,7 +135,7 @@ export default function Navbar() {
           
           {/* Mobile Navigation */}
           <div className="flex lg:hidden items-center gap-2">
-            {!isOnboarding && !isSubmit && (
+            {!isOnboarding && !isSubmit && !isLoggedIn && (
               <Link href="/signup">
                 <Button size="sm" className="text-xs">
                   Share Story
@@ -147,7 +160,7 @@ export default function Navbar() {
                 <div className="mb-8 mt-12">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex justify-start">
-                    <Link href="/" className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={isLoggedIn ? "/dashboard" : "/"} className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                       <Logo className="text-2xl" />
                     </Link>
                   </div>
@@ -171,17 +184,19 @@ export default function Navbar() {
                   
                   {!isOnboarding && !isSubmit && (
                     <>
-                      <Link 
-                        href="/signup" 
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Button
-                          size="sm"
-                          className="w-full h-12"
+                      {!isLoggedIn && (
+                        <Link 
+                          href="/signup" 
+                          onClick={() => setMobileMenuOpen(false)}
                         >
-                          Document Your Story
-                        </Button>
-                      </Link>
+                          <Button
+                            size="sm"
+                            className="w-full h-12"
+                          >
+                            Document Your Story
+                          </Button>
+                        </Link>
+                      )}
                       <Link 
                         href="/stories" 
                         onClick={() => setMobileMenuOpen(false)}
@@ -197,18 +212,31 @@ export default function Navbar() {
                   )}
                   
                   {isLoggedIn && (
-                    <Button 
-                      variant="secondary"
-                      size="sm"
-                      className="w-full h-12 flex items-center gap-2 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        handleSignOut();
-                      }}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out Safely
-                    </Button>
+                    <>
+                      <Link 
+                        href="/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Button
+                          size="sm"
+                          className="w-full h-12 bg-purple-400/30 hover:bg-purple-400/40 dark:bg-purple-600/30 dark:hover:bg-purple-600/40 text-purple-900 dark:text-purple-100"
+                        >
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="secondary"
+                        size="sm"
+                        className="w-full h-12 flex items-center gap-2 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleSignOut();
+                        }}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out Safely
+                      </Button>
+                    </>
                   )}
                   
                   {/* What's This link */}
