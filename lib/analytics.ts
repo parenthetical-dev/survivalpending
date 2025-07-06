@@ -97,63 +97,54 @@ function getUserSegmentTags(): Record<string, string | number | boolean> {
   return tags;
 }
 
-// Send event to Pirsch with tags
+// Send event to Pirsch via our API route
 async function sendPirschEvent(
   eventName: string,
   metadata?: Record<string, string | number | boolean>,
   duration?: number
 ) {
   if (typeof window === 'undefined') return;
-  
-  const token = process.env.NEXT_PUBLIC_PIRSCH_ACCESS_TOKEN;
-  if (!token) return;
 
   try {
     const segmentTags = getUserSegmentTags();
+    const payload = {
+      name: eventName,
+      duration,
+      metadata: {
+        ...segmentTags,
+        ...metadata
+      }
+    };
     
-    await fetch(PIRSCH_EVENT_URL, {
+    console.log('[Pirsch] Sending event:', eventName, payload);
+    
+    const response = await fetch('/api/analytics/event', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        name: eventName,
-        url: window.location.href,
-        duration,
-        metadata: {
-          ...segmentTags,
-          ...metadata
-        }
-      })
+      body: JSON.stringify(payload)
     });
+    
+    if (!response.ok) {
+      console.error('[Pirsch] Event tracking failed:', response.status);
+    } else {
+      console.log('[Pirsch] Event tracked successfully:', eventName);
+    }
   } catch (error) {
-    // Silently fail - analytics should not break the app
+    console.error('[Pirsch] Error sending event:', error);
   }
 }
 
-// Send custom page hit with tags (for conversions)
+// Send custom page hit with tags (for conversions) via our API
 async function sendPirschHit(tags: Record<string, string>) {
   if (typeof window === 'undefined') return;
-  
-  const token = process.env.NEXT_PUBLIC_PIRSCH_ACCESS_TOKEN;
-  if (!token) return;
 
   try {
-    await fetch(PIRSCH_HIT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        url: window.location.href,
-        ip: 'anonymous', // Let Pirsch handle IP detection
-        user_agent: navigator.userAgent,
-        accept_language: navigator.language,
-        referrer: document.referrer,
-        tags
-      })
+    // For now, we'll track conversions as events with special metadata
+    await sendPirschEvent('conversion', {
+      ...tags,
+      _type: 'conversion'
     });
   } catch (error) {
     // Silently fail

@@ -9,6 +9,9 @@ const PIRSCH_API_URL = 'https://api.pirsch.io/api/v1/hit';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  console.log('[Middleware] Running for path:', pathname);
+  console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!process.env.PIRSCH_ACCESS_TOKEN);
+  
   // Check if the route requires authentication
   const isProtectedRoute = protectedRoutes.some(route => 
     pathname.startsWith(route)
@@ -61,6 +64,21 @@ export function middleware(request: NextRequest) {
         viewport_width: request.headers.get('viewport-width'),
       };
 
+      const payload = {
+        url,
+        ip,
+        user_agent: userAgent,
+        accept_language: acceptLanguage,
+        referrer,
+        ...clientHints
+      };
+
+      console.log('[Pirsch] Tracking page view:', {
+        url: pathname,
+        hasToken: !!process.env.PIRSCH_ACCESS_TOKEN,
+        payload
+      });
+
       // Fire and forget - don't await
       fetch(PIRSCH_API_URL, {
         method: 'POST',
@@ -68,19 +86,23 @@ export function middleware(request: NextRequest) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.PIRSCH_ACCESS_TOKEN}`
         },
-        body: JSON.stringify({
-          url,
-          ip,
-          user_agent: userAgent,
-          accept_language: acceptLanguage,
-          referrer,
-          ...clientHints
-        })
-      }).catch(() => {
-        // Silently fail - analytics should not break the app
+        body: JSON.stringify(payload)
+      }).then(res => {
+        if (!res.ok) {
+          console.error('[Pirsch] Tracking failed:', res.status, res.statusText);
+          res.text().then(text => console.error('[Pirsch] Response:', text));
+        } else {
+          console.log('[Pirsch] Page view tracked successfully');
+        }
+      }).catch((error) => {
+        console.error('[Pirsch] Error tracking page view:', error);
       });
     } catch (error) {
-      // Silently fail - analytics should not break the app
+      console.error('[Pirsch] Unexpected error:', error);
+    }
+  } else {
+    if (shouldTrack) {
+      console.log('[Pirsch] Skipping tracking - no token found');
     }
   }
 
@@ -97,6 +119,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public files
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
