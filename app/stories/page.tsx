@@ -256,9 +256,11 @@ export default function StoriesPage() {
     selectedState: null as string | null, // For geographic filtering
   });
   const [showMap, setShowMap] = useState(false);
+  const [mapData, setMapData] = useState<{ statesWithData: number; totalStories: number } | null>(null);
 
   useEffect(() => {
     fetchStories();
+    fetchMapData();
   }, []);
 
   async function fetchStories() {
@@ -278,6 +280,21 @@ export default function StoriesPage() {
       console.error('Error fetching stories:', error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchMapData() {
+    try {
+      const response = await fetch('/api/stories/map-data-synced');
+      if (response.ok) {
+        const data = await response.json();
+        setMapData({
+          statesWithData: data.statesWithData || 0,
+          totalStories: data.totalStories || 0
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching map data:', error);
     }
   }
 
@@ -385,6 +402,26 @@ export default function StoriesPage() {
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Voices creating an undeniable chorus. Each one different. All of them true. Together, impossible to ignore.
           </p>
+          
+          {/* Early stage message */}
+          {mapData && mapData.statesWithData < 10 && (
+            <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">We're Just Getting Started</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Survival Pending is in its early stages. As more stories are shared, our geographic view will become available 
+                    while maintaining strict privacy protections. Every story matters in building this collective testimony.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Filter and Sort Controls */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-6">
