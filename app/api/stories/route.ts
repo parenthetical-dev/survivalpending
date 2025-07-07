@@ -13,6 +13,7 @@ export async function GET() {
       audioUrl,
       createdAt,
       categories,
+      color,
       "voiceSettings": {
         "voiceName": voiceId
       }

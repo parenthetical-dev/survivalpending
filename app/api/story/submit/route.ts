@@ -5,6 +5,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { generateVoiceAudio, uploadAudioToStorage } from '@/lib/voice-generation';
 import { syncStoryToSanity } from '@/lib/sanity-sync';
 import { trackPurchase } from '@/lib/meta-capi';
+import { getStoryColor } from '@/lib/utils/storyColors';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -98,6 +99,13 @@ Story: "${contentText}"`
         status: 'PENDING',
         audioUrl: null, // Will be updated after audio generation
       },
+    });
+    
+    // Update story with color based on its ID
+    const storyColor = getStoryColor(story.id);
+    await prisma.story.update({
+      where: { id: story.id },
+      data: { color: storyColor },
     });
 
     // Generate audio for the story

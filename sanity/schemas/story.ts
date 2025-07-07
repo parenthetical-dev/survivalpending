@@ -164,6 +164,14 @@ export default defineType({
       type: 'boolean',
       description: 'Display this story on the homepage',
       hidden: ({ document }) => document?.status !== 'approved'
+    }),
+    defineField({
+      name: 'color',
+      title: 'Story Color',
+      type: 'string',
+      description: 'Color assigned to this story for consistent display',
+      readOnly: true,
+      validation: Rule => Rule.required()
     })
   ],
   preview: {

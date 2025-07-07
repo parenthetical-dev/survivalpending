@@ -29,20 +29,7 @@ import Navbar from '@/components/layout/Navbar';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { cn } from '@/lib/utils';
-
-// Progress Pride flag colors for the gradient (matching stories page)
-const progressFlagColors = [
-  '#E40303', // Red
-  '#FF8C00', // Orange
-  '#FFED00', // Yellow
-  '#008026', // Green
-  '#24408E', // Blue
-  '#732982', // Purple
-  '#5BCEFA', // Light Blue
-  '#F5A9B8', // Pink
-  '#FFFFFF', // White
-  '#613915', // Brown
-];
+import { getStoryColor } from '@/lib/utils/storyColors';
 
 interface Story {
   _id: string;
@@ -51,6 +38,7 @@ interface Story {
   audioUrl?: string;
   createdAt: string;
   status?: string;
+  color?: string;
 }
 
 function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string }) {
@@ -350,8 +338,8 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {userStories.map((story, index) => {
-              const color = progressFlagColors[index % progressFlagColors.length];
+            {userStories.map((story) => {
+              const color = story.color || getStoryColor(story._id);
               
               return (
                 <div

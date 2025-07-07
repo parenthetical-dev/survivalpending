@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { sanityClient } from '@/lib/sanity';
 import prisma from '@/lib/prisma';
+import { getStoryColor } from '@/lib/utils/storyColors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,7 +51,8 @@ export async function GET(request: NextRequest) {
         audioUrl,
         createdAt,
         categories,
-        status
+        status,
+        color
       }`,
       { username: user.username }
     );
@@ -77,7 +79,8 @@ export async function GET(request: NextRequest) {
         audioUrl: story.audioUrl,
         createdAt: story.createdAt.toISOString(),
         categories: [],
-        status: story.status.toLowerCase()
+        status: story.status.toLowerCase(),
+        color: getStoryColor(story.id)
       }));
       
       return NextResponse.json({ 

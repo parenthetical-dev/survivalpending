@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma'
 import { sanityClient } from './sanity'
 import { StoryStatus } from '@prisma/client'
+import { getStoryColor } from './utils/storyColors'
 
 interface SyncOptions {
   environment: 'development' | 'production'
@@ -68,7 +69,8 @@ export class SyncService {
             moderatorNotes: story.moderationNotes,
             showOnHomepage: story.showOnHomepage,
             tags: [],
-            categories: []
+            categories: [],
+            color: story.color || getStoryColor(story.id)
           }
         }))
         
@@ -131,7 +133,8 @@ export class SyncService {
             const updateData: any = {
               status: (sanityStory.status?.toUpperCase() || 'PENDING') as StoryStatus,
               moderationNotes: sanityStory.moderatorNotes,
-              showOnHomepage: sanityStory.showOnHomepage || false
+              showOnHomepage: sanityStory.showOnHomepage || false,
+              color: sanityStory.color || existingStory.color || getStoryColor(sanityStory.storyId)
             }
             
             if (sanityStory.status === 'approved' && sanityStory.approvedAt) {
