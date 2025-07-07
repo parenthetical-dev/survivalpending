@@ -14,25 +14,41 @@ Survival Pending is a platform for LGBTQ+ individuals to share their stories ano
 - Compromise the anonymity of story contributors
 - Put vulnerable individuals at risk
 
-### How to Report
+### How to Report Using GitHub Security Advisories
 
-Please report all security vulnerabilities via email to:
+We use GitHub's private Security Advisory feature to manage vulnerability reports securely.
 
-**security@survivalpending.com**
+#### Step-by-Step Reporting Process
 
-#### What to Include in Your Report
+1. **Navigate to Security Tab**: Go to https://github.com/parenthetical-dev/survivalpending/security
+2. **Click "Report a vulnerability"**: This opens a private security advisory
+3. **Fill in the Advisory Form**:
+   - **Title**: Brief description of the vulnerability
+   - **CVE ID**: Leave blank (we'll request one if needed)
+   - **Description**: Detailed explanation including:
+     - Type of vulnerability
+     - Potential impact on users
+     - Affected components/files
+   - **Severity**: Select appropriate level (Critical/High/Medium/Low)
+   - **Proof of Concept**: Include code samples or reproduction steps
+   - **Recommended Fix**: Your suggestions if any
 
-1. **Description**: Clear explanation of the vulnerability
-2. **Impact**: Potential harm to users or the platform
-3. **Steps to Reproduce**: Detailed instructions to replicate the issue
-4. **Proof of Concept**: Code or screenshots (if applicable)
-5. **Suggested Fix**: Your recommendations (if any)
+#### Benefits of GitHub Security Advisories
 
-#### Encryption
+- **Private Discussion**: Invisible to public until resolved
+- **Secure Collaboration**: Work directly with maintainers
+- **Coordinated Disclosure**: Manage timeline together
+- **Credit Attribution**: Proper recognition for researchers
+- **CVE Assignment**: Official vulnerability tracking if needed
+- **Automated Patches**: GitHub can create security updates
 
-For sensitive disclosures, please encrypt your email using our PGP key:
-- Key ID: [To be added]
-- Fingerprint: [To be added]
+#### What Happens Next
+
+1. **Immediate Notification**: Maintainers are alerted instantly
+2. **Private Fork**: GitHub creates a private fork for developing fixes
+3. **Collaboration**: We work together in the private advisory
+4. **Patch Development**: Fix is developed and tested privately
+5. **Coordinated Release**: Security update and advisory published together
 
 ## Our Security Response Process
 
@@ -124,8 +140,8 @@ The platform includes a quick exit feature (3x ESC or panic button) that:
 
 ## Contact
 
-- **Security Issues**: security@survivalpending.com
-- **General Support**: support@survivalpending.com
+- **Security Issues**: Use GitHub Security Advisories (see above)
+- **General Support**: GitHub Discussions or Issues (non-security)
 - **Crisis Support**: Links available on platform
 
 ## Acknowledgments
@@ -134,7 +150,7 @@ We maintain a hall of fame for security researchers who have helped improve our 
 
 ---
 
-*Last updated: [Current Date]*
+*Last updated: 07 July 2025*
 *Version: 1.0*
 
 Remember: The safety of our users depends on the security of our platform. Thank you for helping us protect vulnerable voices.
