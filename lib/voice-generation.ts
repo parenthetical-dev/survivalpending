@@ -8,6 +8,18 @@ interface VoiceGenerationResult {
   error?: string;
 }
 
+// Allowed ElevenLabs voice IDs
+const ALLOWED_VOICE_IDS = [
+  'EXAVITQu4vr4xnSDxMaL', // Sarah
+  'MF3mGyEYCl7XYWbV9V6O', // Emily
+  'TxGEqnHWrfWFTfGW9XjX', // Josh
+  'VR6AewLTigWG4xSOukaG', // Arnold
+  'pNInz6obpgDQGcFmaJgB', // Adam
+  'yoZ06aMxZJJ28mfd3POQ', // Sam
+  'AZnzlk1XvdvUeBnXmlld', // Domi
+  'ThT5KcBeYPX3keUQqHPh', // Bella
+];
+
 export async function generateVoiceAudio(
   text: string,
   voiceId: string,
@@ -15,6 +27,11 @@ export async function generateVoiceAudio(
   skipRateLimit: boolean = false
 ): Promise<VoiceGenerationResult> {
   try {
+    // Validate voice ID to prevent request forgery
+    if (!ALLOWED_VOICE_IDS.includes(voiceId)) {
+      return { success: false, error: 'Invalid voice ID' };
+    }
+
     // Check character limit
     if (text.length > 1000) {
       return { success: false, error: 'Text exceeds character limit' };

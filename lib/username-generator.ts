@@ -1,4 +1,5 @@
 import Groq from 'groq-sdk';
+import { randomInt } from 'crypto';
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -47,7 +48,7 @@ export async function generateUsername(): Promise<string> {
     // Validate format
     if (baseUsername && /^[a-z]+_[a-z]+$/.test(baseUsername)) {
       // Add random 3-4 digit suffix for uniqueness
-      const suffix = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+      const suffix = randomInt(1000, 10000); // 1000-9999
       return `${baseUsername}_${suffix}`;
     }
     
@@ -56,9 +57,9 @@ export async function generateUsername(): Promise<string> {
     
   } catch (error) {
     // Fallback to local generation with suffix
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    const suffix = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+    const adjective = adjectives[randomInt(0, adjectives.length)];
+    const noun = nouns[randomInt(0, nouns.length)];
+    const suffix = randomInt(1000, 10000); // 1000-9999
     return `${adjective}_${noun}_${suffix}`;
   }
 }
