@@ -2,25 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Clock, Play, Pause, ArrowLeft, Share2 } from 'lucide-react';
+import { Clock, Play, Pause, ArrowLeft, Share2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import ShareModal from '@/components/share/ShareModal';
-
-// Progress Pride flag colors for the gradient (matching stories page)
-const progressFlagColors = [
-  '#E40303', // Red
-  '#FF8C00', // Orange
-  '#FFED00', // Yellow
-  '#008026', // Green
-  '#24408E', // Blue
-  '#732982', // Purple
-  '#5BCEFA', // Light Blue
-  '#F5A9B8', // Pink
-  '#FFFFFF', // White
-  '#613915', // Brown
-];
+import { getStoryColor } from '@/lib/utils/storyColors';
 
 interface Story {
   _id: string;
@@ -28,6 +15,7 @@ interface Story {
   contentSanitized: string;
   audioUrl?: string;
   createdAt: string;
+  color?: string;
   voiceSettings?: {
     voiceName: string;
   };
@@ -43,6 +31,7 @@ export default function StoryPage() {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [loadingNextStory, setLoadingNextStory] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -142,6 +131,21 @@ export default function StoryPage() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const loadRandomStory = async () => {
+    setLoadingNextStory(true);
+    try {
+      const response = await fetch(`/api/stories/random?exclude=${story?._id}`);
+      if (response.ok) {
+        const data = await response.json();
+        router.push(`/stories/${data.storyId}`);
+      }
+    } catch (error) {
+      console.error('Error loading random story:', error);
+    } finally {
+      setLoadingNextStory(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -171,19 +175,27 @@ export default function StoryPage() {
       
       <div className="container max-w-4xl mx-auto px-4 pt-[80px] md:pt-[100px] pb-12">
         <div className="mb-8">
-          <Link href="/stories">
-            <Button variant="ghost" size="default" className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Stories
-            </Button>
-          </Link>
-          
-          <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-6">
-            <span className="font-mono">{story.username}</span>
-            <span>•</span>
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>{getTimeAgo(story.createdAt)}</span>
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <Link href="/stories">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Stories
+              </Button>
+            </Link>
+            
+            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600" />
+            
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{story.username}</span>
+              <span>•</span>
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{getTimeAgo(story.createdAt)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -203,14 +215,14 @@ export default function StoryPage() {
           <div 
             className="w-full relative overflow-hidden"
             style={{ 
-              height: '48px',
-              backgroundImage: `linear-gradient(90deg, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}15, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}40, ${progressFlagColors[story._id.charCodeAt(0) % progressFlagColors.length]}15)`,
+              height: '72px',
+              backgroundImage: `linear-gradient(90deg, ${story.color || getStoryColor(story._id)}15, ${story.color || getStoryColor(story._id)}40, ${story.color || getStoryColor(story._id)}15)`,
               backgroundSize: '200% 100%',
               animation: 'gradientMove 15s linear infinite'
             }}
             aria-hidden="true"
           />
-          <div className="p-8 md:p-12">
+          <div className="px-8 pt-6 pb-8 md:px-12 md:pt-8 md:pb-12">
             <div className="prose prose-base dark:prose-invert max-w-none">
               <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
                 {story.contentSanitized}
@@ -266,6 +278,33 @@ export default function StoryPage() {
               </Button>
             </div>
           </div>
+          </div>
+        </div>
+        
+        {/* Next Story Section */}
+        <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Every story matters
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              Continue listening to voices from our community
+            </p>
+            <Button
+              onClick={loadRandomStory}
+              disabled={loadingNextStory}
+              size="lg"
+              className="group"
+            >
+              {loadingNextStory ? (
+                'Loading...'
+              ) : (
+                <>
+                  Next Story
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </div>

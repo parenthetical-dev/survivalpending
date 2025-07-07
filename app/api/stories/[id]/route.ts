@@ -14,6 +14,7 @@ export async function GET(
       contentSanitized,
       audioUrl,
       createdAt,
+      color,
       "voiceSettings": {
         "voiceName": voiceId
       }

@@ -1,5 +1,6 @@
 import { sanityClient } from './sanity'
 import { Story } from '@prisma/client'
+import { getStoryColor } from './utils/storyColors'
 
 export async function syncStoryToSanity(
   story: Story & { user?: { username: string } }, 
@@ -37,7 +38,8 @@ export async function syncStoryToSanity(
       },
       createdAt: story.createdAt.toISOString(),
       categories: categories || [], // AI-generated categories or empty
-      tags: [] // To be filled by moderators
+      tags: [], // To be filled by moderators
+      color: getStoryColor(story.id) // Assign color based on story ID
     }
 
     if (existingStory) {

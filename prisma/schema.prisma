@@ -47,6 +47,7 @@ model Story {
   flaggedCrisis    Boolean                 @default(false)
   flaggedPositive  Boolean                 @default(false)
   showOnHomepage   Boolean                 @default(false)
+  color            String?
   createdAt        DateTime                @default(now())
   approvedAt       DateTime?
   approvedBy       String?
