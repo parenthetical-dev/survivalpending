@@ -175,19 +175,27 @@ export default function StoryPage() {
       
       <div className="container max-w-4xl mx-auto px-4 pt-[80px] md:pt-[100px] pb-12">
         <div className="mb-8">
-          <Link href="/stories">
-            <Button variant="ghost" size="default" className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Stories
-            </Button>
-          </Link>
-          
-          <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-6">
-            <span className="font-mono">{story.username}</span>
-            <span>•</span>
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>{getTimeAgo(story.createdAt)}</span>
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <Link href="/stories">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Stories
+              </Button>
+            </Link>
+            
+            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600" />
+            
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{story.username}</span>
+              <span>•</span>
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>{getTimeAgo(story.createdAt)}</span>
+              </div>
             </div>
           </div>
         </div>
