@@ -3,6 +3,18 @@ import { verifyToken } from '@/lib/auth';
 import { voicePreviewLimiter } from '@/lib/rate-limit';
 import { trackInitiateCheckout } from '@/lib/meta-capi';
 
+// Allowed ElevenLabs voice IDs
+const ALLOWED_VOICE_IDS = [
+  'EXAVITQu4vr4xnSDxMaL', // Sarah
+  'MF3mGyEYCl7XYWbV9V6O', // Emily
+  'TxGEqnHWrfWFTfGW9XjX', // Josh
+  'VR6AewLTigWG4xSOukaG', // Arnold
+  'pNInz6obpgDQGcFmaJgB', // Adam
+  'yoZ06aMxZJJ28mfd3POQ', // Sam
+  'AZnzlk1XvdvUeBnXmlld', // Domi
+  'ThT5KcBeYPX3keUQqHPh', // Bella
+];
+
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -20,6 +32,11 @@ export async function POST(request: NextRequest) {
 
     if (!text || !voiceId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Validate voice ID to prevent request forgery
+    if (!ALLOWED_VOICE_IDS.includes(voiceId)) {
+      return NextResponse.json({ error: 'Invalid voice ID' }, { status: 400 });
     }
 
     // Check rate limit
