@@ -22,6 +22,9 @@ interface StoriesMapProps {
   selectedState: string | null;
 }
 
+// Privacy threshold - states need at least this many stories to be clickable
+const PRIVACY_THRESHOLD = 5;
+
 // Map of state FIPS codes to abbreviations (for the TopoJSON data)
 const STATE_FIPS_TO_ABBR: { [key: string]: string } = {
   '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', '09': 'CT', '10': 'DE',
@@ -52,6 +55,9 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
   const [loading, setLoading] = useState(true);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [totalStates, setTotalStates] = useState(0);
+  const [showInsufficientDataMessage, setShowInsufficientDataMessage] = useState(false);
+  const [clickedInactiveState, setClickedInactiveState] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -64,6 +70,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
       if (response.ok) {
         const data = await response.json();
         setStateData(data.states);
+        setTotalStates(data.statesWithData || 0);
       }
     } catch (error) {
       console.error('Error fetching map data:', error);
@@ -71,6 +78,11 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
       setLoading(false);
     }
   }
+
+  const isStateActive = (stateAbbr: string) => {
+    const state = stateData.find(s => s.state === stateAbbr);
+    return state ? state.count >= PRIVACY_THRESHOLD : false;
+  };
 
   const getStateColor = (geo: any) => {
     const stateId = geo.id;
@@ -80,11 +92,17 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     const state = stateData.find(s => s.state === stateAbbr);
     if (!state || state.count === 0) return '#e5e7eb'; // Lighter gray for no data
     
+    const isActive = isStateActive(stateAbbr);
     const isSelected = selectedState === stateAbbr;
     const isHovered = hoveredState === stateAbbr;
     
-    if (isSelected) {
+    if (isSelected && isActive) {
       return '#7c3aed'; // Purple for selected
+    }
+    
+    // States below threshold get a special treatment
+    if (!isActive) {
+      return isHovered ? '#d1d5db' : '#e5e7eb'; // Lighter gray, slightly darker on hover
     }
     
     // Create a gradient from powdery purple to saturated purple
@@ -109,9 +127,12 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
 
   const getStateInfo = (stateAbbr: string) => {
     const state = stateData.find(s => s.state === stateAbbr);
+    const count = state?.count || 0;
+    const isActive = count >= PRIVACY_THRESHOLD;
     return {
       name: STATE_NAMES[stateAbbr] || stateAbbr,
-      count: state?.count || 0
+      count,
+      isActive
     };
   };
 
@@ -120,12 +141,21 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     const stateAbbr = STATE_FIPS_TO_ABBR[stateId];
     if (!stateAbbr) return;
     
-    const state = stateData.find(s => s.state === stateAbbr);
-    if (state && state.count > 0) {
-      console.log(`Clicked ${stateAbbr} with ${state.count} stories`);
+    const isActive = isStateActive(stateAbbr);
+    if (isActive) {
+      const state = stateData.find(s => s.state === stateAbbr);
+      console.log(`Clicked ${stateAbbr} with ${state?.count || 0} stories`);
       onStateSelect(selectedState === stateAbbr ? null : stateAbbr);
+      setShowInsufficientDataMessage(false);
+      setClickedInactiveState(null);
     } else {
-      console.log(`Clicked ${stateAbbr} but it has no stories`);
+      console.log(`Clicked ${stateAbbr} but it has insufficient stories`);
+      setShowInsufficientDataMessage(true);
+      setClickedInactiveState(stateAbbr);
+      setTimeout(() => {
+        setShowInsufficientDataMessage(false);
+        setClickedInactiveState(null);
+      }, 3000);
     }
   };
 
@@ -137,8 +167,32 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     );
   }
 
+  // Count active states (those with enough stories)
+  const activeStatesCount = stateData.filter(s => s.count >= PRIVACY_THRESHOLD).length;
+
   return (
     <div className="w-full">
+      {/* Privacy info banner */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0">
+            <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-purple-900 dark:text-purple-100 mb-1">Privacy First</h3>
+            <p className="text-sm text-purple-700 dark:text-purple-300">
+              To protect storyteller anonymity, states are only clickable once they have at least {PRIVACY_THRESHOLD} stories. 
+              This prevents individual stories from being identifiable by location.
+            </p>
+            <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
+              Stories from <strong>{activeStatesCount} states</strong> so far.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {selectedState && (
         <div className="flex items-center gap-2 mb-2">
           <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -159,6 +213,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
             {({ geographies }: { geographies: any[] }) =>
               geographies.map((geo: any) => {
                 const stateAbbr = STATE_FIPS_TO_ABBR[geo.id];
+                const isActive = stateAbbr ? isStateActive(stateAbbr) : false;
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -168,7 +223,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
                     strokeWidth={0.5}
                     style={{
                       default: { outline: 'none' },
-                      hover: { outline: 'none', cursor: stateAbbr && (stateData.find(s => s.state === stateAbbr)?.count ?? 0) > 0 ? 'pointer' : 'default' },
+                      hover: { outline: 'none', cursor: isActive ? 'pointer' : 'not-allowed' },
                       pressed: { outline: 'none' }
                     }}
                     onMouseEnter={() => {
@@ -185,12 +240,25 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
           </Geographies>
         </ComposableMap>
         
+        {/* Hover tooltip */}
         {hoveredState && (
           <div className="absolute bottom-4 left-4 bg-black bg-opacity-90 text-white px-3 py-2 rounded-lg text-sm pointer-events-none">
             {(() => {
               const info = getStateInfo(hoveredState);
+              if (!info.isActive) {
+                return `${info.name}: Insufficient data`;
+              }
               return `${info.name}: ${info.count} ${info.count === 1 ? 'story' : 'stories'}`;
             })()}
+          </div>
+        )}
+        
+        {/* Insufficient data message */}
+        {showInsufficientDataMessage && clickedInactiveState && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2 shadow-lg">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              {STATE_NAMES[clickedInactiveState]} doesn't have enough stories yet to protect individual privacy.
+            </p>
           </div>
         )}
       </div>
@@ -220,7 +288,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
         </div>
         
         <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
-          Click a state to filter stories
+          Click active states to filter stories
         </div>
       </div>
     </div>
