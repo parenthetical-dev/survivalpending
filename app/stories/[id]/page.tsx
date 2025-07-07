@@ -215,14 +215,14 @@ export default function StoryPage() {
           <div 
             className="w-full relative overflow-hidden"
             style={{ 
-              height: '48px',
+              height: '72px',
               backgroundImage: `linear-gradient(90deg, ${story.color || getStoryColor(story._id)}15, ${story.color || getStoryColor(story._id)}40, ${story.color || getStoryColor(story._id)}15)`,
               backgroundSize: '200% 100%',
               animation: 'gradientMove 15s linear infinite'
             }}
             aria-hidden="true"
           />
-          <div className="p-8 md:p-12">
+          <div className="px-8 pt-6 pb-8 md:px-12 md:pt-8 md:pb-12">
             <div className="prose prose-base dark:prose-invert max-w-none">
               <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
                 {story.contentSanitized}
