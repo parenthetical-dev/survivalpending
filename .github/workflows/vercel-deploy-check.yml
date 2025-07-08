@@ -1,0 +1,99 @@
+name: Vercel Deploy Check
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  deploy-check:
+    name: Vercel Preview Deployment Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pre-deployment checks
+        run: |
+          echo "Running pre-deployment checks..."
+          
+          # Type checking
+          echo "Type checking..."
+          npm run type-check
+          
+          # Build test
+          echo "Testing build..."
+          npm run build
+          
+          # Check for critical files
+          echo "Checking critical files..."
+          files_to_check=(
+            ".env.example"
+            "prisma/schema.prisma"
+            "next.config.ts"
+            "package.json"
+            "package-lock.json"
+          )
+          
+          for file in "${files_to_check[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Critical file missing: $file"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All pre-deployment checks passed!"
+
+      - name: Comment on PR
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `### ✅ Vercel Deploy Check Passed
+            
+            All pre-deployment checks completed successfully:
+            - ✓ TypeScript type checking
+            - ✓ Next.js build
+            - ✓ Critical files present
+            
+            This PR is ready for Vercel deployment.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Comment on PR (Failure)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `### ❌ Vercel Deploy Check Failed
+            
+            Pre-deployment checks failed. Please check the workflow logs for details.
+            
+            Common issues:
+            - TypeScript errors
+            - Build failures
+            - Missing critical files
+            
+            Fix these issues before merging to ensure successful Vercel deployment.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
