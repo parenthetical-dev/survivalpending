@@ -27,6 +27,89 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
+
+// Mock NextRequest and NextResponse
+jest.mock('next/server', () => {
+  const actualNext = jest.requireActual('next/server')
+  
+  class MockNextRequest {
+    constructor(input, init = {}) {
+      const url = typeof input === 'string' ? input : input.url
+      this.url = url
+      this.method = init.method || 'GET'
+      this.headers = new Map()
+      
+      if (init.headers) {
+        Object.entries(init.headers).forEach(([key, value]) => {
+          this.headers.set(key.toLowerCase(), value)
+        })
+      }
+      
+      this._body = init.body || null
+      
+      this.json = async () => {
+        if (typeof this._body === 'string') {
+          return JSON.parse(this._body)
+        }
+        return this._body
+      }
+      
+      this.text = async () => String(this._body)
+      this.arrayBuffer = async () => new ArrayBuffer(0)
+      this.blob = async () => new Blob()
+      this.formData = async () => new FormData()
+      this.clone = () => new MockNextRequest(url, init)
+    }
+  }
+  
+  class MockNextResponse extends Response {
+    constructor(body, init = {}) {
+      super(body, init)
+      this._cookies = new Map()
+      
+      this.cookies = {
+        set: (name, value, options = {}) => {
+          this._cookies.set(name, { value, options })
+          const cookieString = `${name}=${value}; ${Object.entries(options)
+            .map(([k, v]) => {
+              if (k === 'maxAge') return `Max-Age=${v}`
+              if (k === 'httpOnly' && v) return 'HttpOnly'
+              if (k === 'secure' && v) return 'Secure'
+              if (k === 'sameSite') return `SameSite=${v}`
+              if (k === 'path') return `Path=${v}`
+              return ''
+            })
+            .filter(Boolean)
+            .join('; ')}`
+          this.headers.set('set-cookie', cookieString)
+        },
+        get: (name) => this._cookies.get(name),
+        delete: (name) => {
+          this._cookies.delete(name)
+          this.cookies.set(name, '', { maxAge: 0 })
+        }
+      }
+    }
+    
+    static json(data, init = {}) {
+      const response = new MockNextResponse(JSON.stringify(data), {
+        ...init,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(init.headers || {})
+        }
+      })
+      return response
+    }
+  }
+  
+  return {
+    ...actualNext,
+    NextRequest: MockNextRequest,
+    NextResponse: MockNextResponse,
+  }
+})
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -61,6 +144,7 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
+
 // Suppress console errors in tests unless explicitly testing them
 const originalError = console.error
 beforeAll(() => {
@@ -71,6 +155,10 @@ beforeAll(() => {
        args[0].includes('Error:') ||
        args[0].includes('Not implemented: navigation'))
     ) {
+      return
+    }
+    // Also suppress errors that are objects with navigation error
+    if (args[0] && typeof args[0] === 'object' && args[0].type === 'not implemented') {
       return
     }
     originalError.call(console, ...args)
@@ -191,8 +279,38 @@ if (typeof globalThis.clearImmediate === 'undefined') {
   globalThis.clearImmediate = (id) => clearTimeout(id)
 }
 
+// Mock performance.markResourceTiming for undici
+if (typeof globalThis.performance === 'undefined') {
+  globalThis.performance = {
+    now: Date.now,
+    markResourceTiming: jest.fn(),
+  }
+} else if (!globalThis.performance.markResourceTiming) {
+  globalThis.performance.markResourceTiming = jest.fn()
+}
+
 // Mock analytics
 jest.mock('@/lib/analytics', () => ({
   trackEvent: jest.fn(),
   trackPageView: jest.fn(),
+}))
+
+// Mock Meta CAPI
+jest.mock('@/lib/meta-capi', () => ({
+  trackPageView: jest.fn().mockResolvedValue(undefined),
+  trackViewContent: jest.fn().mockResolvedValue(undefined),
+  trackInitiateCheckout: jest.fn().mockResolvedValue(undefined),
+  trackCompleteRegistration: jest.fn().mockResolvedValue(undefined),
+  trackStartTrial: jest.fn().mockResolvedValue(undefined),
+}))
+
+// Mock Sentry
+jest.mock('@sentry/nextjs', () => ({
+  captureException: jest.fn(),
+  captureMessage: jest.fn(),
+  captureEvent: jest.fn(),
+  captureConsoleIntegration: jest.fn(),
+  captureRouterTransitionStart: jest.fn(),
+  init: jest.fn(),
+  replayIntegration: jest.fn(),
 }))
