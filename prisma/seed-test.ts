@@ -13,7 +13,7 @@ async function seedTestDatabase() {
         username: 'test_user_1234',
         passwordHash: await bcrypt.hash('TestPassword123!', 10),
         hasCompletedOnboarding: true,
-        isRestricted: false,
+        isBanned: false,
       },
     });
 
@@ -22,7 +22,7 @@ async function seedTestDatabase() {
         username: 'new_user_5678',
         passwordHash: await bcrypt.hash('TestPassword123!', 10),
         hasCompletedOnboarding: false,
-        isRestricted: false,
+        isBanned: false,
       },
     });
 
