@@ -38,6 +38,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# production/dangerous scripts
+scripts/clear-prod-database.js
+scripts/neon-migrate.sh
+scripts/*prod*.js
+scripts/*production*.js
 next-env.d.ts
 .env*.local
 
