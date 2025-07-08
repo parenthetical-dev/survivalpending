@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApprovedStories } from '@/lib/sanity-sync';
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
@@ -23,6 +26,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-// This endpoint can be cached for better performance
-export const revalidate = 60; // Revalidate every minute

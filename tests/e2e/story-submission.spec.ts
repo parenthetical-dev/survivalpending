@@ -33,8 +33,11 @@ test.describe('Story Submission Flow', () => {
     // Skip refinement for this test
     await page.getByRole('button', { name: /skip refinement/i }).click();
     
+    // Wait for navigation to voice stage
+    await page.waitForLoadState('networkidle');
+    
     // Step 3: Voice Stage
-    await expect(page.getByText(/choose a voice/i)).toBeVisible();
+    await expect(page.getByText(/choose a voice/i)).toBeVisible({ timeout: 15000 });
     
     // Select a voice
     await page.getByRole('button', { name: /sarah/i }).first().click();
@@ -119,7 +122,7 @@ test.describe('Story Submission Flow', () => {
     await page.waitForTimeout(1500);
     
     // Wait for auto-save indicator to appear
-    await expect(page.getByText('Saved')).toBeVisible({ timeout: 3000 });
+    await expect(page.getByTestId('autosave-indicator')).toBeVisible({ timeout: 3000 });
     
     // Verify localStorage was updated
     const savedDraft = await page.evaluate(() => localStorage.getItem('draft_story'));

@@ -102,18 +102,6 @@ jobs:
             echo "has_coverage=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        # Only upload coverage if tests passed and coverage file exists
-        if: success() && steps.coverage-check.outputs.has_coverage == 'true'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: unit
-          name: unit-tests
-          fail_ci_if_error: false
-          verbose: true
-
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -259,10 +247,47 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
+  upload-coverage:
+    name: Upload Coverage to Codecov
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests]
+    # Only run if both test jobs succeeded
+    if: success()
+    
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+      
+      - name: Check if coverage file exists
+        id: coverage-check
+        run: |
+          if [ -f "coverage/lcov.info" ] && [ -s "coverage/lcov.info" ]; then
+            echo "Coverage file exists and is not empty"
+            echo "has_coverage=true" >> $GITHUB_OUTPUT
+            ls -la coverage/
+          else
+            echo "::error::Coverage file is missing or empty"
+            echo "has_coverage=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unit
+          name: unit-tests
+          fail_ci_if_error: false
+          verbose: true
+
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [unit-tests, e2e-tests]
+    needs: [unit-tests, e2e-tests, upload-coverage]
     if: always()
     
     steps:
