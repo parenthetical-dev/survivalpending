@@ -207,14 +207,14 @@ jobs:
           npx prisma generate
           echo "Database schema created successfully"
           
-      - name: Seed test database
+      - name: Clean test database
         env:
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
           JWT_SECRET: test-secret
         run: |
-          echo "Seeding test database..."
-          npx tsx prisma/seed-test.ts
-          echo "Test data seeded successfully"
+          echo "Cleaning test database..."
+          npx tsx prisma/clean-test-db.ts
+          echo "Test database cleaned successfully"
 
       - name: Build Next.js app
         env:

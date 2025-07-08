@@ -7,10 +7,11 @@ async function seedTestDatabase() {
   console.log('Seeding test database...');
 
   try {
-    // Create test users
+    // Create test users with unique names to avoid conflicts
+    const timestamp = Date.now();
     const testUser = await prisma.user.create({
       data: {
-        username: 'test_user_1234',
+        username: `test_user_${timestamp}_1234`,
         passwordHash: await bcrypt.hash('TestPassword123!', 10),
         hasCompletedOnboarding: true,
         isBanned: false,
@@ -19,7 +20,7 @@ async function seedTestDatabase() {
 
     const newUser = await prisma.user.create({
       data: {
-        username: 'new_user_5678',
+        username: `new_user_${timestamp}_5678`,
         passwordHash: await bcrypt.hash('TestPassword123!', 10),
         hasCompletedOnboarding: false,
         isBanned: false,
