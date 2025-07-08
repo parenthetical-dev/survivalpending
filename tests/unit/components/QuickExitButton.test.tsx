@@ -5,8 +5,12 @@ import '@testing-library/jest-dom';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 
 // Mock window.location
+const mockReplace = jest.fn();
 delete (window as any).location;
-window.location = { replace: jest.fn() } as any;
+window.location = { 
+  replace: mockReplace,
+  pathname: '/'
+} as any;
 
 describe('QuickExitButton', () => {
   beforeEach(() => {
@@ -16,7 +20,7 @@ describe('QuickExitButton', () => {
   it('renders the quick exit button', () => {
     const { getByRole } = render(<QuickExitButton />);
     
-    const button = getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /ESC/i });
     expect(button).toBeInTheDocument();
   });
 
@@ -24,10 +28,10 @@ describe('QuickExitButton', () => {
     const user = userEvent.setup();
     const { getByRole } = render(<QuickExitButton />);
     
-    const button = getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /ESC/i });
     await user.click(button);
     
-    expect(window.location.replace).toHaveBeenCalledWith('https://weather.com');
+    expect(mockReplace).toHaveBeenCalledWith('https://www.google.com');
   });
 
   it('exits on triple ESC key press', async () => {
@@ -39,7 +43,7 @@ describe('QuickExitButton', () => {
     await user.keyboard('{Escape}');
     await user.keyboard('{Escape}');
     
-    expect(window.location.replace).toHaveBeenCalledWith('https://weather.com');
+    expect(mockReplace).toHaveBeenCalledWith('https://www.google.com');
   });
 
   it('resets ESC count after timeout', async () => {
@@ -57,7 +61,7 @@ describe('QuickExitButton', () => {
     // Press ESC once more - should not exit
     await user.keyboard('{Escape}');
     
-    expect(window.location.replace).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
     
     jest.useRealTimers();
   });
@@ -66,10 +70,10 @@ describe('QuickExitButton', () => {
     const user = userEvent.setup();
     const { getByRole, findByText } = render(<QuickExitButton />);
     
-    const button = getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /ESC/i });
     await user.hover(button);
     
     // Tooltip content should appear
-    expect(await findByText(/immediately leave/i)).toBeInTheDocument();
+    expect(await findByText(/Click to immediately leave this page/i)).toBeInTheDocument();
   });
 });

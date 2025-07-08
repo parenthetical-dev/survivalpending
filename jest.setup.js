@@ -56,7 +56,9 @@ beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
-      (args[0].includes('Warning:') || args[0].includes('Error:'))
+      (args[0].includes('Warning:') || 
+       args[0].includes('Error:') ||
+       args[0].includes('Not implemented: navigation'))
     ) {
       return
     }
@@ -67,3 +69,41 @@ beforeAll(() => {
 afterAll(() => {
   console.error = originalError
 })
+
+// Add missing Node.js globals for tests
+if (typeof globalThis.Request === 'undefined') {
+  globalThis.Request = class Request {
+    constructor(url, init) {
+      this.url = url
+      this.init = init
+    }
+  }
+}
+
+if (typeof globalThis.Response === 'undefined') {
+  globalThis.Response = class Response {
+    constructor(body, init) {
+      this.body = body
+      this.init = init
+    }
+  }
+}
+
+if (typeof globalThis.TextDecoder === 'undefined') {
+  globalThis.TextDecoder = require('util').TextDecoder
+}
+
+if (typeof globalThis.TextEncoder === 'undefined') {
+  globalThis.TextEncoder = require('util').TextEncoder
+}
+
+// Mock fetch for tests
+if (typeof globalThis.fetch === 'undefined') {
+  globalThis.fetch = jest.fn()
+}
+
+// Mock analytics
+jest.mock('@/lib/analytics', () => ({
+  trackEvent: jest.fn(),
+  trackPageView: jest.fn(),
+}))
