@@ -37,7 +37,7 @@ test.describe('Story Submission Flow', () => {
     await page.waitForLoadState('networkidle');
     
     // Step 3: Voice Stage
-    await expect(page.getByText(/choose a voice/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /choose your voice/i })).toBeVisible({ timeout: 15000 });
     
     // Select a voice
     await page.getByRole('button', { name: /sarah/i }).first().click();
@@ -132,10 +132,14 @@ test.describe('Story Submission Flow', () => {
     await page.reload();
     await page.waitForLoadState('networkidle');
     
+    // Wait a bit for the component to mount and load from localStorage
+    await page.waitForTimeout(500);
+    
     // Check if draft is restored
     await expect(textarea).toHaveValue(draftText);
     
     // Should show toast notification about draft restoration
-    await expect(page.getByText('Draft restored')).toBeVisible({ timeout: 5000 });
+    // Toast might be in a portal or overlay
+    await expect(page.locator('text="Draft restored"')).toBeVisible({ timeout: 10000 });
   });
 });

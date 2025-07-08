@@ -16,7 +16,9 @@ export async function mockAuthentication(page: Page) {
 }
 
 export async function clearAuthentication(page: Page) {
-  await page.evaluate(() => {
+  // Use addInitScript to clear auth on next navigation
+  // This avoids SecurityError when localStorage is not accessible
+  await page.addInitScript(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('hasCompletedOnboarding');
     localStorage.removeItem('user');
