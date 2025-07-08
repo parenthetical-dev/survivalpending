@@ -66,11 +66,11 @@ test.describe('Story Submission Flow', () => {
     // Type a story
     await page.getByPlaceholder(/start typing your story/i).fill('Test story');
     
-    // Test quick exit button
-    await page.getByRole('button', { name: /quick exit/i }).click();
+    // Test quick exit button - it displays "ESC" with an X icon
+    await page.getByRole('button', { name: /ESC/i }).click();
     
-    // Should redirect to weather.com
-    await expect(page).toHaveURL('https://weather.com');
+    // Should redirect to google.com
+    await expect(page).toHaveURL('https://www.google.com');
   });
 
   test('character limit enforcement', async ({ page }) => {
@@ -94,10 +94,13 @@ test.describe('Story Submission Flow', () => {
     const draftText = 'This is my draft story';
     await page.getByPlaceholder(/start typing your story/i).fill(draftText);
     
-    // Wait for auto-save indicator or check localStorage
+    // Wait for auto-save - the code saves after 1 second
+    await page.waitForTimeout(1500);
+    
+    // Check localStorage
     await page.waitForFunction(() => {
-      const draft = localStorage.getItem('story-draft');
-      return draft && JSON.parse(draft).content === 'This is my draft story';
+      const draft = localStorage.getItem('draft_story');
+      return draft === 'This is my draft story';
     }, { timeout: 5000 });
     
     // Reload page

@@ -4,14 +4,17 @@ test.describe('Authentication Flow', () => {
   test('signup with onboarding flow', async ({ page }) => {
     await page.goto('/signup');
     
-    // Step 1: Generate username
-    await page.getByRole('button', { name: /generate new username/i }).click();
+    // Wait for username to be loaded
+    await page.waitForSelector('input#username', { state: 'visible' });
     
     // Verify username format
-    await expect(page.getByRole('textbox', { name: /username/i })).toHaveValue(/^[a-z]+_[a-z]+_\d{4}$/);
+    await expect(page.locator('input#username')).toHaveValue(/^[a-z]+_[a-z]+_\d{4}$/);
     
     // Set password
-    await page.getByRole('textbox', { name: /password/i }).fill('TestPassword123!');
+    await page.locator('input#password').fill('TestPassword123!');
+    
+    // Set confirm password
+    await page.locator('input#confirmPassword').fill('TestPassword123!');
     
     // Handle Turnstile (in test mode it auto-passes)
     // Wait for Turnstile iframe or bypass in test mode
@@ -62,8 +65,8 @@ test.describe('Authentication Flow', () => {
     await page.goto('/login');
     
     // Enter credentials
-    await page.getByRole('textbox', { name: /username/i }).fill('test_user_1234');
-    await page.getByRole('textbox', { name: /password/i }).fill('TestPassword123!');
+    await page.locator('input#username').fill('test_user_1234');
+    await page.locator('input#password').fill('TestPassword123!');
     
     // Wait for Turnstile iframe or bypass in test mode
     await page.waitForSelector('[data-turnstile-ready="true"]', { timeout: 5000 }).catch(() => {});
@@ -79,8 +82,8 @@ test.describe('Authentication Flow', () => {
     await page.goto('/login');
     
     // Enter invalid credentials
-    await page.getByRole('textbox', { name: /username/i }).fill('invalid_user');
-    await page.getByRole('textbox', { name: /password/i }).fill('wrongpassword');
+    await page.locator('input#username').fill('invalid_user');
+    await page.locator('input#password').fill('wrongpassword');
     
     // Wait for Turnstile iframe or bypass in test mode
     await page.waitForSelector('[data-turnstile-ready="true"]', { timeout: 5000 }).catch(() => {});
