@@ -62,14 +62,24 @@ interface SignupBody {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as SignupBody;
-    const { username, password, turnstileToken } = body;
+    
+    // Extract and validate each field individually with strict checks
+    const username = typeof body?.username === 'string' ? body.username.trim() : '';
+    const password = typeof body?.password === 'string' ? body.password : '';
+    const turnstileToken = typeof body?.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
 
-    // Validate input - ensure all fields are non-empty strings
-    if (typeof username !== 'string' || username.trim().length === 0 ||
-        typeof password !== 'string' || password.trim().length === 0 ||
-        typeof turnstileToken !== 'string' || turnstileToken.trim().length === 0) {
+    // Validate required fields
+    if (username.length === 0 || password.length === 0 || turnstileToken.length === 0) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 },
+      );
+    }
+    
+    // Additional validation for username format
+    if (!/^[a-z]+_[a-z]+_\d{4}$/.test(username)) {
+      return NextResponse.json(
+        { error: 'Invalid username format' },
         { status: 400 },
       );
     }
