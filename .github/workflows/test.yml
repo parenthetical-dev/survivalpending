@@ -101,10 +101,15 @@ jobs:
           fail-on-error: false
 
   e2e-tests:
-    name: E2E Tests
+    name: E2E Tests (Shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     runs-on: ubuntu-latest
     # Only run E2E tests on main branch or PRs to main
     if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
     
     services:
       postgres:
@@ -146,6 +151,9 @@ jobs:
           npx prisma generate
           echo "Database schema created successfully"
 
+      - name: Build Next.js app
+        run: npm run build
+        
       - name: Run Playwright tests
         env:
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
@@ -155,13 +163,16 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
           BASE_URL: http://localhost:3000
-        run: npm run test:e2e
+          FULL_BROWSER_MATRIX: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
+          CI: true
+        run: npx playwright test --config=playwright.config.ci.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        timeout-minutes: 10
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shardIndex }}
           path: playwright-report/
           retention-days: 30
 
@@ -169,7 +180,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-results
+          name: playwright-results-${{ matrix.shardIndex }}
           path: test-results/
           retention-days: 30
 

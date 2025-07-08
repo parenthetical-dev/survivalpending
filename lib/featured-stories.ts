@@ -82,12 +82,18 @@ export async function getFeaturedStoriesFromSanity(): Promise<FeaturedStory[]> {
  */
 export async function getFeaturedStories(): Promise<FeaturedStory[]> {
   // Try Sanity first
+  console.log('Fetching featured stories from Sanity...');
   const sanityStories = await getFeaturedStoriesFromSanity();
+  console.log(`Found ${sanityStories.length} stories from Sanity`);
+  
   if (sanityStories.length > 0) {
     return sanityStories;
   }
 
   // Fall back to Neon
   console.log('Falling back to Neon for featured stories');
-  return getFeaturedStoriesFromNeon();
+  const neonStories = await getFeaturedStoriesFromNeon();
+  console.log(`Found ${neonStories.length} stories from Neon`);
+  
+  return neonStories;
 }

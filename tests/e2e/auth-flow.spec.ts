@@ -14,7 +14,8 @@ test.describe('Authentication Flow', () => {
     await page.getByRole('textbox', { name: /password/i }).fill('TestPassword123!');
     
     // Handle Turnstile (in test mode it auto-passes)
-    await page.waitForTimeout(1000);
+    // Wait for Turnstile iframe or bypass in test mode
+    await page.waitForSelector('[data-turnstile-ready="true"]', { timeout: 5000 }).catch(() => {});
     
     // Submit
     await page.getByRole('button', { name: /create account/i }).click();
@@ -64,8 +65,8 @@ test.describe('Authentication Flow', () => {
     await page.getByRole('textbox', { name: /username/i }).fill('test_user_1234');
     await page.getByRole('textbox', { name: /password/i }).fill('TestPassword123!');
     
-    // Wait for Turnstile
-    await page.waitForTimeout(1000);
+    // Wait for Turnstile iframe or bypass in test mode
+    await page.waitForSelector('[data-turnstile-ready="true"]', { timeout: 5000 }).catch(() => {});
     
     // Submit
     await page.getByRole('button', { name: /sign in/i }).click();
@@ -81,8 +82,8 @@ test.describe('Authentication Flow', () => {
     await page.getByRole('textbox', { name: /username/i }).fill('invalid_user');
     await page.getByRole('textbox', { name: /password/i }).fill('wrongpassword');
     
-    // Wait for Turnstile
-    await page.waitForTimeout(1000);
+    // Wait for Turnstile iframe or bypass in test mode
+    await page.waitForSelector('[data-turnstile-ready="true"]', { timeout: 5000 }).catch(() => {});
     
     // Submit
     await page.getByRole('button', { name: /sign in/i }).click();

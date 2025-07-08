@@ -5,6 +5,11 @@ export async function verifyTurnstileToken(token: string): Promise<boolean> {
   }
 
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  
+  if (!secretKey) {
+    console.error('TURNSTILE_SECRET_KEY is not set');
+    return false;
+  }
 
   const formData = new FormData();
   formData.append('secret', secretKey);

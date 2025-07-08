@@ -28,7 +28,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for existing session
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setUser({ id: data.user.id, username: data.user.username });
@@ -43,7 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.removeItem('username');
         }
       } catch (error) {
-        console.error('Auth check error:', error);
+        // Only log non-network errors
+        if (error instanceof Error && !error.message.includes('Failed to fetch')) {
+          console.error('Auth check error:', error);
+        }
       } finally {
         setLoading(false);
       }

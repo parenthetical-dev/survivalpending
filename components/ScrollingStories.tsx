@@ -121,7 +121,7 @@ export function ScrollingStories() {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden opacity-[0.15] dark:opacity-[0.07]">
+    <div className="absolute inset-0 overflow-hidden opacity-[0.25] dark:opacity-[0.15]">
       {stories.map((story) => (
           <div
             key={story.id}

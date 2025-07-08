@@ -38,8 +38,8 @@ test.describe('Story Submission Flow', () => {
     // Preview voice
     await page.getByRole('button', { name: /preview/i }).click();
     
-    // Wait for audio preview
-    await page.waitForTimeout(2000);
+    // Wait for audio preview button to be enabled after preview loads
+    await expect(page.getByRole('button', { name: /preview/i })).toBeEnabled({ timeout: 5000 });
     
     // Continue
     await page.getByRole('button', { name: /continue.*voice/i }).click();
@@ -49,7 +49,8 @@ test.describe('Story Submission Flow', () => {
     
     // Play full audio
     await page.getByRole('button', { name: /play/i }).click();
-    await page.waitForTimeout(1000);
+    // Wait for audio element to appear
+    await expect(page.locator('audio')).toBeVisible({ timeout: 5000 });
     
     // Submit story
     await page.getByRole('button', { name: /submit story/i }).click();
@@ -93,8 +94,11 @@ test.describe('Story Submission Flow', () => {
     const draftText = 'This is my draft story';
     await page.getByPlaceholder(/start typing your story/i).fill(draftText);
     
-    // Wait for auto-save
-    await page.waitForTimeout(1500);
+    // Wait for auto-save indicator or check localStorage
+    await page.waitForFunction(() => {
+      const draft = localStorage.getItem('story-draft');
+      return draft && JSON.parse(draft).content === 'This is my draft story';
+    }, { timeout: 5000 });
     
     // Reload page
     await page.reload();

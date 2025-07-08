@@ -28,7 +28,11 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchFeaturedStories() {
       try {
-        const response = await fetch('/api/featured-stories');
+        const response = await fetch('/api/featured-stories', {
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setFeaturedStories(data.stories);
@@ -40,7 +44,12 @@ export default function HomePage() {
           }
         }
       } catch (error) {
-        console.error('Error fetching featured stories:', error);
+        // Only log non-network errors
+        if (error instanceof Error && !error.message.includes('Failed to fetch')) {
+          console.error('Error fetching featured stories:', error);
+        }
+        // Set empty array to prevent undefined errors
+        setFeaturedStories([]);
       }
     }
     fetchFeaturedStories();
