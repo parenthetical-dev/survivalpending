@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 
@@ -19,39 +20,42 @@ describe('QuickExitButton', () => {
     expect(button).toBeInTheDocument();
   });
 
-  it('exits when clicked', () => {
+  it('exits when clicked', async () => {
+    const user = userEvent.setup();
     const { getByRole } = render(<QuickExitButton />);
     
     const button = getByRole('button', { name: /quick exit/i });
-    fireEvent.click(button);
+    await user.click(button);
     
     expect(window.location.replace).toHaveBeenCalledWith('https://weather.com');
   });
 
-  it('exits on triple ESC key press', () => {
+  it('exits on triple ESC key press', async () => {
+    const user = userEvent.setup();
     render(<QuickExitButton />);
     
     // Press ESC three times
-    fireEvent.keyDown(window, { key: 'Escape' });
-    fireEvent.keyDown(window, { key: 'Escape' });
-    fireEvent.keyDown(window, { key: 'Escape' });
+    await user.keyboard('{Escape}');
+    await user.keyboard('{Escape}');
+    await user.keyboard('{Escape}');
     
     expect(window.location.replace).toHaveBeenCalledWith('https://weather.com');
   });
 
-  it('resets ESC count after timeout', () => {
+  it('resets ESC count after timeout', async () => {
     jest.useFakeTimers();
+    const user = userEvent.setup({ delay: null });
     render(<QuickExitButton />);
     
     // Press ESC twice
-    fireEvent.keyDown(window, { key: 'Escape' });
-    fireEvent.keyDown(window, { key: 'Escape' });
+    await user.keyboard('{Escape}');
+    await user.keyboard('{Escape}');
     
     // Wait for timeout
     jest.advanceTimersByTime(1000);
     
     // Press ESC once more - should not exit
-    fireEvent.keyDown(window, { key: 'Escape' });
+    await user.keyboard('{Escape}');
     
     expect(window.location.replace).not.toHaveBeenCalled();
     
@@ -59,10 +63,11 @@ describe('QuickExitButton', () => {
   });
 
   it('shows tooltip on hover', async () => {
+    const user = userEvent.setup();
     const { getByRole, findByText } = render(<QuickExitButton />);
     
     const button = getByRole('button', { name: /quick exit/i });
-    fireEvent.mouseEnter(button);
+    await user.hover(button);
     
     // Tooltip content should appear
     expect(await findByText(/immediately leave/i)).toBeInTheDocument();
