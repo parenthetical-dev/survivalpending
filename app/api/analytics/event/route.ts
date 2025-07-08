@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
       metadata,
     };
 
-    console.log('[Pirsch API] Sending event:', name, payload);
+    // Sanitize log output to prevent log injection
+    const sanitizedName = name.replace(/[
+]/g, '_');
+    console.log('[Pirsch API] Sending event:', sanitizedName, JSON.stringify(payload).replace(/[
+]/g, '_'));
 
     const response = await fetch(PIRSCH_EVENT_URL, {
       method: 'POST',
@@ -63,7 +67,9 @@ export async function POST(request: NextRequest) {
       const text = await response.text();
       console.error('[Pirsch API] Event tracking failed:', response.status, text);
     } else {
-      console.log('[Pirsch API] Event tracked successfully:', name);
+      const sanitizedEventName = name.replace(/[
+]/g, '_');
+      console.log('[Pirsch API] Event tracked successfully:', sanitizedEventName);
     }
 
     return NextResponse.json({ success: true });

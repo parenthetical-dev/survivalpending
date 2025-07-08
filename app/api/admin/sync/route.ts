@@ -41,7 +41,10 @@ export async function POST(req: NextRequest) {
     // Select sync service based on environment
     const syncService = environment === 'production' ? prodSyncService : devSyncService;
 
-    console.log(`Admin sync requested: ${environment} - ${direction}`);
+    // Sanitize log output to prevent log injection
+    const sanitizedEnv = environment.replace(/[\n\r]/g, '_');
+    const sanitizedDir = direction.replace(/[\n\r]/g, '_');
+    console.log(`Admin sync requested: ${sanitizedEnv} - ${sanitizedDir}`);
 
     let result: SyncResult;
 

@@ -64,8 +64,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as SignupBody;
     const { username, password, turnstileToken } = body;
 
-    // Validate input
-    if (!username || !password || !turnstileToken) {
+    // Validate input - ensure all fields are non-empty strings
+    if (typeof username !== 'string' || username.trim().length === 0 ||
+        typeof password !== 'string' || password.trim().length === 0 ||
+        typeof turnstileToken !== 'string' || turnstileToken.trim().length === 0) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 },

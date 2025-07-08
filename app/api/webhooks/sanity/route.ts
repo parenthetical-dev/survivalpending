@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!story) {
-      console.error(`Story not found in database: ${storyId}`);
+      // Sanitize log output to prevent log injection
+      const sanitizedId = storyId.replace(/[
+]/g, '_');
+      console.error(`Story not found in database: ${sanitizedId}`);
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
@@ -87,7 +90,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log(`Story ${storyId} updated from Sanity: ${status}`);
+    // Sanitize log output to prevent log injection
+    const sanitizedStoryId = storyId.replace(/[
+]/g, '_');
+    const sanitizedStatus = status?.replace(/[
+]/g, '_') || 'unknown';
+    console.log(`Story ${sanitizedStoryId} updated from Sanity: ${sanitizedStatus}`);
 
     return NextResponse.json({
       success: true,
