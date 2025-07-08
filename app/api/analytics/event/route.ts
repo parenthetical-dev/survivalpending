@@ -23,8 +23,16 @@ export async function POST(request: NextRequest) {
     const body: EventRequestBody = await request.json();
     const { name, metadata, duration } = body;
 
-    if (!process.env.PIRSCH_ACCESS_TOKEN) {
-      console.log('[Pirsch API] No access token configured');
+    // Skip tracking in test environment or when token is not properly configured
+    const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.CI === 'true';
+    const hasValidToken = process.env.PIRSCH_ACCESS_TOKEN && 
+                         process.env.PIRSCH_ACCESS_TOKEN.trim() !== '' && 
+                         process.env.PIRSCH_ACCESS_TOKEN !== 'test-token';
+    
+    if (!hasValidToken || isTestEnvironment) {
+      if (process.env.NODE_ENV === 'development' && !isTestEnvironment) {
+        console.log('[Pirsch API] Skipping tracking - no valid token or test environment');
+      }
       return NextResponse.json({ success: true }); // Don't fail the request
     }
 
@@ -48,9 +56,12 @@ export async function POST(request: NextRequest) {
       metadata,
     };
 
-    // Sanitize log output to prevent log injection
-    const sanitizedName = name.replace(/[\n\r]/g, '_');
-    console.log('[Pirsch API] Sending event:', sanitizedName, JSON.stringify(payload).replace(/[\n\r]/g, '_'));
+    // Only log in development, not in CI/test environments
+    if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
+      // Sanitize log output to prevent log injection
+      const sanitizedName = name.replace(/[\n\r]/g, '_');
+      console.log('[Pirsch API] Sending event:', sanitizedName, JSON.stringify(payload).replace(/[\n\r]/g, '_'));
+    }
 
     const response = await fetch(PIRSCH_EVENT_URL, {
       method: 'POST',
@@ -63,10 +74,14 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const text = await response.text();
-      console.error('[Pirsch API] Event tracking failed:', response.status, text);
+      if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
+        console.error('[Pirsch API] Event tracking failed:', response.status, text);
+      }
     } else {
-      const sanitizedEventName = name.replace(/[\n\r]/g, '_');
-      console.log('[Pirsch API] Event tracked successfully:', sanitizedEventName);
+      if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
+        const sanitizedEventName = name.replace(/[\n\r]/g, '_');
+        console.log('[Pirsch API] Event tracked successfully:', sanitizedEventName);
+      }
     }
 
     return NextResponse.json({ success: true });

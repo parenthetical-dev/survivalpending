@@ -31,7 +31,7 @@ test.describe('Story Submission Flow', () => {
     await expect(page.getByRole('heading', { name: /AI Suggestions/i })).toBeVisible({ timeout: 10000 });
     
     // Skip refinement for this test
-    await page.getByRole('button', { name: /skip.*keep original/i }).click();
+    await page.getByRole('button', { name: /skip refinement/i }).click();
     
     // Step 3: Voice Stage
     await expect(page.getByText(/choose a voice/i)).toBeVisible();
@@ -92,8 +92,8 @@ test.describe('Story Submission Flow', () => {
     const maxStory = 'a'.repeat(1000);
     await page.getByPlaceholder(/start typing your story/i).fill(maxStory);
     
-    // Check character count shows 0 remaining
-    await expect(page.getByText('0')).toBeVisible();
+    // Check character count shows 0 remaining - be more specific to avoid strict mode violation
+    await expect(page.locator('span.font-mono').filter({ hasText: '0' }).first()).toBeVisible();
     await expect(page.getByText('/ 1000')).toBeVisible();
     
     // Try to type more - it should not accept
@@ -114,6 +114,9 @@ test.describe('Story Submission Flow', () => {
     const draftText = 'This is my draft story that will be automatically saved by the system';
     const textarea = page.getByPlaceholder(/start typing your story/i);
     await textarea.fill(draftText);
+    
+    // Wait for auto-save to complete (1 second delay + processing time)
+    await page.waitForTimeout(1500);
     
     // Wait for auto-save indicator to appear
     await expect(page.getByText('Saved')).toBeVisible({ timeout: 3000 });

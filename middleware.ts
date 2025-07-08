@@ -9,8 +9,11 @@ const PIRSCH_API_URL = 'https://api.pirsch.io/api/v1/hit';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  console.log('[Middleware] Running for path:', pathname);
-  console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!(process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim()));
+  // Only log in development, not in CI/test environments
+  if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
+    console.log('[Middleware] Running for path:', pathname);
+    console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!(process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim()));
+  }
   
   // Check if the route requires authentication
   const isProtectedRoute = protectedRoutes.some(route => 
@@ -42,7 +45,13 @@ export function middleware(request: NextRequest) {
     !pathname.startsWith('/static/') &&
     !pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot)$/);
 
-  if (shouldTrack && process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim() !== '') {
+  // Skip tracking in test environment or when token is not properly configured
+  const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.CI === 'true';
+  const hasValidToken = process.env.PIRSCH_ACCESS_TOKEN && 
+                       process.env.PIRSCH_ACCESS_TOKEN.trim() !== '' && 
+                       process.env.PIRSCH_ACCESS_TOKEN !== 'test-token';
+  
+  if (shouldTrack && hasValidToken && !isTestEnvironment) {
     // Track page view asynchronously without blocking the response
     try {
       const url = request.nextUrl.href;
