@@ -104,7 +104,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: always() && steps.coverage-check.outputs.has_coverage == 'true'
+        # Only upload coverage if tests passed and coverage file exists
+        if: success() && steps.coverage-check.outputs.has_coverage == 'true'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
