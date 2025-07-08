@@ -134,6 +134,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!response) {
+      throw new Error('Failed to generate audio after all retries');
+    }
+
     const audioBuffer = await response.arrayBuffer();
 
     // Track that user has entered the voice stage
