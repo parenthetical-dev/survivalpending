@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   console.log('[Middleware] Running for path:', pathname);
-  console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!process.env.PIRSCH_ACCESS_TOKEN);
+  console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!(process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim()));
   
   // Check if the route requires authentication
   const isProtectedRoute = protectedRoutes.some(route => 
@@ -42,7 +42,7 @@ export function middleware(request: NextRequest) {
     !pathname.startsWith('/static/') &&
     !pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf|eot)$/);
 
-  if (shouldTrack && process.env.PIRSCH_ACCESS_TOKEN) {
+  if (shouldTrack && process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim() !== '') {
     // Track page view asynchronously without blocking the response
     try {
       const url = request.nextUrl.href;
