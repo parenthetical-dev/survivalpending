@@ -1,0 +1,7 @@
+# GitHub-specific Codecov settings
+
+# This file is used by Codecov's GitHub App
+# The main codecov.yml in the root handles coverage settings
+
+github_checks:
+  annotations: true  # Add inline annotations to PR files

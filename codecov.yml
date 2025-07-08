@@ -1,0 +1,73 @@
+# Codecov configuration for Survival Pending
+
+coverage:
+  # Overall project coverage
+  status:
+    project:
+      default:
+        target: 60%  # Target coverage percentage
+        threshold: 5%  # Allow 5% drop in coverage
+        base: auto
+        if_ci_failed: error
+    
+    # Coverage per PR
+    patch:
+      default:
+        target: 70%  # New code should have 70% coverage
+        threshold: 10%
+        base: auto
+
+# File ignore patterns
+ignore:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "tests/**"
+  - "scripts/**"
+  - "**/*.config.js"
+  - "**/*.config.ts"
+  - "**/generated/**"
+  - "app/generated/**"
+
+# Coverage precision
+parsers:
+  javascript:
+    enable_partials: yes
+
+# Comment customization
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: true
+  require_base: false
+  require_head: true
+
+# Flag configuration
+flags:
+  unit:
+    paths:
+      - app/
+      - components/
+      - lib/
+    carryforward: true
+
+# Component tracking
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+        threshold: 5%
+  individual_components:
+    - component_id: api
+      name: API Routes
+      paths:
+        - app/api/**
+    - component_id: components
+      name: React Components
+      paths:
+        - components/**
+    - component_id: lib
+      name: Library Functions
+      paths:
+        - lib/**

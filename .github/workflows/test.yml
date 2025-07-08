@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main", "dev" ]
 
+# Cancel in-progress runs when a new run is triggered
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit-tests:
     name: Unit & Integration Tests
@@ -53,6 +58,15 @@ jobs:
           TURNSTILE_SECRET_KEY: test-turnstile-secret
         run: npm test -- --ci --coverage --maxWorkers=2
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unit
+          name: unit-tests
+          fail_ci_if_error: false
+
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -80,6 +94,8 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
+    # Only run E2E tests on main branch or PRs to main
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
     
     services:
       postgres:
