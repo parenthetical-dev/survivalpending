@@ -42,6 +42,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
@@ -95,12 +96,21 @@ if (typeof globalThis.Request === 'undefined') {
         configurable: true
       })
       
-      // Add headers
+      // Add headers with proper methods
       this.headers = new Map()
       if (init.headers) {
         Object.entries(init.headers).forEach(([key, value]) => {
           this.headers.set(key.toLowerCase(), value)
         })
+      }
+      this.headers.append = function(name, value) {
+        this.set(name.toLowerCase(), value)
+      }
+      this.headers.get = function(name) {
+        return Map.prototype.get.call(this, name.toLowerCase())
+      }
+      this.headers.has = function(name) {
+        return Map.prototype.has.call(this, name.toLowerCase())
       }
       
       // Copy init properties
@@ -128,7 +138,17 @@ if (typeof globalThis.Response === 'undefined') {
       this.ok = init.status >= 200 && init.status < 300
       this.status = init.status || 200
       this.statusText = init.statusText || 'OK'
+      // Create a proper Headers object
       this.headers = new Map(Object.entries(init.headers || {}))
+      this.headers.append = function(name, value) {
+        this.set(name.toLowerCase(), value)
+      }
+      this.headers.get = function(name) {
+        return Map.prototype.get.call(this, name.toLowerCase())
+      }
+      this.headers.has = function(name) {
+        return Map.prototype.has.call(this, name.toLowerCase())
+      }
       
       this.json = async () => {
         if (typeof body === 'string') {
@@ -138,6 +158,17 @@ if (typeof globalThis.Response === 'undefined') {
       }
       this.text = async () => String(body)
       this.clone = () => new Response(body, init)
+    }
+    
+    // Add static json method for NextResponse.json()
+    static json(data, init = {}) {
+      return new Response(JSON.stringify(data), {
+        ...init,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(init.headers || {})
+        }
+      })
     }
   }
 }
@@ -153,6 +184,11 @@ if (typeof globalThis.TextEncoder === 'undefined') {
 // Mock fetch for tests
 if (typeof globalThis.fetch === 'undefined') {
   globalThis.fetch = jest.fn()
+}
+
+// Add clearImmediate for undici
+if (typeof globalThis.clearImmediate === 'undefined') {
+  globalThis.clearImmediate = (id) => clearTimeout(id)
 }
 
 // Mock analytics

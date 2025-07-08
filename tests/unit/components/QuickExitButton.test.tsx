@@ -4,30 +4,6 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 
-// Mock window.location.replace
-const mockReplace = jest.fn();
-
-// Save original descriptor
-const originalDescriptor = Object.getOwnPropertyDescriptor(window, 'location');
-
-// Remove the existing property first if it exists
-delete (window as any).location;
-
-// Define new location mock
-window.location = {
-  ...window.location,
-  replace: mockReplace,
-  pathname: '/',
-  href: 'http://localhost',
-  origin: 'http://localhost',
-  protocol: 'http:',
-  host: 'localhost',
-  hostname: 'localhost',
-  port: '',
-  search: '',
-  hash: ''
-} as any;
-
 describe('QuickExitButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,7 +23,7 @@ describe('QuickExitButton', () => {
     const button = getByRole('button', { name: /ESC/i });
     await user.click(button);
     
-    expect(mockReplace).toHaveBeenCalledWith('https://www.google.com');
+    expect(window.location.replace).toHaveBeenCalledWith('https://www.google.com');
   });
 
   it('exits on triple ESC key press', async () => {
@@ -59,7 +35,7 @@ describe('QuickExitButton', () => {
     await user.keyboard('{Escape}');
     await user.keyboard('{Escape}');
     
-    expect(mockReplace).toHaveBeenCalledWith('https://www.google.com');
+    expect(window.location.replace).toHaveBeenCalledWith('https://www.google.com');
   });
 
   it('resets ESC count after timeout', async () => {
@@ -77,7 +53,7 @@ describe('QuickExitButton', () => {
     // Press ESC once more - should not exit
     await user.keyboard('{Escape}');
     
-    expect(mockReplace).not.toHaveBeenCalled();
+    expect(window.location.replace).not.toHaveBeenCalled();
     
     jest.useRealTimers();
   });
