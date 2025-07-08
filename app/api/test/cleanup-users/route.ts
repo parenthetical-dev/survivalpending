@@ -17,22 +17,7 @@ export async function POST() {
       }
     });
 
-    // Also clean up any orphaned data
-    await prisma.crisisInterventionLog.deleteMany({
-      where: {
-        user: {
-          is: null
-        }
-      }
-    });
-
-    await prisma.story.deleteMany({
-      where: {
-        user: {
-          is: null
-        }
-      }
-    });
+    // Note: Related records (stories, crisis logs) are automatically deleted due to cascade delete in schema
 
     return NextResponse.json({ 
       success: true, 
