@@ -50,6 +50,16 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve() {}
 }
 
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor(callback) {
+    this.callback = callback
+  }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 // Suppress console errors in tests unless explicitly testing them
 const originalError = console.error
 beforeAll(() => {
@@ -73,18 +83,51 @@ afterAll(() => {
 // Add missing Node.js globals for tests
 if (typeof globalThis.Request === 'undefined') {
   globalThis.Request = class Request {
-    constructor(url, init) {
-      this.url = url
-      this.init = init
+    constructor(input, init = {}) {
+      // Handle URL object or string
+      const url = typeof input === 'string' ? input : input.url
+      
+      // Create properties that Next.js expects
+      Object.defineProperty(this, 'url', {
+        value: url,
+        writable: false,
+        enumerable: true,
+        configurable: true
+      })
+      
+      // Copy init properties
+      Object.keys(init).forEach(key => {
+        this[key] = init[key]
+      })
+      
+      // Add required methods
+      this.clone = () => new Request(url, init)
+      this.json = async () => JSON.parse(init.body)
+      this.text = async () => init.body
+      this.arrayBuffer = async () => new ArrayBuffer(0)
+      this.blob = async () => new Blob()
+      this.formData = async () => new FormData()
     }
   }
 }
 
 if (typeof globalThis.Response === 'undefined') {
   globalThis.Response = class Response {
-    constructor(body, init) {
+    constructor(body, init = {}) {
       this.body = body
-      this.init = init
+      this.ok = init.status >= 200 && init.status < 300
+      this.status = init.status || 200
+      this.statusText = init.statusText || 'OK'
+      this.headers = new Map(Object.entries(init.headers || {}))
+      
+      this.json = async () => {
+        if (typeof body === 'string') {
+          return JSON.parse(body)
+        }
+        return body
+      }
+      this.text = async () => String(body)
+      this.clone = () => new Response(body, init)
     }
   }
 }

@@ -4,13 +4,16 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 
-// Mock window.location
+// Mock window.location.replace
 const mockReplace = jest.fn();
-delete (window as any).location;
-window.location = { 
-  replace: mockReplace,
-  pathname: '/'
-} as any;
+Object.defineProperty(window, 'location', {
+  value: {
+    ...window.location,
+    replace: mockReplace,
+    pathname: '/'
+  },
+  writable: true
+});
 
 describe('QuickExitButton', () => {
   beforeEach(() => {
