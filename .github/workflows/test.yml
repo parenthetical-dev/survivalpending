@@ -51,10 +51,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create root user in PostgreSQL
+      - name: Create root user and database in PostgreSQL
         run: |
-          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';" || true
-          echo "Created root user (if not exists)"
+          set -e
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "DO \$\$
+          BEGIN
+            IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'root') THEN
+              CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';
+            END IF;
+          END
+          \$\$;"
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;" || echo "Database 'root' may already exist"
+          echo "Created root user and database (if not exists)"
 
       - name: Setup test database
         env:
@@ -177,10 +185,18 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Create root user in PostgreSQL
+      - name: Create root user and database in PostgreSQL
         run: |
-          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';" || true
-          echo "Created root user (if not exists)"
+          set -e
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "DO \$\$
+          BEGIN
+            IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'root') THEN
+              CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';
+            END IF;
+          END
+          \$\$;"
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;" || echo "Database 'root' may already exist"
+          echo "Created root user and database (if not exists)"
 
       - name: Setup test database
         env:
