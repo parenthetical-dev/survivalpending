@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import QuickExitButton from '@/components/safety/QuickExitButton';
 
 // Mock window.location
@@ -12,16 +13,16 @@ describe('QuickExitButton', () => {
   });
 
   it('renders the quick exit button', () => {
-    render(<QuickExitButton />);
+    const { getByRole } = render(<QuickExitButton />);
     
-    const button = screen.getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /quick exit/i });
     expect(button).toBeInTheDocument();
   });
 
   it('exits when clicked', () => {
-    render(<QuickExitButton />);
+    const { getByRole } = render(<QuickExitButton />);
     
-    const button = screen.getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /quick exit/i });
     fireEvent.click(button);
     
     expect(window.location.replace).toHaveBeenCalledWith('https://weather.com');
@@ -58,12 +59,12 @@ describe('QuickExitButton', () => {
   });
 
   it('shows tooltip on hover', async () => {
-    render(<QuickExitButton />);
+    const { getByRole, findByText } = render(<QuickExitButton />);
     
-    const button = screen.getByRole('button', { name: /quick exit/i });
+    const button = getByRole('button', { name: /quick exit/i });
     fireEvent.mouseEnter(button);
     
     // Tooltip content should appear
-    expect(await screen.findByText(/immediately leave/i)).toBeInTheDocument();
+    expect(await findByText(/immediately leave/i)).toBeInTheDocument();
   });
 });

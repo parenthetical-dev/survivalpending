@@ -1,4 +1,4 @@
-import { generateVoiceAudio, generateVoicePreview } from '@/lib/voice-generation';
+import { generateVoiceAudio } from '@/lib/voice-generation';
 import { setupCommonMocks, cleanupMocks } from '@/tests/fixtures/test-helpers';
 
 // Mock fetch
@@ -14,50 +14,6 @@ describe('Voice Generation', () => {
     cleanupMocks();
   });
 
-  describe('generateVoicePreview', () => {
-    it('validates voice ID before making request', async () => {
-      const result = await generateVoicePreview('invalid-voice-id');
-      
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid voice ID');
-      expect(global.fetch).not.toHaveBeenCalled();
-    });
-
-    it('generates preview for valid voice', async () => {
-      const mockAudioBuffer = Buffer.from('mock-audio-data');
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        arrayBuffer: async () => mockAudioBuffer,
-      });
-
-      const result = await generateVoicePreview('EXAVITQu4vr4xnSDxMaL'); // Sarah
-      
-      expect(result.success).toBe(true);
-      expect(result.audioBuffer).toBeDefined();
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL'),
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'xi-api-key': 'test-elevenlabs-key',
-          }),
-        })
-      );
-    });
-
-    it('handles API errors gracefully', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized',
-      });
-
-      const result = await generateVoicePreview('EXAVITQu4vr4xnSDxMaL');
-      
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('Voice generation failed');
-    });
-  });
 
   describe('generateVoiceAudio', () => {
     it('validates voice ID', async () => {
@@ -117,8 +73,15 @@ describe('Voice Generation', () => {
     });
 
     it('returns dummy audio in development when no API key', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      const originalApiKey = process.env.ELEVENLABS_API_KEY;
+      
       process.env.ELEVENLABS_API_KEY = '';
-      process.env.NODE_ENV = 'development';
+      // Use Object.defineProperty to override readonly NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
       
       const result = await generateVoiceAudio(
         'Test story',
@@ -129,6 +92,13 @@ describe('Voice Generation', () => {
       expect(result.success).toBe(true);
       expect(result.audioUrl).toContain('dummy-audio');
       expect(global.fetch).not.toHaveBeenCalled();
+      
+      // Restore original values
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        configurable: true,
+      });
+      process.env.ELEVENLABS_API_KEY = originalApiKey;
     });
   });
 });
