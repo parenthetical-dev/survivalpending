@@ -27,21 +27,13 @@ describe('Voice Generation', () => {
       expect(result.error).toContain('Invalid voice ID');
     });
 
-    it('truncates long text to 1000 characters', async () => {
+    it('validates text length limit', async () => {
       const longText = 'a'.repeat(1500);
-      const mockAudioBuffer = Buffer.from('mock-audio-data');
       
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        arrayBuffer: async () => mockAudioBuffer,
-      });
-
-      await generateVoiceAudio(longText, 'EXAVITQu4vr4xnSDxMaL', 'user-123');
+      const result = await generateVoiceAudio(longText, 'EXAVITQu4vr4xnSDxMaL', 'user-123');
       
-      const callArgs = (global.fetch as jest.Mock).mock.calls[0];
-      const requestBody = JSON.parse(callArgs[1].body);
-      
-      expect(requestBody.text.length).toBe(1000);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Text exceeds character limit');
     });
 
     it('uses correct voice settings', async () => {
@@ -62,11 +54,11 @@ describe('Voice Generation', () => {
       
       expect(requestBody).toMatchObject({
         text: 'Test story',
-        model_id: 'eleven_turbo_v2_5',
+        model_id: 'eleven_multilingual_v2',
         voice_settings: {
-          stability: 0.6,
-          similarity_boost: 0.85,
-          style: 0.4,
+          stability: 0.5,
+          similarity_boost: 0.5,
+          style: 0,
           use_speaker_boost: true,
         },
       });

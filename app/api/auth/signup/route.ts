@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
       success: true,
       token,
       userId: id,
-    });
+    }, { status: 201 });
 
     // Set token as HTTP-only cookie
     response.cookies.set('token', token, {

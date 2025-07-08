@@ -60,20 +60,47 @@ jobs:
           TURNSTILE_SECRET_KEY: test-turnstile-secret
         run: |
           mkdir -p test-results
-          npm test -- --ci --coverage --maxWorkers=2 || true
-          # Ensure test results exist even if tests fail
-          if [ ! -f test-results/jest-junit.xml ]; then
+          # Run tests and capture exit code
+          npm test -- --ci --coverage --maxWorkers=2 || TEST_EXIT_CODE=$?
+          
+          # Check if coverage directory exists
+          if [ ! -d "coverage" ]; then
+            echo "::warning::Coverage directory not found"
+            mkdir -p coverage
+            echo "" > coverage/lcov.info
+          fi
+          
+          # Check if test results exist
+          if [ ! -f "test-results/jest-junit.xml" ]; then
+            echo "::warning::Test results file not found"
             echo '<?xml version="1.0" encoding="UTF-8"?><testsuites></testsuites>' > test-results/jest-junit.xml
+          fi
+          
+          # Exit with original test exit code
+          exit ${TEST_EXIT_CODE:-0}
+
+      - name: Check coverage files
+        id: coverage-check
+        if: always()
+        run: |
+          if [ -f "coverage/lcov.info" ] && [ -s "coverage/lcov.info" ]; then
+            echo "Coverage file exists and is not empty"
+            echo "has_coverage=true" >> $GITHUB_OUTPUT
+          else
+            echo "::warning::Coverage file is missing or empty"
+            echo "has_coverage=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        if: always() && steps.coverage-check.outputs.has_coverage == 'true'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           flags: unit
           name: unit-tests
           fail_ci_if_error: false
+          verbose: true
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
