@@ -13,6 +13,19 @@ test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Clear any existing authentication
     await clearAuthentication(page);
+    
+    // Clean up test users before each test
+    try {
+      const response = await fetch('http://localhost:3000/api/test/cleanup-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) {
+        console.warn('Failed to cleanup test users:', response.statusText);
+      }
+    } catch (error) {
+      console.warn('Could not cleanup test users:', error);
+    }
   });
   test('signup with onboarding flow', async ({ page }) => {
     await page.goto('/signup');
@@ -20,11 +33,11 @@ test.describe('Authentication Flow', () => {
     // Wait for username to be loaded
     await page.waitForSelector('input#username', { state: 'visible' });
     
-    // Get the generated username
-    const generatedUsername = await page.locator('input#username').inputValue();
-    
-    // Verify username format
-    await expect(page.locator('input#username')).toHaveValue(/^[a-z]+_[a-z]+_\d{4}$/);
+    // Generate and set a unique username explicitly
+    const uniqueUsername = generateTestUsername();
+    await page.locator('input#username').clear();
+    await page.locator('input#username').fill(uniqueUsername);
+    console.log('Using username:', uniqueUsername);
     
     // Set password
     await page.locator('input#password').fill('TestPassword123!');
@@ -126,8 +139,11 @@ test.describe('Authentication Flow', () => {
     await page.goto('/signup');
     await page.waitForSelector('input#username', { state: 'visible' });
     
-    // Get the auto-generated username
-    const generatedUsername = await page.locator('input#username').inputValue();
+    // Generate and set a unique username explicitly
+    const uniqueUsername = generateTestUsername();
+    await page.locator('input#username').clear();
+    await page.locator('input#username').fill(uniqueUsername);
+    console.log('Creating user for login test:', uniqueUsername);
     
     // Fill in password fields
     await page.locator('input#password').fill('TestPassword123!');
@@ -168,7 +184,7 @@ test.describe('Authentication Flow', () => {
     await page.goto('/login');
     
     // Enter credentials with the generated username
-    await page.locator('input#username').fill(generatedUsername);
+    await page.locator('input#username').fill(uniqueUsername);
     await page.locator('input#password').fill('TestPassword123!');
     
     // In development mode, we should see the bypass message

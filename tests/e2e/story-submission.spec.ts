@@ -3,6 +3,19 @@ import { mockAuthentication } from './helpers/auth';
 
 test.describe('Story Submission Flow', () => {
   test.beforeEach(async ({ page }) => {
+    // Clean up test users before each test
+    try {
+      const response = await fetch('http://localhost:3000/api/test/cleanup-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) {
+        console.warn('Failed to cleanup test users:', response.statusText);
+      }
+    } catch (error) {
+      console.warn('Could not cleanup test users:', error);
+    }
+    
     // Mock authentication
     await mockAuthentication(page);
   });
