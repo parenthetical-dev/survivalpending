@@ -12,10 +12,10 @@ import { Eye, EyeOff, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-
 export default function LoginForm() {
   const { login } = useAuth();
+  // In test environment, bypass Turnstile
+  const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

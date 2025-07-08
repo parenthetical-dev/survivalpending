@@ -14,10 +14,10 @@ import { RefreshCw, Shield, Eye, EyeOff, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-
 export default function SignupForm() {
   const { signup } = useAuth();
+  // In test environment, bypass Turnstile
+  const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
   const [usernames, setUsernames] = useState<string[]>([]);
   const [selectedUsername, setSelectedUsername] = useState('');
   const [password, setPassword] = useState('');

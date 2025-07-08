@@ -194,7 +194,6 @@ jobs:
 
       - name: Build Next.js app
         env:
-          NODE_ENV: development
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
           JWT_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
@@ -207,11 +206,11 @@ jobs:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN || '' }}
           META_TEST_EVENT_CODE: ${{ secrets.META_TEST_EVENT_CODE || '' }}
           SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET || 'test-secret' }}
+          NEXT_PUBLIC_META_PIXEL_ID: ${{ secrets.META_PIXEL_ID || '' }}
         run: npm run build
         
       - name: Run Playwright tests
         env:
-          NODE_ENV: development
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
           JWT_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
