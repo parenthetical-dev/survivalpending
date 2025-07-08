@@ -15,7 +15,7 @@ export default function FooterSection() {
         <div className="px-4 md:px-8 py-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-2">
             <span>MMXXV</span>
-            <span 
+            <span
               className="inline-flex items-center text-sm font-black tracking-tight"
               style={{ fontFamily: 'Satoshi, sans-serif' }}
             >
@@ -25,15 +25,15 @@ export default function FooterSection() {
             <span>All Rights Reserved.</span>
           </div>
           <div className="flex items-center gap-6">
-            <a 
-              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=61228498-eb21-4048-bf3a-00a9518e88c3" 
+            <a
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=61228498-eb21-4048-bf3a-00a9518e88c3"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               Privacy Policy
             </a>
-            <a 
+            <a
               href="https://app.termly.io/policy-viewer/policy.html?policyUUID=69f226cd-4d1f-4513-b13e-7b7060379aac"
               target="_blank"
               rel="noopener noreferrer"
@@ -47,9 +47,9 @@ export default function FooterSection() {
                 Developers
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="h-8 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
               onClick={() => setShowContactModal(true)}
             >
@@ -60,7 +60,7 @@ export default function FooterSection() {
         </div>
       </footer>
 
-      <ContactModal 
+      <ContactModal
         open={showContactModal}
         onClose={() => setShowContactModal(false)}
         title="Contact Us"

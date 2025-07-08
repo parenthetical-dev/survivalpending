@@ -9,9 +9,9 @@
  */
 export function formatStoryCount(count: number): string {
   if (count < 5) {
-    return "< 5";
+    return '< 5';
   } else if (count < 10) {
-    return "< 10";
+    return '< 10';
   } else {
     // Round to nearest 5 for privacy
     return `~${Math.round(count / 5) * 5}`;
@@ -35,7 +35,7 @@ export function isStateActive(count: number): boolean {
  */
 export function getPrivacyMessage(totalStates: number, activeStates: number): string {
   if (activeStates === 0) {
-    return "Building our community presence across states";
+    return 'Building our community presence across states';
   } else if (activeStates < 5) {
     return `Stories from ${activeStates} ${activeStates === 1 ? 'state' : 'states'} so far`;
   } else if (activeStates < 10) {
@@ -111,11 +111,11 @@ export function createStateStoryCount(state: string, count: number): StateStoryC
  * Helper function to create a geographic summary with privacy protection
  */
 export function createGeographicSummary(
-  stateCounts: StateStoryCount[]
+  stateCounts: StateStoryCount[],
 ): GeographicSummary {
   const activeStates = stateCounts.filter(s => s.isActive).length;
   const totalStories = stateCounts.reduce((sum, s) => sum + s.count, 0);
-  
+
   return {
     totalStates: stateCounts.length,
     activeStates,

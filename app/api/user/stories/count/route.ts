@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     if (!payload) {
       return NextResponse.json(
         { error: 'Invalid token' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching story count:', error);
     return NextResponse.json(
       { error: 'Failed to fetch story count' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

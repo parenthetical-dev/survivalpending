@@ -99,7 +99,7 @@ export default function StoriesGrid({ stories }: StoriesGridProps) {
             <p className="text-sm leading-relaxed line-clamp-4">
               {story.contentSanitized || story.content}
             </p>
-            
+
             {story.categories.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {story.categories.map((category) => (
@@ -109,11 +109,11 @@ export default function StoriesGrid({ stories }: StoriesGridProps) {
                 ))}
               </div>
             )}
-            
+
             {story.audioUrl && (
               <Button
                 size="sm"
-                variant={playingId === story.storyId ? "default" : "outline"}
+                variant={playingId === story.storyId ? 'default' : 'outline'}
                 onClick={() => togglePlayPause(story.storyId, story.audioUrl)}
                 className="w-full"
               >
@@ -130,7 +130,7 @@ export default function StoriesGrid({ stories }: StoriesGridProps) {
                 )}
               </Button>
             )}
-            
+
             {story.tags.length > 0 && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Tag className="w-3 h-3" />

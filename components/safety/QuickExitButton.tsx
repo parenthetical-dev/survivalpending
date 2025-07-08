@@ -19,7 +19,7 @@ export default function QuickExitButton() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         escapeCount++;
-        
+
         clearTimeout(resetTimeout);
         resetTimeout = setTimeout(() => {
           escapeCount = 0;
@@ -29,13 +29,13 @@ export default function QuickExitButton() {
           // Track keyboard trigger separately
           trackEvent('QUICK_EXIT_USED', 'SAFETY', {
             trigger: 'keyboard',
-            page: window.location.pathname
+            page: window.location.pathname,
           });
-          
+
           // Clear any sensitive data
           localStorage.removeItem('draft_story');
           sessionStorage.clear();
-          
+
           // Replace current page in history and redirect
           window.location.replace('https://www.google.com');
         }
@@ -53,13 +53,13 @@ export default function QuickExitButton() {
     // Track the quick exit usage
     trackEvent('QUICK_EXIT_USED', 'SAFETY', {
       trigger: 'button',
-      page: window.location.pathname
+      page: window.location.pathname,
     });
-    
+
     // Clear any sensitive data
     localStorage.removeItem('draft_story');
     sessionStorage.clear();
-    
+
     // Replace current page in history and redirect
     window.location.replace('https://www.google.com');
   };

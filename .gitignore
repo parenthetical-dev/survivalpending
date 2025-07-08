@@ -38,7 +38,22 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# production/dangerous scripts
+scripts/clear-prod-database.js
+scripts/neon-migrate.sh
+scripts/*prod*.js
+scripts/*production*.js
 next-env.d.ts
 .env*.local
 
 /app/generated/prisma
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/

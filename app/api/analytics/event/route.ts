@@ -2,9 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const PIRSCH_EVENT_URL = 'https://api.pirsch.io/api/v1/event';
 
+interface EventRequestBody {
+  name: string;
+  metadata?: Record<string, string | number | boolean>;
+  duration?: number;
+}
+
+interface PirschEventPayload {
+  name: string;
+  url: string;
+  ip: string;
+  user_agent: string;
+  accept_language: string;
+  duration?: number;
+  metadata?: Record<string, string | number | boolean>;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: EventRequestBody = await request.json();
     const { name, metadata, duration } = body;
 
     if (!process.env.PIRSCH_ACCESS_TOKEN) {
@@ -16,38 +32,41 @@ export async function POST(request: NextRequest) {
     const referer = request.headers.get('referer');
     const origin = request.headers.get('origin') || 'https://survivalpending.com';
     const url = referer || `${origin}/`;
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
-               request.headers.get('x-real-ip') || 
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+               request.headers.get('x-real-ip') ||
                '127.0.0.1';
     const userAgent = request.headers.get('user-agent') || '';
     const acceptLanguage = request.headers.get('accept-language') || '';
 
-    const payload = {
+    const payload: PirschEventPayload = {
       name,
       url,
       ip,
       user_agent: userAgent,
       accept_language: acceptLanguage,
       duration,
-      metadata
+      metadata,
     };
 
-    console.log('[Pirsch API] Sending event:', name, payload);
+    // Sanitize log output to prevent log injection
+    const sanitizedName = name.replace(/[\n\r]/g, '_');
+    console.log('[Pirsch API] Sending event:', sanitizedName, JSON.stringify(payload).replace(/[\n\r]/g, '_'));
 
     const response = await fetch(PIRSCH_EVENT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.PIRSCH_ACCESS_TOKEN}`
+        'Authorization': `Bearer ${process.env.PIRSCH_ACCESS_TOKEN}`,
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
       const text = await response.text();
       console.error('[Pirsch API] Event tracking failed:', response.status, text);
     } else {
-      console.log('[Pirsch API] Event tracked successfully:', name);
+      const sanitizedEventName = name.replace(/[\n\r]/g, '_');
+      console.log('[Pirsch API] Event tracked successfully:', sanitizedEventName);
     }
 
     return NextResponse.json({ success: true });

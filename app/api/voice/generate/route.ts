@@ -30,26 +30,26 @@ export async function POST(request: NextRequest) {
       if (result.error?.includes('Rate limit exceeded')) {
         const retryAfterMatch = result.error.match(/Try again in (\d+) seconds/);
         const retryAfter = retryAfterMatch ? parseInt(retryAfterMatch[1]) : 60;
-        
+
         return NextResponse.json(
-          { 
+          {
             error: 'Too many requests. Please try again later.',
-            retryAfter
+            retryAfter,
           },
-          { 
+          {
             status: 429,
             headers: {
               'X-RateLimit-Limit': '5',
               'X-RateLimit-Remaining': '0',
               'X-RateLimit-Reset': (Date.now() + retryAfter * 1000).toString(),
-            }
-          }
+            },
+          },
         );
       }
 
       return NextResponse.json(
         { error: result.error || 'Failed to generate audio' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     if (result.audioBuffer) {
       // Track that user has reached the preview stage
       await trackInitiateCheckout(request, payload.userId, 'preview');
-      
+
       return new NextResponse(result.audioBuffer, {
         headers: {
           'Content-Type': 'audio/mpeg',
@@ -69,13 +69,13 @@ export async function POST(request: NextRequest) {
     // This shouldn't happen, but handle it gracefully
     return NextResponse.json(
       { error: 'Audio generated but buffer not available' },
-      { status: 500 }
+      { status: 500 },
     );
   } catch (error) {
     console.error('Voice generation error:', error);
     return NextResponse.json(
       { error: 'Failed to generate audio' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

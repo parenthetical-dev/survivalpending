@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
     }
 
     const { storyId, resourceName } = await request.json();
-    
+
     if (!storyId || !resourceName) {
       return NextResponse.json(
         { error: 'Story ID and resource name required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
         storyId: storyId,
       },
       orderBy: {
-        timestamp: 'desc'
-      }
+        timestamp: 'desc',
+      },
     });
 
     if (!interventionLog) {
       return NextResponse.json(
         { error: 'No intervention log found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -48,22 +48,22 @@ export async function POST(request: NextRequest) {
     // Update the log with the clicked resource
     const updated = await prisma.crisisInterventionLog.update({
       where: {
-        id: interventionLog.id
+        id: interventionLog.id,
       },
       data: {
-        resourcesClicked: updatedResources
-      }
+        resourcesClicked: updatedResources,
+      },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      resourcesClicked: updated.resourcesClicked
+      resourcesClicked: updated.resourcesClicked,
     });
   } catch (error) {
     console.error('Error tracking resource click:', error);
     return NextResponse.json(
       { error: 'Failed to track resource click' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

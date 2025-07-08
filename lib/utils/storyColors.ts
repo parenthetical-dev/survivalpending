@@ -25,13 +25,13 @@ export function getStoryColor(storyId: string): string {
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
-  
+
   // Make hash positive
   hash = Math.abs(hash);
-  
+
   // Get color index, but skip white (index 8)
   const availableColors = progressFlagColors.filter((_, index) => index !== 8);
   const colorIndex = hash % availableColors.length;
-  
+
   return availableColors[colorIndex];
 }

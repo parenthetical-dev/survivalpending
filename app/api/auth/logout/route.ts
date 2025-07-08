@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function POST() {
+export function POST() {
   const response = NextResponse.json({ success: true });
-  
+
   // Clear the token cookie
   response.cookies.set('token', '', {
     httpOnly: true,
@@ -11,6 +11,6 @@ export async function POST() {
     maxAge: 0, // Expire immediately
     path: '/',
   });
-  
+
   return response;
 }

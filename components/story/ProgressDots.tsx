@@ -13,12 +13,12 @@ export default function ProgressDots({ currentStep }: ProgressDotsProps) {
         <div
           key={step}
           className={cn(
-            "w-2 h-2 rounded-full transition-all duration-500",
+            'w-2 h-2 rounded-full transition-all duration-500',
             step === currentStep
-              ? "w-8 bg-blue-600 dark:bg-blue-400"
+              ? 'w-8 bg-blue-600 dark:bg-blue-400'
               : step < currentStep
-              ? "bg-blue-600 dark:bg-blue-400"
-              : "bg-gray-300 dark:bg-gray-700"
+              ? 'bg-blue-600 dark:bg-blue-400'
+              : 'bg-gray-300 dark:bg-gray-700',
           )}
         />
       ))}

@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import ContactModal from '@/components/developer/ContactModal';
-import { 
+import {
   ArrowLeft,
   Terminal,
   Book,
@@ -23,7 +23,7 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
-  Mail
+  Mail,
 } from 'lucide-react';
 
 const navItems = [
@@ -31,32 +31,32 @@ const navItems = [
     id: 'quickstart',
     label: 'Quick Start',
     icon: Rocket,
-    description: 'Get up and running'
+    description: 'Get up and running',
   },
   {
     id: 'architecture',
     label: 'Architecture',
     icon: Book,
-    description: 'Technical overview'
+    description: 'Technical overview',
   },
   {
     id: 'contributing',
     label: 'Contributing',
     icon: Users,
-    description: 'How to help'
+    description: 'How to help',
   },
   {
     id: 'security',
     label: 'Security',
     icon: Shield,
-    description: 'Best practices'
+    description: 'Best practices',
   },
   {
     id: 'license',
     label: 'License',
     icon: Lock,
-    description: 'Terms and usage'
-  }
+    description: 'Terms and usage',
+  },
 ];
 
 export default function DeveloperPage() {
@@ -98,42 +98,42 @@ export default function DeveloperPage() {
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
             const Icon = item.icon;
-            
+
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
                 className={cn(
-                  "w-full group flex items-start gap-3 rounded-lg px-3 py-3 transition-all text-left",
-                  "hover:bg-gray-100 dark:hover:bg-gray-800",
-                  isActive && "bg-gray-100 dark:bg-gray-800"
+                  'w-full group flex items-start gap-3 rounded-lg px-3 py-3 transition-all text-left',
+                  'hover:bg-gray-100 dark:hover:bg-gray-800',
+                  isActive && 'bg-gray-100 dark:bg-gray-800',
                 )}
               >
-                <Icon 
+                <Icon
                   className={cn(
-                    "h-5 w-5 mt-0.5 flex-shrink-0 transition-colors",
-                    isActive 
-                      ? "text-gray-900 dark:text-gray-100" 
-                      : "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-                  )} 
+                    'h-5 w-5 mt-0.5 flex-shrink-0 transition-colors',
+                    isActive
+                      ? 'text-gray-900 dark:text-gray-100'
+                      : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300',
+                  )}
                 />
                 <div className="space-y-1">
-                  <p 
+                  <p
                     className={cn(
-                      "text-sm font-medium leading-tight transition-colors",
-                      isActive 
-                        ? "text-gray-900 dark:text-gray-100" 
-                        : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100"
+                      'text-sm font-medium leading-tight transition-colors',
+                      isActive
+                        ? 'text-gray-900 dark:text-gray-100'
+                        : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100',
                     )}
                   >
                     {item.label}
                   </p>
-                  <p 
+                  <p
                     className={cn(
-                      "text-xs leading-tight transition-colors",
+                      'text-xs leading-tight transition-colors',
                       isActive
-                        ? "text-gray-600 dark:text-gray-400"
-                        : "text-gray-500 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400"
+                        ? 'text-gray-600 dark:text-gray-400'
+                        : 'text-gray-500 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400',
                     )}
                   >
                     {item.description}
@@ -146,8 +146,8 @@ export default function DeveloperPage() {
 
         {/* GitHub Link */}
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-3">
-          <a 
-            href="https://github.com/yourusername/survivalpending" 
+          <a
+            href="https://github.com/yourusername/survivalpending"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
@@ -156,7 +156,7 @@ export default function DeveloperPage() {
             <span>View on GitHub</span>
             <ExternalLink className="w-3 h-3" />
           </a>
-          
+
           <button
             onClick={() => setShowContactModal(true)}
             className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors w-full text-left"
@@ -184,7 +184,7 @@ export default function DeveloperPage() {
           <div className="flex gap-8">
             {/* Left navigation */}
             <DeveloperNav />
-            
+
             {/* Main content */}
             <div className="flex-1">
               {/* Header */}
@@ -199,7 +199,7 @@ export default function DeveloperPage() {
                 <div className="space-y-8">
                   <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 sm:p-8 space-y-4">
                     <p className="text-base sm:text-lg leading-relaxed">
-                      Survival Pending is open source software built with urgency and care. 
+                      Survival Pending is open source software built with urgency and care.
                       Every contribution helps protect and amplify LGBTQ+ voices during critical times.
                     </p>
                     <p className="text-lg sm:text-xl font-bold">
@@ -212,7 +212,7 @@ export default function DeveloperPage() {
                       <Terminal className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       <h2 className="font-bold text-lg">Getting Started</h2>
                     </div>
-                    
+
                     <div className="space-y-6">
                       <div>
                         <h3 className="font-semibold mb-2">Prerequisites</h3>
@@ -372,7 +372,7 @@ npm run sync:prod   # Sync production data`}
                   <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-6 sm:p-8">
                     <h2 className="font-bold text-lg mb-4">Our Mission</h2>
                     <p className="text-base leading-relaxed">
-                      Before contributing, understand that Survival Pending is a safe space for LGBTQ+ individuals 
+                      Before contributing, understand that Survival Pending is a safe space for LGBTQ+ individuals
                       to share their stories anonymously. Every contribution helps protect and amplify these voices.
                     </p>
                   </div>
@@ -449,7 +449,7 @@ npm run sync:prod   # Sync production data`}
                   <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-6 sm:p-8">
                     <h2 className="font-bold text-lg mb-4">Security is Critical</h2>
                     <p className="text-base leading-relaxed">
-                      Given the sensitive nature of this platform, security is our top priority. 
+                      Given the sensitive nature of this platform, security is our top priority.
                       Every feature must be designed with user safety in mind.
                     </p>
                   </div>
@@ -528,7 +528,7 @@ npm run sync:prod   # Sync production data`}
                   <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 sm:p-8">
                     <h2 className="font-bold text-lg mb-4">Modified MIT License</h2>
                     <p className="text-base leading-relaxed">
-                      This project uses a custom license that allows contributions but prevents commercial derivatives 
+                      This project uses a custom license that allows contributions but prevents commercial derivatives
                       to protect the mission and community.
                     </p>
                   </div>
@@ -587,7 +587,7 @@ npm run sync:prod   # Sync production data`}
         </div>
       </div>
 
-      <ContactModal 
+      <ContactModal
         open={showContactModal}
         onClose={() => setShowContactModal(false)}
       />

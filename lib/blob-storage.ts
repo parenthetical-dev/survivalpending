@@ -2,10 +2,10 @@ import { put, del } from '@vercel/blob';
 
 /**
  * Vercel Blob Storage utilities for audio file management
- * 
+ *
  * Required environment variable:
  * - BLOB_READ_WRITE_TOKEN: Vercel Blob storage token
- * 
+ *
  * Note: In production, this token should be set in Vercel project settings
  */
 
@@ -33,7 +33,7 @@ export interface BlobUploadOptions {
 export async function uploadAudioToBlob(
   audioBuffer: ArrayBuffer,
   filename: string,
-  options: BlobUploadOptions = {}
+  options: BlobUploadOptions = {},
 ): Promise<BlobUploadResult> {
   const {
     contentType = 'audio/mpeg',
@@ -49,7 +49,7 @@ export async function uploadAudioToBlob(
   // Ensure filename has proper extension
   const hasExtension = filename.includes('.');
   const finalFilename = hasExtension ? filename : `${filename}.mp3`;
-  
+
   // Prefix with 'audio/' directory
   const pathname = `audio/${finalFilename}`;
 
@@ -79,7 +79,7 @@ export async function uploadAudioToBlob(
       };
     } catch (error) {
       attempt++;
-      
+
       if (attempt === maxRetries) {
         console.error('Failed to upload audio to blob storage after max retries:', error);
         throw new Error(`Failed to upload audio file: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -125,13 +125,13 @@ export async function deleteAudioFromBlob(url: string): Promise<void> {
 export function generateAudioFilename(
   storyId: string,
   userId: string,
-  voiceId: string
+  voiceId: string,
 ): string {
   const timestamp = Date.now();
   const sanitizedStoryId = storyId.replace(/[^a-zA-Z0-9-_]/g, '');
   const sanitizedUserId = userId.replace(/[^a-zA-Z0-9-_]/g, '');
   const sanitizedVoiceId = voiceId.replace(/[^a-zA-Z0-9-_]/g, '');
-  
+
   return `${sanitizedStoryId}_${sanitizedUserId}_${sanitizedVoiceId}_${timestamp}`;
 }
 
@@ -154,6 +154,6 @@ export function isValidAudioBuffer(audioBuffer: ArrayBuffer): boolean {
 
   // Could add more validation here (e.g., check audio file headers)
   // For now, basic validation is sufficient
-  
+
   return true;
 }

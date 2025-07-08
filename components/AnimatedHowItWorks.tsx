@@ -108,7 +108,7 @@ export function AnimatedHowItWorks() {
             </p>
           )}
         </div>
-      )
+      ),
     },
     {
       id: 'refine',
@@ -118,9 +118,9 @@ export function AnimatedHowItWorks() {
         <div className="space-y-4 h-[200px] flex flex-col justify-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2 mb-3">
-              <RefreshCw className={cn("w-4 h-4", showRefinement ? "" : "animate-spin")} />
+              <RefreshCw className={cn('w-4 h-4', showRefinement ? '' : 'animate-spin')} />
               <span className="text-sm font-medium">
-                {showRefinement ? "Suggested refinement:" : "Analyzing your story..."}
+                {showRefinement ? 'Suggested refinement:' : 'Analyzing your story...'}
               </span>
             </div>
             {showRefinement && (
@@ -136,7 +136,7 @@ export function AnimatedHowItWorks() {
             </div>
           )}
         </div>
-      )
+      ),
     },
     {
       id: 'voice',
@@ -149,10 +149,10 @@ export function AnimatedHowItWorks() {
               <button
                 key={voice}
                 className={cn(
-                  "p-3 rounded-lg border text-sm transition-all",
+                  'p-3 rounded-lg border text-sm transition-all',
                   selectedVoice === voice
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
                 )}
               >
                 {voice}
@@ -172,7 +172,7 @@ export function AnimatedHowItWorks() {
                             className="w-1 bg-blue-500 animate-pulse"
                             style={{
                               height: isPlaying ? `${Math.random() * 12 + 4}px` : '4px',
-                              animationDelay: `${i * 0.1}s`
+                              animationDelay: `${i * 0.1}s`,
                             }}
                           />
                         ))}
@@ -190,13 +190,13 @@ export function AnimatedHowItWorks() {
                   </div>
                 </div>
                 <span className="text-xs text-gray-600 dark:text-gray-400">
-                  {isPlaying ? "0:03" : "Preview"}
+                  {isPlaying ? '0:03' : 'Preview'}
                 </span>
               </div>
             </div>
           )}
         </div>
-      )
+      ),
     },
     {
       id: 'submit',
@@ -204,10 +204,10 @@ export function AnimatedHowItWorks() {
       icon: <Send className="w-5 h-5" />,
       content: (
         <div className="space-y-4 h-[200px] flex flex-col justify-center">
-          <Button 
+          <Button
             className={cn(
-              "w-full transition-all",
-              showSuccess && "bg-green-600 hover:bg-green-600"
+              'w-full transition-all',
+              showSuccess && 'bg-green-600 hover:bg-green-600',
             )}
           >
             {showSuccess ? (
@@ -233,8 +233,8 @@ export function AnimatedHowItWorks() {
             </div>
           )}
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -245,12 +245,12 @@ export function AnimatedHowItWorks() {
           <div
             key={stage.id}
             className={cn(
-              "w-2 h-2 rounded-full transition-all duration-500",
+              'w-2 h-2 rounded-full transition-all duration-500',
               index === currentStage
-                ? "w-8 bg-blue-600 dark:bg-blue-400"
+                ? 'w-8 bg-blue-600 dark:bg-blue-400'
                 : index < currentStage
-                ? "bg-blue-600 dark:bg-blue-400"
-                : "bg-gray-300 dark:bg-gray-700"
+                ? 'bg-blue-600 dark:bg-blue-400'
+                : 'bg-gray-300 dark:bg-gray-700',
             )}
           />
         ))}
@@ -263,18 +263,18 @@ export function AnimatedHowItWorks() {
           <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className={cn(
-                "p-2 rounded-lg transition-all",
-                "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
+                'p-2 rounded-lg transition-all',
+                'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400',
               )}>
                 {stages[currentStage].icon}
               </div>
               <div>
                 <h3 className="font-semibold">Step {currentStage + 1}: {stages[currentStage].title}</h3>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
-                  {currentStage === 0 && "Share your experience in your own words"}
-                  {currentStage === 1 && "AI helps polish while preserving your voice"}
-                  {currentStage === 2 && "Select a voice for your audio testimony"}
-                  {currentStage === 3 && "Your story joins thousands of others"}
+                  {currentStage === 0 && 'Share your experience in your own words'}
+                  {currentStage === 1 && 'AI helps polish while preserving your voice'}
+                  {currentStage === 2 && 'Select a voice for your audio testimony'}
+                  {currentStage === 3 && 'Your story joins thousands of others'}
                 </p>
               </div>
             </div>

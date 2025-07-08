@@ -28,7 +28,7 @@ export default function CredentialsStep({ username, onNext, onBack }: Credential
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     setDownloaded(true);
     toast.success('Credentials downloaded successfully');
   };
@@ -52,13 +52,13 @@ export default function CredentialsStep({ username, onNext, onBack }: Credential
           This is the ONLY way to access your account
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 md:space-y-6 pt-0">
         <Alert className="border-yellow-200 bg-yellow-50 py-3">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <AlertTitle className="text-yellow-900 text-sm md:text-base">Critical: Save Your Credentials</AlertTitle>
           <AlertDescription className="text-yellow-800 text-xs md:text-sm mt-1">
-            We cannot recover your account. No email. No backup. This protects your 
+            We cannot recover your account. No email. No backup. This protects your
             anonymity but means you MUST save these credentials.
           </AlertDescription>
         </Alert>
@@ -85,7 +85,7 @@ export default function CredentialsStep({ username, onNext, onBack }: Credential
                 </Button>
               </div>
             </div>
-            
+
             <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1.5">
               <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
               For privacy's sake, the download will not include your password.
@@ -95,7 +95,7 @@ export default function CredentialsStep({ username, onNext, onBack }: Credential
           <Button
             onClick={downloadCredentials}
             className="w-full"
-            variant={downloaded ? "outline" : "default"}
+            variant={downloaded ? 'outline' : 'default'}
           >
             <Download className="w-4 h-4 mr-2" />
             {downloaded ? 'Downloaded!' : 'Download Credentials'}
@@ -110,8 +110,8 @@ export default function CredentialsStep({ username, onNext, onBack }: Credential
       </CardContent>
 
       <CardFooter className="pt-4 md:pt-6">
-        <Button 
-          onClick={onNext} 
+        <Button
+          onClick={onNext}
           className="w-full"
           size="default"
           disabled={!downloaded}

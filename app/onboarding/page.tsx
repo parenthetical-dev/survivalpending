@@ -34,7 +34,7 @@ export default function OnboardingPage() {
   // Scroll to top when step changes and track progress
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Track onboarding step view
     const stepNames = ['welcome', 'credentials', 'safety', 'demographics', 'review'];
     if (currentStep > 0 && currentStep <= TOTAL_STEPS) {
@@ -47,7 +47,7 @@ export default function OnboardingPage() {
       // Track step completion
       const stepNames = ['welcome', 'credentials', 'safety', 'demographics', 'review'];
       trackOnboardingStep(currentStep, stepNames[currentStep - 1], true);
-      
+
       setCurrentStep(currentStep + 1);
     }
   };
@@ -78,9 +78,9 @@ export default function OnboardingPage() {
 
       // Track completion
       trackEvent('ONBOARDING_COMPLETE', 'USER', {
-        providedDemographics: !!(demographicData.ageRange || demographicData.state || demographicData.genderIdentity || demographicData.racialIdentity || demographicData.urbanicity)
+        providedDemographics: !!(demographicData.ageRange || demographicData.state || demographicData.genderIdentity || demographicData.racialIdentity || demographicData.urbanicity),
       });
-      
+
       // Mark onboarding as complete in localStorage
       localStorage.setItem('onboardingComplete', 'true');
 
@@ -102,19 +102,19 @@ export default function OnboardingPage() {
         return <SafetyStep onNext={handleNext} onBack={handleBack} />;
       case 4:
         return (
-          <DemographicsStep 
+          <DemographicsStep
             data={demographicData}
             onChange={setDemographicData}
-            onNext={handleNext} 
-            onBack={handleBack} 
+            onNext={handleNext}
+            onBack={handleBack}
           />
         );
       case 5:
         return (
-          <ReviewStep 
+          <ReviewStep
             data={demographicData}
-            onComplete={handleComplete} 
-            onBack={handleBack} 
+            onComplete={handleComplete}
+            onBack={handleBack}
           />
         );
       default:

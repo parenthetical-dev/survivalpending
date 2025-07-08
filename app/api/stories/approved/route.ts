@@ -13,13 +13,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       stories,
-      count: stories.length
+      count: stories.length,
     });
   } catch (error) {
     console.error('Error fetching approved stories:', error);
     return NextResponse.json(
       { error: 'Failed to fetch stories' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

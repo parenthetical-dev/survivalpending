@@ -36,7 +36,7 @@ export default function DemographicsStep({ data, onChange, onNext, onBack }: Dem
           Help us show the breadth of who's affected. Your data builds our collective evidence.
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 md:space-y-6 pt-0">
         <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-lg p-3 md:p-4 flex gap-3">
           <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
@@ -135,8 +135,8 @@ export default function DemographicsStep({ data, onChange, onNext, onBack }: Dem
         <Button variant="outline" size="default" onClick={onBack}>
           Back
         </Button>
-        <Button 
-          onClick={onNext} 
+        <Button
+          onClick={onNext}
           className="flex-1"
           size="default"
           disabled={!canContinue}

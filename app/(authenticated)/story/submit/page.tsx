@@ -66,31 +66,31 @@ export default function SubmitStoryPage() {
       }
 
       toast.success('Your story has been submitted');
-      
+
       // Track submission success
       trackStoryProgress('submit', {
         usedRefinement: refinedContent !== storyContent,
         voiceId: voiceSettings?.voiceId || 'unknown',
-        contentLength: refinedContent.length
+        contentLength: refinedContent.length,
       });
-      
+
       // Clear local storage
       localStorage.removeItem('draft_story');
-      
+
       // Emit event for homepage to update story count
       window.dispatchEvent(new Event('storySubmitted'));
-      
+
       // Redirect to success page or dashboard
       router.push('/story/success');
     } catch (error) {
       console.error('Submit error:', error);
-      
+
       // Track submission failure
       trackEvent('STORY_SUBMIT_FAILED', 'STORY', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        stage: 'submit'
+        stage: 'submit',
       });
-      
+
       toast.error('Failed to submit story. Please try again.');
     }
   };
@@ -98,7 +98,7 @@ export default function SubmitStoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <QuickExitButton />
-      
+
       <div className="py-4 md:py-8">
         <div className="container max-w-5xl mx-auto px-4 mb-6 md:mb-8">
           <div className="space-y-3 md:space-y-4">
@@ -110,29 +110,29 @@ export default function SubmitStoryPage() {
           {currentStage === 'write' && (
             <WriteStage onComplete={handleWriteComplete} />
           )}
-          
+
           {currentStage === 'refine' && (
-            <RefineStage 
+            <RefineStage
               originalContent={storyContent}
               onComplete={handleRefineComplete}
               onSkip={handleRefineSkip}
               onBack={() => setCurrentStage('write')}
             />
           )}
-          
+
           {currentStage === 'voice' && (
-            <VoiceStage 
+            <VoiceStage
               content={refinedContent}
               onComplete={handleVoiceComplete}
               onBack={() => setCurrentStage('refine')}
             />
           )}
-          
+
           {currentStage === 'preview' && voiceSettings && (
-            <PreviewStage 
+            <PreviewStage
               content={refinedContent}
               voiceSettings={voiceSettings}
-              onComplete={handlePublish}
+              onComplete={() => { void handlePublish(); }}
               onEdit={handleEdit}
               onBack={() => setCurrentStage('voice')}
             />

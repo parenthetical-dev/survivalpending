@@ -10,34 +10,34 @@ interface SimpleWaveformProps {
   className?: string;
 }
 
-export default function SimpleWaveform({ 
-  audioElement, 
-  isPlaying, 
+export default function SimpleWaveform({
+  audioElement,
+  isPlaying,
   progress,
-  className 
+  className,
 }: SimpleWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  
+
   useEffect(() => {
     if (!audioElement || isConnected) return;
 
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    
+
     try {
       if (!(audioElement as any).audioSourceNode) {
         audioContextRef.current = new AudioContext();
         analyserRef.current = audioContextRef.current.createAnalyser();
         analyserRef.current.fftSize = 256;
         analyserRef.current.smoothingTimeConstant = 0.8;
-        
+
         const source = audioContextRef.current.createMediaElementSource(audioElement);
         source.connect(analyserRef.current);
         analyserRef.current.connect(audioContextRef.current.destination);
-        
+
         (audioElement as any).audioSourceNode = source;
         setIsConnected(true);
       }
@@ -79,16 +79,16 @@ export default function SimpleWaveform({
           const dataIndex = Math.floor((i / bars) * bufferLength * 0.5);
           const frequency = dataArray[dataIndex];
           const barHeight = Math.max(2, (frequency / 255) * canvas.offsetHeight * 0.8);
-          
+
           const x = i * barWidth;
-          
+
           // Simple gray color, darker for played portion
           if (i / bars <= progress) {
             ctx.fillStyle = '#333';
           } else {
             ctx.fillStyle = '#999';
           }
-          
+
           ctx.fillRect(x, centerY - barHeight / 2, barWidth - 1, barHeight);
         }
       } else {
@@ -97,13 +97,13 @@ export default function SimpleWaveform({
           const x = i * barWidth;
           const phase = (i / bars) * Math.PI * 4;
           const barHeight = (Math.sin(phase) * 0.3 + 0.4) * canvas.offsetHeight * 0.6;
-          
+
           if (i / bars <= progress) {
             ctx.fillStyle = '#333';
           } else {
             ctx.fillStyle = '#999';
           }
-          
+
           ctx.fillRect(x, centerY - barHeight / 2, barWidth - 1, barHeight);
         }
       }
@@ -136,7 +136,7 @@ export default function SimpleWaveform({
   }, [isPlaying, progress, isConnected]);
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn('relative w-full', className)}>
       <canvas
         ref={canvasRef}
         className="w-full h-full"

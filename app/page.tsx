@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { ScrollingStories } from "@/components/ScrollingStories";
-import { FeaturedStories } from "@/components/FeaturedStories";
-import { AnimatedHowItWorks } from "@/components/AnimatedHowItWorks";
-import ShareModal from "@/components/share/ShareModal";
-import { Heart, Shield, Users, Share2, Clock } from "lucide-react";
-import type { FeaturedStory } from "@/lib/sanity-homepage";
-import Navbar from "@/components/layout/Navbar";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { ScrollingStories } from '@/components/ScrollingStories';
+import { FeaturedStories } from '@/components/FeaturedStories';
+import { AnimatedHowItWorks } from '@/components/AnimatedHowItWorks';
+import ShareModal from '@/components/share/ShareModal';
+import { Heart, Shield, Users, Share2, Clock } from 'lucide-react';
+import type { FeaturedStory } from '@/lib/sanity-homepage';
+import Navbar from '@/components/layout/Navbar';
 
 export default function HomePage() {
   const [storyCount, setStoryCount] = useState(23);
@@ -32,7 +32,7 @@ export default function HomePage() {
         if (response.ok) {
           const data = await response.json();
           setFeaturedStories(data.stories);
-          
+
           // Update last story time from the most recent story
           if (data.stories && data.stories.length > 0) {
             const mostRecentStory = data.stories[0]; // Stories are ordered by createdAt desc
@@ -59,7 +59,7 @@ export default function HomePage() {
     if (minutes > 0) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
     return 'just now';
   };
-  
+
   return (
     <>
       <Navbar />
@@ -70,7 +70,7 @@ export default function HomePage() {
         <ScrollingStories />
         <div className="max-w-6xl mx-auto px-6 md:px-4 text-center relative z-10 pt-[15vh] pb-[10vh] md:pt-[25vh] md:pb-[15vh]">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            <span className="block md:inline">Document your truth.</span>{" "}
+            <span className="block md:inline">Document your truth.</span>{' '}
             <span className="block md:inline">Before they erase it.</span>
           </h2>
           <p className="mt-6 md:mt-8 text-lg md:text-xl text-gray-700 dark:text-gray-300">
@@ -98,18 +98,18 @@ export default function HomePage() {
               No email required. Complete anonymity. Your safety is our priority.
             </p>
           </div>
-          
+
           {/* Featured Stories Below Hero Content */}
-          <FeaturedStories 
-            stories={featuredStories} 
+          <FeaturedStories
+            stories={featuredStories}
             position="below"
           />
-          
+
           {/* Browse Stories Button */}
           {featuredStories.length > 0 && (
             <div className="mt-12 md:mt-16 -mb-8 md:-mb-12">
               <Link href="/stories">
-                <Button 
+                <Button
                   size="lg"
                   className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
                 >
@@ -138,7 +138,7 @@ export default function HomePage() {
                   <span aria-hidden="true">→</span>
                 </Link>
               </div>
-              
+
               <div className="text-center px-4 md:px-0">
                 <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
                   <Shield className="w-6 h-6 md:w-7 md:h-7 text-green-600 dark:text-green-400" />
@@ -152,7 +152,7 @@ export default function HomePage() {
                   <span aria-hidden="true">→</span>
                 </Link>
               </div>
-              
+
               <div className="text-center px-4 md:px-0">
                 <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
                   <Users className="w-6 h-6 md:w-7 md:h-7 text-purple-600 dark:text-purple-400" />
@@ -198,10 +198,10 @@ export default function HomePage() {
                   Document Your Story
                 </Button>
               </Link>
-              
+
               <Link href="/stories" className="w-full md:w-auto">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6 bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
                 >
                   Browse Stories
@@ -219,8 +219,8 @@ export default function HomePage() {
               <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
                 Help us reach those who need to know they're not alone. Every share connects someone to this community. Every new voice makes our archive stronger. Spread the word wherever you feel safe to do so.
               </p>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="w-full md:w-auto md:min-w-[200px] text-base md:text-lg py-5 md:py-6 bg-black hover:bg-gray-800 text-white"
                 onClick={() => setShowShareModal(true)}
               >
@@ -238,7 +238,7 @@ export default function HomePage() {
             // Could track sharing analytics here if needed
           }}
         />
-      
+
     </>
   );
 }

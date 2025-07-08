@@ -8,10 +8,10 @@ interface LogoProps {
 
 export function Logo({ className }: LogoProps) {
   return (
-    <span 
+    <span
       className={cn(
-        "inline-flex items-center font-black tracking-tight",
-        className
+        'inline-flex items-center font-black tracking-tight',
+        className,
       )}
       style={{ fontFamily: 'Satoshi, sans-serif' }}
     >

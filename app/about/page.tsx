@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Shield, Users, Clock, Lock, ArrowLeft } from "lucide-react";
-import { InfoPagesNav } from "@/components/InfoPagesNav";
-import Navbar from "@/components/layout/Navbar";
+import Link from 'next/link';
+import { Shield, Users, Clock, Lock, ArrowLeft } from 'lucide-react';
+import { InfoPagesNav } from '@/components/InfoPagesNav';
+import Navbar from '@/components/layout/Navbar';
 
 export default function AboutPage() {
   return (
@@ -21,7 +21,7 @@ export default function AboutPage() {
           <div className="flex gap-8">
             {/* Left navigation */}
             <InfoPagesNav />
-            
+
             {/* Main content */}
             <div className="flex-1">
               {/* Header */}
@@ -30,14 +30,14 @@ export default function AboutPage() {
                   A living archive of LGBTQ+ resilience in real time.
                 </h1>
               </div>
-            
+
               {/* Main content */}
               <div className="space-y-8">
             <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 sm:p-8 space-y-4">
               <p className="text-base sm:text-lg leading-relaxed">
-                Survival Pending is an anonymous platform documenting the experiences of LGBTQ+ 
-                people as we navigate unprecedented political and social attacks on our existence. 
-                This isn't just another website. It's an act of collective resistance. 
+                Survival Pending is an anonymous platform documenting the experiences of LGBTQ+
+                people as we navigate unprecedented political and social attacks on our existence.
+                This isn&apos;t just another website. It&apos;s an act of collective resistance.
                 Every story shared makes us harder to ignore, impossible to erase.
               </p>
               <p className="text-lg sm:text-xl font-bold">
@@ -52,7 +52,7 @@ export default function AboutPage() {
                 <h2 className="font-bold text-lg">Why we built this</h2>
               </div>
               <p className="text-base leading-relaxed">
-                After the 2024 United States presidential election, crisis calls spiked 700%. Friends were fleeing states. Stories were being silenced. We built this platform because our truths deserve to be documented before they're erased. Started by LGBTQ+ community members who understand the urgency of this moment.
+                After the 2024 United States presidential election, crisis calls spiked 700%. Friends were fleeing states. Stories were being silenced. We built this platform because our truths deserve to be documented before they&apos;re erased. Started by LGBTQ+ community members who understand the urgency of this moment.
               </p>
             </div>
 
@@ -78,7 +78,7 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 dark:text-blue-400 mr-2">•</span>
-                    <span className="text-base">You need to know you're not alone</span>
+                    <span className="text-base">You need to know you&apos;re not alone</span>
                   </li>
                 </ul>
               </div>
@@ -135,7 +135,7 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-start">
                   <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
-                  <span className="text-base">We can't see who you are, ever</span>
+                  <span className="text-base">We can&apos;t see who you are, ever</span>
                 </div>
               </div>
             </div>

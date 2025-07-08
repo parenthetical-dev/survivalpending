@@ -1,7 +1,7 @@
-import prisma from '@/lib/prisma'
-import { sanityClient } from './sanity'
-import { StoryStatus } from '@prisma/client'
-import { getStoryColor } from './utils/storyColors'
+import prisma from '@/lib/prisma';
+import { sanityClient } from './sanity';
+import { StoryStatus } from '@prisma/client';
+import { getStoryColor } from './utils/storyColors';
 
 interface SyncOptions {
   environment: 'development' | 'production'
@@ -11,43 +11,43 @@ interface SyncOptions {
 }
 
 export class SyncService {
-  private environment: string
-  private sanityDataset: string
-  
+  private environment: string;
+  private sanityDataset: string;
+
   constructor(environment: 'development' | 'production' = 'development') {
-    this.environment = environment
+    this.environment = environment;
     // Use NODE_ENV if available, otherwise use parameter
-    const env = process.env.NODE_ENV === 'production' ? 'production' : environment
-    this.sanityDataset = env === 'production' ? 'production' : 'development'
+    const env = process.env.NODE_ENV === 'production' ? 'production' : environment;
+    this.sanityDataset = env === 'production' ? 'production' : 'development';
   }
-  
+
   /**
    * Sync all stories from Neon to Sanity
    */
   async syncNeonToSanity(options: { batchSize?: number; includeRejected?: boolean } = {}) {
-    const { batchSize = 50, includeRejected = false } = options
-    
-    console.log(`Starting Neon → Sanity sync (${this.environment})...`)
-    
+    const { batchSize = 50, includeRejected = false } = options;
+
+    console.log(`Starting Neon → Sanity sync (${this.environment})...`);
+
     try {
       // Get all stories from Neon
       const whereClause = includeRejected ? {} : {
-        status: { not: StoryStatus.REJECTED }
-      }
-      
+        status: { not: StoryStatus.REJECTED },
+      };
+
       const stories = await prisma.story.findMany({
         where: whereClause,
         include: { user: true },
-        orderBy: { createdAt: 'desc' }
-      })
-      
-      console.log(`Found ${stories.length} stories to sync`)
-      
+        orderBy: { createdAt: 'desc' },
+      });
+
+      console.log(`Found ${stories.length} stories to sync`);
+
       // Process in batches
       for (let i = 0; i < stories.length; i += batchSize) {
-        const batch = stories.slice(i, i + batchSize)
-        console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(stories.length / batchSize)}`)
-        
+        const batch = stories.slice(i, i + batchSize);
+        console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(stories.length / batchSize)}`);
+
         const mutations = batch.map(story => ({
           createOrReplace: {
             _type: 'story',
@@ -62,7 +62,7 @@ export class SyncService {
             sentimentFlags: {
               highRisk: story.flaggedHighRisk,
               crisisContent: story.flaggedCrisis,
-              positiveResilience: story.flaggedPositive
+              positiveResilience: story.flaggedPositive,
             },
             createdAt: story.createdAt.toISOString(),
             approvedAt: story.approvedAt?.toISOString(),
@@ -70,117 +70,117 @@ export class SyncService {
             showOnHomepage: story.showOnHomepage,
             tags: [],
             categories: [],
-            color: story.color || getStoryColor(story.id)
-          }
-        }))
-        
+            color: story.color || getStoryColor(story.id),
+          },
+        }));
+
         // Execute batch mutation
         await sanityClient
           .config({ dataset: this.sanityDataset })
           .transaction(mutations)
-          .commit()
-        
-        console.log(`  ✓ Synced ${batch.length} stories`)
+          .commit();
+
+        console.log(`  ✓ Synced ${batch.length} stories`);
       }
-      
-      console.log(`✅ Neon → Sanity sync completed: ${stories.length} stories`)
-      return { success: true, count: stories.length }
-      
+
+      console.log(`✅ Neon → Sanity sync completed: ${stories.length} stories`);
+      return { success: true, count: stories.length };
+
     } catch (error) {
-      console.error('Neon → Sanity sync failed:', error)
-      throw error
+      console.error('Neon → Sanity sync failed:', error);
+      throw error;
     }
   }
-  
+
   /**
    * Sync all stories from Sanity to Neon
    */
   async syncSanityToNeon(options: { batchSize?: number } = {}) {
-    const { batchSize = 50 } = options
-    
-    console.log(`Starting Sanity → Neon sync (${this.environment})...`)
-    
+    const { batchSize = 50 } = options;
+
+    console.log(`Starting Sanity → Neon sync (${this.environment})...`);
+
     try {
       // Get all stories from Sanity
       const stories = await sanityClient
         .config({ dataset: this.sanityDataset })
-        .fetch(`*[_type == "story"] | order(createdAt desc)`)
-      
-      console.log(`Found ${stories.length} stories in Sanity`)
-      
-      let syncedCount = 0
-      let skippedCount = 0
-      
+        .fetch(`*[_type == "story"] | order(createdAt desc)`);
+
+      console.log(`Found ${stories.length} stories in Sanity`);
+
+      let syncedCount = 0;
+      let skippedCount = 0;
+
       // Process in batches
       for (let i = 0; i < stories.length; i += batchSize) {
-        const batch = stories.slice(i, i + batchSize)
-        console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(stories.length / batchSize)}`)
-        
+        const batch = stories.slice(i, i + batchSize);
+        console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(stories.length / batchSize)}`);
+
         for (const sanityStory of batch) {
           try {
             // Check if story exists in Neon
             const existingStory = await prisma.story.findUnique({
-              where: { id: sanityStory.storyId }
-            })
-            
+              where: { id: sanityStory.storyId },
+            });
+
             if (!existingStory) {
-              console.log(`  ⚠️  Story ${sanityStory.storyId} not found in Neon, skipping`)
-              skippedCount++
-              continue
+              console.log(`  ⚠️  Story ${sanityStory.storyId} not found in Neon, skipping`);
+              skippedCount++;
+              continue;
             }
-            
+
             // Update story in Neon with Sanity data
             const updateData: any = {
               status: (sanityStory.status?.toUpperCase() || 'PENDING') as StoryStatus,
               moderationNotes: sanityStory.moderatorNotes,
               showOnHomepage: sanityStory.showOnHomepage || false,
-              color: sanityStory.color || existingStory.color || getStoryColor(sanityStory.storyId)
-            }
-            
+              color: sanityStory.color || existingStory.color || getStoryColor(sanityStory.storyId),
+            };
+
             if (sanityStory.status === 'approved' && sanityStory.approvedAt) {
-              updateData.approvedAt = new Date(sanityStory.approvedAt)
+              updateData.approvedAt = new Date(sanityStory.approvedAt);
             }
-            
+
             await prisma.story.update({
               where: { id: sanityStory.storyId },
-              data: updateData
-            })
-            
-            syncedCount++
+              data: updateData,
+            });
+
+            syncedCount++;
           } catch (error) {
-            console.error(`  ❌ Failed to sync story ${sanityStory.storyId}:`, error)
+            console.error(`  ❌ Failed to sync story ${sanityStory.storyId}:`, error);
           }
         }
       }
-      
-      console.log(`✅ Sanity → Neon sync completed: ${syncedCount} synced, ${skippedCount} skipped`)
-      return { success: true, synced: syncedCount, skipped: skippedCount }
-      
+
+      console.log(`✅ Sanity → Neon sync completed: ${syncedCount} synced, ${skippedCount} skipped`);
+      return { success: true, synced: syncedCount, skipped: skippedCount };
+
     } catch (error) {
-      console.error('Sanity → Neon sync failed:', error)
-      throw error
+      console.error('Sanity → Neon sync failed:', error);
+      throw error;
     }
   }
-  
+
   /**
    * Perform bidirectional sync
    */
   async syncBidirectional(options: { batchSize?: number; includeRejected?: boolean } = {}) {
-    console.log(`Starting bidirectional sync (${this.environment})...`)
-    
+    console.log(`Starting bidirectional sync (${this.environment})...`);
+
     // First sync from Neon to Sanity (source of truth for new stories)
-    const neonToSanity = await this.syncNeonToSanity(options)
-    
+    const neonToSanity = await this.syncNeonToSanity(options);
+
     // Then sync back from Sanity to Neon (for moderation updates)
-    const sanityToNeon = await this.syncSanityToNeon(options)
-    
+    const sanityToNeon = await this.syncSanityToNeon(options);
+
     return {
       success: true,
       neonToSanity,
-      sanityToNeon
-    }
+      sanityToNeon,
+    };
   }
-  
+
   /**
    * Get sync status and statistics
    */
@@ -191,9 +191,9 @@ export class SyncService {
         .config({ dataset: this.sanityDataset })
         .fetch(`count(*[_type == "story"])`),
       prisma.story.count({ where: { status: StoryStatus.PENDING } }),
-      prisma.story.count({ where: { status: StoryStatus.APPROVED } })
-    ])
-    
+      prisma.story.count({ where: { status: StoryStatus.APPROVED } }),
+    ]);
+
     return {
       environment: this.environment,
       dataset: this.sanityDataset,
@@ -201,11 +201,11 @@ export class SyncService {
       sanityStories: sanityCount,
       pendingModeration: pendingCount,
       approved: approvedCount,
-      synced: neonCount === sanityCount
-    }
+      synced: neonCount === sanityCount,
+    };
   }
 }
 
 // Export singleton instances
-export const devSyncService = new SyncService('development')
-export const prodSyncService = new SyncService('production')
+export const devSyncService = new SyncService('development');
+export const prodSyncService = new SyncService('production');

@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
     }
 
     const { storyId } = await request.json();
-    
+
     if (!storyId) {
       return NextResponse.json(
         { error: 'Story ID required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,36 +31,36 @@ export async function POST(request: NextRequest) {
         storyId: storyId,
       },
       orderBy: {
-        timestamp: 'desc'
-      }
+        timestamp: 'desc',
+      },
     });
 
     if (!interventionLog) {
       return NextResponse.json(
         { error: 'No intervention log found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Update the log to indicate the intervention was shown
     const updated = await prisma.crisisInterventionLog.update({
       where: {
-        id: interventionLog.id
+        id: interventionLog.id,
       },
       data: {
-        interventionShown: true
-      }
+        interventionShown: true,
+      },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      interventionLogId: updated.id
+      interventionLogId: updated.id,
     });
   } catch (error) {
     console.error('Error updating intervention log:', error);
     return NextResponse.json(
       { error: 'Failed to update intervention log' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

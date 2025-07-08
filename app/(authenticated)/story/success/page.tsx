@@ -34,14 +34,14 @@ export default function StorySuccessPage() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <Button 
+            <Button
               onClick={() => router.push('/dashboard')}
               className="w-full"
             >
               <Home className="w-4 h-4 mr-2" />
               Go to Dashboard
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => router.push('/story/submit')}
               className="w-full"

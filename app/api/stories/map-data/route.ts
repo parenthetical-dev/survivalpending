@@ -8,16 +8,16 @@ export async function GET() {
       include: {
         user: {
           include: {
-            demographics: true
-          }
-        }
-      }
+            demographics: true,
+          },
+        },
+      },
     });
 
     // Count stories by state (only counting actual stories, not just users)
     const stateCounts: { [key: string]: number } = {};
     let totalStoriesWithState = 0;
-    
+
     storiesWithDemographics.forEach((story) => {
       const state = story.user.demographics?.state;
       if (state && state.trim() !== '') {
@@ -33,7 +33,7 @@ export async function GET() {
     const stateData = Object.entries(stateCounts).map(([state, count]) => ({
       state,
       count,
-      density: count / maxCount // 0-1 scale
+      density: count / maxCount, // 0-1 scale
     }));
 
     // Log for debugging
@@ -42,18 +42,18 @@ export async function GET() {
     console.log('Stories with state data:', totalStoriesWithState);
     console.log('State data being returned:', stateData);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       states: stateData,
       totalStories: storiesWithDemographics.length,
-      statesWithData: stateData.length
+      statesWithData: stateData.length,
     });
   } catch (error) {
     console.error('Error fetching map data:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: error instanceof Error ? error.message : 'Unknown error',
       states: [],
       totalStories: 0,
-      statesWithData: 0
+      statesWithData: 0,
     }, { status: 500 });
   }
 }

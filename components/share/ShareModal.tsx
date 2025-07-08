@@ -12,17 +12,17 @@ import {
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  MessageCircle, 
-  Mail, 
-  Copy, 
-  Share2, 
+import {
+  MessageCircle,
+  Mail,
+  Copy,
+  Share2,
   AlertTriangle,
   Shield,
   Check,
   Smartphone,
   Users,
-  Globe
+  Globe,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -50,7 +50,7 @@ const privateShareMethods = [
         navigator.clipboard.writeText(shareMessage);
         toast.success('Message copied! Send via your messaging app');
       }
-    }
+    },
   },
   {
     id: 'whatsapp',
@@ -60,7 +60,7 @@ const privateShareMethods = [
     action: () => {
       // WhatsApp has great web/app integration
       window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
-    }
+    },
   },
   {
     id: 'signal',
@@ -80,7 +80,7 @@ const privateShareMethods = [
         navigator.clipboard.writeText(shareMessage);
         toast.success('Message copied! Paste in Signal');
       }
-    }
+    },
   },
   {
     id: 'telegram',
@@ -89,7 +89,7 @@ const privateShareMethods = [
     description: 'Fast and secure messaging',
     action: () => {
       window.open(`https://t.me/share/url?url=${encodeURIComponent('https://survivalpending.com')}&text=${encodeURIComponent(shareMessage)}`, '_blank');
-    }
+    },
   },
   {
     id: 'email',
@@ -99,7 +99,7 @@ const privateShareMethods = [
     action: () => {
       const subject = 'A safe space for our stories';
       window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareMessage)}`;
-    }
+    },
   },
   {
     id: 'copy',
@@ -109,8 +109,8 @@ const privateShareMethods = [
     action: () => {
       navigator.clipboard.writeText('https://survivalpending.com');
       toast.success('Link copied to clipboard!');
-    }
-  }
+    },
+  },
 ];
 
 const publicShareMethods = [
@@ -121,7 +121,7 @@ const publicShareMethods = [
     warning: 'Public post - visible to anyone',
     action: () => {
       window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`, '_blank');
-    }
+    },
   },
   {
     id: 'instagram',
@@ -143,7 +143,7 @@ const publicShareMethods = [
         navigator.clipboard.writeText(shareMessage);
         toast.info('Message copied! Create a post or story on Instagram');
       }
-    }
+    },
   },
   {
     id: 'tiktok',
@@ -156,7 +156,7 @@ const publicShareMethods = [
       window.open(tiktokUrl, '_blank');
       navigator.clipboard.writeText(shareMessage);
       toast.info('Message copied! Add to your TikTok caption');
-    }
+    },
   },
   {
     id: 'facebook',
@@ -166,13 +166,13 @@ const publicShareMethods = [
     action: () => {
       // Try the dialog share method
       const fbShareUrl = `https://www.facebook.com/dialog/share?app_id=YOUR_APP_ID&display=popup&href=${encodeURIComponent('https://survivalpending.com')}&redirect_uri=${encodeURIComponent('https://survivalpending.com')}`;
-      
+
       // For now, since we don't have a Facebook App ID, just open Facebook and copy message
       window.open('https://www.facebook.com', '_blank');
       navigator.clipboard.writeText(`${shareMessage}\n\nhttps://survivalpending.com`);
       toast.info('Opening Facebook. Message and link copied - create a post and paste!');
-    }
-  }
+    },
+  },
 ];
 
 export default function ShareModal({ open, onClose, onShare }: ShareModalProps) {
@@ -181,7 +181,7 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
   const handleShare = async (method: string, action: () => void) => {
     try {
       action();
-      
+
       // Track the share
       await fetch('/api/user/shares', {
         method: 'POST',
@@ -191,11 +191,11 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
         },
         body: JSON.stringify({ method }),
       });
-      
+
       if (onShare) {
         onShare(method);
       }
-      
+
       // Close modal after a short delay for private methods
       if (!publicShareMethods.find(m => m.id === method)) {
         setTimeout(() => onClose(), 1500);
@@ -217,7 +217,7 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
             Help others find a safe space to document their truth
           </DialogDescription>
         </DialogHeader>
-        
+
         <Tabs defaultValue="private" className="mt-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="private" className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
               Public
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="private" className="space-y-4">
             <Alert>
               <Shield className="h-4 w-4" />
@@ -237,7 +237,7 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
                 These methods keep your sharing private and don't create public posts
               </AlertDescription>
             </Alert>
-            
+
             <div className="space-y-2">
               {privateShareMethods.map((method) => (
                 <button
@@ -256,7 +256,7 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
               ))}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="public" className="space-y-4">
             {!showPublicWarning ? (
               <>
@@ -266,8 +266,8 @@ export default function ShareModal({ open, onClose, onShare }: ShareModalProps) 
                     <strong>Privacy Warning:</strong> Public shares may reveal your interest in LGBTQ+ resources to others. Consider your safety before proceeding.
                   </AlertDescription>
                 </Alert>
-                
-                <Button 
+
+                <Button
                   onClick={() => setShowPublicWarning(true)}
                   className="w-full"
                   variant="outline"

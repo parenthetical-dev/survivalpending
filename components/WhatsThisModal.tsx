@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,11 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/ui/logo";
-import Link from "next/link";
-import { Shield, Users, Clock, Lock } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/ui/logo';
+import Link from 'next/link';
+import { Shield, Users, Clock, Lock } from 'lucide-react';
 
 interface WhatsThisModalProps {
   isOpen: boolean;
@@ -30,13 +30,13 @@ export function WhatsThisModal({ isOpen, onClose }: WhatsThisModalProps) {
               A living archive of LGBTQ+ resilience in real time.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="mt-4 sm:mt-6 space-y-6 sm:space-y-8">
             <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4">
               <p className="text-sm sm:text-base md:text-lg leading-relaxed">
-                Survival Pending is an anonymous platform documenting the experiences of LGBTQ+ 
-                people as we navigate unprecedented political and social attacks on our existence. 
-                This isn't just another website. It's an act of collective resistance. 
+                Survival Pending is an anonymous platform documenting the experiences of LGBTQ+
+                people as we navigate unprecedented political and social attacks on our existence.
+                This isn't just another website. It's an act of collective resistance.
                 Every story shared makes us harder to ignore, impossible to erase.
               </p>
               <p className="text-base sm:text-lg md:text-xl font-bold">

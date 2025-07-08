@@ -19,7 +19,7 @@ export default function VoiceWaveform({
   onPlayPause,
   onTimeUpdate,
   onEnd,
-  className
+  className,
 }: VoiceWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const howlRef = useRef<Howl | null>(null);
@@ -32,18 +32,18 @@ export default function VoiceWaveform({
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
-      
+
       // Fetch and decode audio for waveform
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      
+
       // Process waveform data
       const rawData = audioBuffer.getChannelData(0);
       const samples = 300; // Number of samples to display
       const blockSize = Math.floor(rawData.length / samples);
       const filteredData = [];
-      
+
       for (let i = 0; i < samples; i++) {
         const blockStart = blockSize * i;
         let sum = 0;
@@ -56,7 +56,7 @@ export default function VoiceWaveform({
       // Normalize
       const max = Math.max(...filteredData);
       const normalizedData = filteredData.map(n => n / max);
-      
+
       setWaveformData(normalizedData);
       audioContext.close();
     } catch (error) {
@@ -69,7 +69,7 @@ export default function VoiceWaveform({
     if (!audioUrl) return;
 
     setIsLoading(true);
-    
+
     const sound = new Howl({
       src: [audioUrl],
       html5: true,
@@ -90,7 +90,7 @@ export default function VoiceWaveform({
       onloaderror: (id, error) => {
         console.error('Load error:', error);
         setIsLoading(false);
-      }
+      },
     });
 
     howlRef.current = sound;
@@ -130,39 +130,39 @@ export default function VoiceWaveform({
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      
+
       const centerY = canvas.offsetHeight / 2;
       const sound = howlRef.current;
-      const progress = sound ? (sound.seek() as number) / sound.duration() : 0;
-      
+      const progress = sound ? (sound.seek()) / sound.duration() : 0;
+
       // Draw waveform
       ctx.strokeStyle = '#666';
       ctx.lineWidth = 1;
-      
+
       const barWidth = canvas.offsetWidth / waveformData.length;
-      
+
       for (let i = 0; i < waveformData.length; i++) {
         const x = i * barWidth;
         const height = waveformData[i] * canvas.offsetHeight * 0.7;
-        
+
         // Color based on progress
         if (i / waveformData.length <= progress) {
           // Gradient for played portion
           const gradient = ctx.createLinearGradient(x, centerY - height/2, x, centerY + height/2);
-          gradient.addColorStop(0, '#E4030366');    // Red with transparency
-          gradient.addColorStop(0.5, '#732982AA');  // Purple
+          gradient.addColorStop(0, '#E4030366'); // Red with transparency
+          gradient.addColorStop(0.5, '#732982AA'); // Purple
           gradient.addColorStop(1, '#E4030366');
           ctx.strokeStyle = gradient;
         } else {
           ctx.strokeStyle = '#666';
         }
-        
+
         ctx.beginPath();
         ctx.moveTo(x + barWidth/2, centerY - height / 2);
         ctx.lineTo(x + barWidth/2, centerY + height / 2);
         ctx.stroke();
       }
-      
+
       // Draw progress line
       const progressX = progress * canvas.offsetWidth;
       ctx.strokeStyle = '#E40303';
@@ -174,7 +174,7 @@ export default function VoiceWaveform({
 
       // Update time
       if (sound && sound.playing()) {
-        const seek = sound.seek() as number;
+        const seek = sound.seek();
         const duration = sound.duration();
         onTimeUpdate(seek, duration);
         animationRef.current = requestAnimationFrame(draw);
@@ -202,7 +202,7 @@ export default function VoiceWaveform({
   }, [waveformData, isPlaying]);
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn('relative w-full', className)}>
       <div className="relative w-full h-32 bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden">
         <canvas
           ref={canvasRef}
@@ -210,14 +210,14 @@ export default function VoiceWaveform({
           onClick={(e) => {
             const sound = howlRef.current;
             if (!sound || isLoading) return;
-            
+
             const rect = canvasRef.current!.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const progress = x / rect.width;
             sound.seek(progress * sound.duration());
           }}
         />
-        
+
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="animate-pulse text-sm text-muted-foreground">

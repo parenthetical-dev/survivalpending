@@ -13,7 +13,7 @@ export const ANALYTICS_EVENTS = {
   ONBOARDING_STEP: 'onboarding_step',
   ONBOARDING_COMPLETE: 'onboarding_complete',
   USERNAME_REGENERATED: 'username_regenerated',
-  
+
   // Story submission funnel
   STORY_START: 'story_start',
   STORY_WRITE_START: 'story_write_start',
@@ -35,19 +35,19 @@ export const ANALYTICS_EVENTS = {
   STORY_SUBMIT_START: 'story_submit_start',
   STORY_SUBMIT_SUCCESS: 'story_submit_success',
   STORY_SUBMIT_FAILED: 'story_submit_failed',
-  
+
   // Crisis & safety events
   CRISIS_RESOURCE_CLICK: 'crisis_resource_click',
   CRISIS_MODAL_SHOWN: 'crisis_modal_shown',
   CRISIS_MODAL_DISMISSED: 'crisis_modal_dismissed',
   QUICK_EXIT_USED: 'quick_exit_used',
-  
+
   // Engagement events
   STORY_SHARED: 'story_shared',
   STORY_PLAYED: 'story_played',
   STORY_COMPLETED: 'story_completed',
   FEATURED_STORY_PLAYED: 'featured_story_played',
-  
+
   // Error events
   API_ERROR: 'api_error',
   AUDIO_GENERATION_FAILED: 'audio_generation_failed',
@@ -66,34 +66,34 @@ export const ANALYTICS_CATEGORIES = {
 // Helper to get user segment tags
 function getUserSegmentTags(): Record<string, string | number | boolean> {
   if (typeof window === 'undefined') return {};
-  
+
   const tags: Record<string, string | number | boolean> = {};
-  
+
   // Platform detection
   tags.platform = /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
-  
+
   // Time of day
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) tags.timeOfDay = 'morning';
   else if (hour >= 12 && hour < 17) tags.timeOfDay = 'afternoon';
   else if (hour >= 17 && hour < 21) tags.timeOfDay = 'evening';
   else tags.timeOfDay = 'night';
-  
+
   // Session info from localStorage
   const sessionStart = localStorage.getItem('sessionStart');
   if (sessionStart) {
     const duration = (Date.now() - parseInt(sessionStart)) / 1000 / 60; // minutes
     tags.sessionDuration = Math.round(duration);
   }
-  
+
   // User journey stage
   const hasCompletedOnboarding = localStorage.getItem('onboardingComplete') === 'true';
   const storyCount = parseInt(localStorage.getItem('storyCount') || '0');
-  
+
   tags.hasCompletedOnboarding = hasCompletedOnboarding;
   tags.userJourneyStage = storyCount === 0 ? 'new' : storyCount === 1 ? 'first_story' : 'returning';
   tags.storyCount = storyCount;
-  
+
   return tags;
 }
 
@@ -101,7 +101,7 @@ function getUserSegmentTags(): Record<string, string | number | boolean> {
 async function sendPirschEvent(
   eventName: string,
   metadata?: Record<string, string | number | boolean>,
-  duration?: number
+  duration?: number,
 ) {
   if (typeof window === 'undefined') return;
 
@@ -112,20 +112,20 @@ async function sendPirschEvent(
       duration,
       metadata: {
         ...segmentTags,
-        ...metadata
-      }
+        ...metadata,
+      },
     };
-    
+
     console.log('[Pirsch] Sending event:', eventName, payload);
-    
+
     const response = await fetch('/api/analytics/event', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
-    
+
     if (!response.ok) {
       console.error('[Pirsch] Event tracking failed:', response.status);
     } else {
@@ -144,7 +144,7 @@ async function sendPirschHit(tags: Record<string, string>) {
     // For now, we'll track conversions as events with special metadata
     await sendPirschEvent('conversion', {
       ...tags,
-      _type: 'conversion'
+      _type: 'conversion',
     });
   } catch (error) {
     // Silently fail
@@ -156,22 +156,22 @@ export function trackEvent(
   event: keyof typeof ANALYTICS_EVENTS,
   category: keyof typeof ANALYTICS_CATEGORIES,
   metadata?: Record<string, string | number | boolean>,
-  duration?: number
+  duration?: number,
 ) {
   const eventName = ANALYTICS_EVENTS[event];
   const categoryName = ANALYTICS_CATEGORIES[category];
-  
+
   // Send to Pirsch with metadata
   sendPirschEvent(eventName, {
     category: categoryName,
-    ...metadata
+    ...metadata,
   }, duration);
-  
+
   // Track conversions for key events
   if (isConversionEvent(event)) {
     sendPirschHit({
       conversion: eventName,
-      category: categoryName
+      category: categoryName,
     });
   }
 }
@@ -182,26 +182,26 @@ function isConversionEvent(event: keyof typeof ANALYTICS_EVENTS): boolean {
     'SIGNUP_COMPLETE',
     'ONBOARDING_COMPLETE',
     'STORY_SUBMIT_SUCCESS',
-    'STORY_SHARED'
+    'STORY_SHARED',
   ];
   return conversionEvents.includes(event);
 }
 
 // Specific tracking helpers
 export function trackCrisisResource(
-  resourceName: string, 
-  location: 'onboarding' | 'modal' | 'story' | 'footer'
+  resourceName: string,
+  location: 'onboarding' | 'modal' | 'story' | 'footer',
 ) {
   trackEvent('CRISIS_RESOURCE_CLICK', 'SAFETY', {
     resource: resourceName,
     location,
-    context: window.location.pathname
+    context: window.location.pathname,
   });
 }
 
 export function trackStoryProgress(
   stage: 'start' | 'write' | 'refine' | 'voice' | 'preview' | 'submit',
-  metadata?: Record<string, string | number | boolean>
+  metadata?: Record<string, string | number | boolean>,
 ) {
   const eventMap = {
     start: 'STORY_START',
@@ -211,11 +211,11 @@ export function trackStoryProgress(
     preview: 'STORY_PREVIEW_COMPLETE',
     submit: 'STORY_SUBMIT_SUCCESS',
   } as const;
-  
+
   const event = eventMap[stage];
   if (event) {
     trackEvent(event, 'STORY', metadata);
-    
+
     // Increment story count on completion
     if (stage === 'submit') {
       const count = parseInt(localStorage.getItem('storyCount') || '0');
@@ -227,47 +227,47 @@ export function trackStoryProgress(
 export function trackOnboardingStep(
   step: number,
   stepName: string,
-  completed: boolean = false
+  completed: boolean = false,
 ) {
   trackEvent('ONBOARDING_STEP', 'ONBOARDING', {
     step,
     stepName,
     completed,
-    totalSteps: 5
+    totalSteps: 5,
   });
 }
 
 export function trackError(
   errorType: 'api' | 'audio' | 'validation',
   errorMessage: string,
-  context?: Record<string, any>
+  context?: Record<string, any>,
 ) {
   const eventMap = {
     api: 'API_ERROR',
     audio: 'AUDIO_GENERATION_FAILED',
-    validation: 'FORM_VALIDATION_ERROR'
+    validation: 'FORM_VALIDATION_ERROR',
   } as const;
-  
+
   trackEvent(eventMap[errorType], 'ERROR', {
     error: errorMessage,
-    ...context
+    ...context,
   });
 }
 
 export function trackStoryEngagement(
   action: 'play' | 'complete' | 'share',
   storyId: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ) {
   const eventMap = {
     play: 'STORY_PLAYED',
     complete: 'STORY_COMPLETED',
-    share: 'STORY_SHARED'
+    share: 'STORY_SHARED',
   } as const;
-  
+
   trackEvent(eventMap[action], 'ENGAGEMENT', {
     storyId,
-    ...metadata
+    ...metadata,
   });
 }
 
@@ -283,6 +283,6 @@ export function trackShareMethod(method: string, success: boolean) {
   trackEvent('STORY_SHARED', 'ENGAGEMENT', {
     method,
     success,
-    url: window.location.href
+    url: window.location.href,
   });
 }

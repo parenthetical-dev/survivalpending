@@ -35,22 +35,22 @@ export default function LoginForm() {
     setLoading(true);
     try {
       await login(username, password, turnstileToken);
-      
+
       // Track successful login
       trackEvent('LOGIN_SUCCESS', 'USER', {
-        method: 'password'
+        method: 'password',
       });
-      
+
       toast.success('Welcome back! You\'ve successfully logged in.');
     } catch (err: any) {
       setError(err.message);
-      
+
       // Track failed login
       trackEvent('LOGIN_FAILED', 'USER', {
         error: err.message,
-        method: 'password'
+        method: 'password',
       });
-      
+
       toast.error(err.message);
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export default function LoginForm() {
           Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-3 md:space-y-4 pt-0">
           <div className="space-y-2">
@@ -84,7 +84,7 @@ export default function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <div className="relative">
               <Input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -142,7 +142,7 @@ export default function LoginForm() {
           <Alert className="py-3">
             <KeyRound className="h-4 w-4" />
             <AlertDescription className="text-xs md:text-sm ml-1">
-              <strong>Remember:</strong> Your username and password cannot be recovered. 
+              <strong>Remember:</strong> Your username and password cannot be recovered.
               Keep them safe.
             </AlertDescription>
           </Alert>

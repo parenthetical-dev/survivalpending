@@ -24,7 +24,7 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
           Important safety features and crisis resources
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 md:space-y-6 pt-0">
         <Alert className="border-red-200 bg-red-50 py-3">
           <AlertCircle className="h-4 w-4 text-red-600" />
@@ -52,7 +52,7 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
             <h3 className="font-semibold">Need someone to talk to right now?</h3>
             <p className="text-sm text-muted-foreground mt-1">If you feel you need to speak to someone, there's people to listen right now.</p>
           </div>
-          
+
           <div className="space-y-3">
             <div className="p-3 md:p-4 bg-gray-50 rounded-lg space-y-1.5 md:space-y-2">
               <div>
@@ -60,8 +60,8 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
                 <p className="text-xs md:text-sm text-muted-foreground">Peer support by and for trans people - Available 24/7</p>
               </div>
               <div className="flex gap-3">
-                <a 
-                  href="tel:877-565-8860" 
+                <a
+                  href="tel:877-565-8860"
                   onClick={() => trackCrisisResource('Trans Lifeline Phone', 'onboarding')}
                   className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
                 >
@@ -77,26 +77,26 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
                 <p className="text-xs md:text-sm text-muted-foreground">Support for LGBTQ youth - Available 24/7</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <a 
-                  href="https://chat.trvr.org/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://chat.trvr.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => trackCrisisResource('Trevor Project Chat', 'onboarding')}
                   className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
                 >
                   <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">Chat</span>
                 </a>
-                <a 
-                  href="tel:1-866-488-7386" 
+                <a
+                  href="tel:1-866-488-7386"
                   onClick={() => trackCrisisResource('Trevor Project Phone', 'onboarding')}
                   className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
                 >
                   <Phone className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="font-medium">1-866-488-7386</span>
                 </a>
-                <a 
-                  href="sms:678678" 
+                <a
+                  href="sms:678678"
                   onClick={() => trackCrisisResource('Trevor Project Text', 'onboarding')}
                   className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-blue-600 hover:text-blue-800"
                 >
@@ -131,8 +131,8 @@ export default function SafetyStep({ onNext, onBack }: SafetyStepProps) {
         <Button variant="outline" onClick={onBack} size="default">
           Back
         </Button>
-        <Button 
-          onClick={onNext} 
+        <Button
+          onClick={onNext}
           className="flex-1"
           size="default"
           disabled={!understood}

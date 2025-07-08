@@ -8,7 +8,7 @@ import { trackPurchase } from '@/lib/meta-capi';
 import { getStoryColor } from '@/lib/utils/storyColors';
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 interface SentimentFlags {
@@ -39,15 +39,15 @@ export async function POST(request: NextRequest) {
     // Run sentiment analysis for crisis detection and get categories
     let sentimentFlags: SentimentFlags = {};
     let storyCategories: string[] = ['Identity']; // Default fallback
-    
+
     try {
       // Get story categories using the categorization API
       const categorizeResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/ai/categorize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: contentText })
+        body: JSON.stringify({ content: contentText }),
       });
-      
+
       if (categorizeResponse.ok) {
         const categorizeData = await categorizeResponse.json();
         storyCategories = categorizeData.categories || ['Identity'];
@@ -71,15 +71,15 @@ export async function POST(request: NextRequest) {
   "categories": ["self-harm"|"suicidal"|"violence"|"none"]
 }
 
-Story: "${contentText}"`
-          }
-        ]
+Story: "${contentText}"`,
+          },
+        ],
       });
 
-      const responseText = sentimentResponse.content[0].type === 'text' 
-        ? sentimentResponse.content[0].text 
+      const responseText = sentimentResponse.content[0].type === 'text'
+        ? sentimentResponse.content[0].text
         : '{}';
-      
+
       sentimentFlags = JSON.parse(responseText) as SentimentFlags;
     } catch (error) {
       console.error('Sentiment analysis error:', error);
@@ -100,7 +100,7 @@ Story: "${contentText}"`
         audioUrl: null, // Will be updated after audio generation
       },
     });
-    
+
     // Update story with color based on its ID
     const storyColor = getStoryColor(story.id);
     await prisma.story.update({
@@ -116,19 +116,19 @@ Story: "${contentText}"`
         textToGenerate,
         voiceId,
         payload.userId,
-        true // Skip rate limit for story submission
+        true, // Skip rate limit for story submission
       );
 
       if (audioResult.success) {
         // Upload audio to storage if we have a buffer
         let finalAudioUrl = audioResult.audioUrl;
-        
+
         if (audioResult.audioBuffer) {
           const uploadedUrl = await uploadAudioToStorage(
             audioResult.audioBuffer,
             story.id,
             payload.userId,
-            voiceId
+            voiceId,
           );
           if (uploadedUrl) {
             finalAudioUrl = uploadedUrl;
@@ -145,24 +145,24 @@ Story: "${contentText}"`
       } else {
         console.error('Audio generation failed:', audioResult.error);
         audioGenerationFailed = true;
-        
+
         // Update story with a flag indicating audio generation failed
         await prisma.story.update({
           where: { id: story.id },
-          data: { 
-            moderationNotes: `Audio generation failed: ${audioResult.error}` 
+          data: {
+            moderationNotes: `Audio generation failed: ${String(audioResult.error).substring(0, 200).replace(/[\n\r]/g, ' ')}`,
           },
         });
       }
     } catch (error) {
       console.error('Error during audio generation:', error);
       audioGenerationFailed = true;
-      
+
       // Update story with error information
       await prisma.story.update({
         where: { id: story.id },
-        data: { 
-          moderationNotes: `Audio generation error: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        data: {
+          moderationNotes: `Audio generation error: ${error instanceof Error ? error.message.substring(0, 200).replace(/[\n\r]/g, ' '): 'Unknown error'}`,
         },
       });
     }
@@ -185,7 +185,7 @@ Story: "${contentText}"`
       // Fetch the story with user data for Sanity sync
       const storyWithUser = await prisma.story.findUnique({
         where: { id: story.id },
-        include: { user: true }
+        include: { user: true },
       });
 
       if (storyWithUser) {
@@ -199,17 +199,17 @@ Story: "${contentText}"`
     // Track story submission with Meta CAPI
     await trackPurchase(request, payload.userId, story.id, sentimentFlags);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       storyId: story.id,
       hasCrisisContent: sentimentFlags?.hasCrisisContent || false,
-      audioGenerated: !audioGenerationFailed
+      audioGenerated: !audioGenerationFailed,
     });
   } catch (error) {
     console.error('Story submission error:', error);
     return NextResponse.json(
       { error: 'Failed to submit story' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
