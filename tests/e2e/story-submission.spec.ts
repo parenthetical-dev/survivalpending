@@ -27,8 +27,8 @@ test.describe('Story Submission Flow', () => {
     // Click continue
     await page.getByRole('button', { name: /continue to refine/i }).click();
     
-    // Step 2: Refine Stage
-    await expect(page.getByText(/would you like claude/i)).toBeVisible({ timeout: 10000 });
+    // Step 2: Refine Stage - wait for AI Suggestions heading
+    await expect(page.getByRole('heading', { name: /AI Suggestions/i })).toBeVisible({ timeout: 10000 });
     
     // Skip refinement for this test
     await page.getByRole('button', { name: /skip.*keep original/i }).click();

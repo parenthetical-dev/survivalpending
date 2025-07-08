@@ -16,11 +16,8 @@ test.describe('Authentication Flow', () => {
     // Set confirm password
     await page.locator('input#confirmPassword').fill('TestPassword123!');
     
-    // Wait for Turnstile widget to be ready
-    await page.waitForSelector('.cf-turnstile, [data-testid="turnstile-widget"]', { timeout: 10000 });
-    
-    // In dev/test mode, Turnstile auto-completes
-    await page.waitForTimeout(1000);
+    // In development mode, we should see the bypass message
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
     
     // Submit
     await page.getByRole('button', { name: /create account/i }).click();
@@ -70,9 +67,8 @@ test.describe('Authentication Flow', () => {
     await page.locator('input#username').fill('test_user_1234');
     await page.locator('input#password').fill('TestPassword123!');
     
-    // Wait for Turnstile widget to be ready
-    await page.waitForSelector('.cf-turnstile, [data-testid="turnstile-widget"]', { timeout: 10000 });
-    await page.waitForTimeout(1000);
+    // In development mode, we should see the bypass message
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
     
     // Submit
     await page.getByRole('button', { name: /sign in/i }).click();
@@ -84,16 +80,12 @@ test.describe('Authentication Flow', () => {
   test('invalid login shows error', async ({ page }) => {
     await page.goto('/login');
     
-    // Wait for page to fully load
-    await page.waitForLoadState('networkidle');
-    
     // Enter invalid credentials
     await page.locator('input#username').fill('invalid_user');
     await page.locator('input#password').fill('wrongpassword');
     
-    // Wait for Turnstile widget to be ready
-    await page.waitForSelector('.cf-turnstile, [data-testid="turnstile-widget"]', { timeout: 10000 });
-    await page.waitForTimeout(1000);
+    // In development mode, we should see the bypass message
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
     
     // Submit
     await page.getByRole('button', { name: /sign in/i }).click();
