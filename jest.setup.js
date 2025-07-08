@@ -95,9 +95,19 @@ if (typeof globalThis.Request === 'undefined') {
         configurable: true
       })
       
+      // Add headers
+      this.headers = new Map()
+      if (init.headers) {
+        Object.entries(init.headers).forEach(([key, value]) => {
+          this.headers.set(key.toLowerCase(), value)
+        })
+      }
+      
       // Copy init properties
       Object.keys(init).forEach(key => {
-        this[key] = init[key]
+        if (key !== 'headers') {
+          this[key] = init[key]
+        }
       })
       
       // Add required methods

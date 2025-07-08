@@ -6,14 +6,27 @@ import QuickExitButton from '@/components/safety/QuickExitButton';
 
 // Mock window.location.replace
 const mockReplace = jest.fn();
-Object.defineProperty(window, 'location', {
-  value: {
-    ...window.location,
-    replace: mockReplace,
-    pathname: '/'
-  },
-  writable: true
-});
+
+// Save original descriptor
+const originalDescriptor = Object.getOwnPropertyDescriptor(window, 'location');
+
+// Remove the existing property first if it exists
+delete (window as any).location;
+
+// Define new location mock
+window.location = {
+  ...window.location,
+  replace: mockReplace,
+  pathname: '/',
+  href: 'http://localhost',
+  origin: 'http://localhost',
+  protocol: 'http:',
+  host: 'localhost',
+  hostname: 'localhost',
+  port: '',
+  search: '',
+  hash: ''
+} as any;
 
 describe('QuickExitButton', () => {
   beforeEach(() => {
