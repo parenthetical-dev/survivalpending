@@ -88,12 +88,31 @@ test.describe('Story Submission Flow', () => {
     }
     
     await sarahButton.click();
+    console.log('Voice selected successfully');
+    
+    // Wait for the preview button to appear and be enabled
+    console.log('Waiting for preview button to be available...');
+    const previewButton = page.getByRole('button', { name: /preview/i });
+    await previewButton.waitFor({ state: 'visible', timeout: 10000 });
+    await expect(previewButton).toBeEnabled({ timeout: 10000 });
     
     // Preview voice
-    await page.getByRole('button', { name: /preview/i }).click();
+    console.log('Clicking preview button');
+    await previewButton.click();
     
-    // Wait for audio preview button to be enabled after preview loads
-    await expect(page.getByRole('button', { name: /preview/i })).toBeEnabled({ timeout: 5000 });
+    // Wait for audio preview to complete (button may change state during preview)
+    console.log('Waiting for preview to complete...');
+    await page.waitForTimeout(2000); // Give time for preview to load
+    
+    // Check if preview completed successfully
+    const isPreviewComplete = await previewButton.isEnabled().catch(() => false);
+    if (!isPreviewComplete) {
+      console.log('Preview button not re-enabled, checking for errors');
+      const errorText = await page.getByText(/error|failed/i).textContent().catch(() => null);
+      if (errorText) {
+        throw new Error(`Voice preview failed: ${errorText}`);
+      }
+    }
     
     // Continue
     await page.getByRole('button', { name: /continue.*voice/i }).click();

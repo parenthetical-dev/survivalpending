@@ -5,8 +5,9 @@ test.describe('Authentication Flow', () => {
   // Generate unique username for each test run to avoid conflicts
   const generateTestUsername = () => {
     const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `test_user_${timestamp}_${random}`;
+    const random = Math.floor(Math.random() * 1000000);
+    const uuid = crypto.randomUUID().substring(0, 8);
+    return `test_user_${timestamp}_${random}_${uuid}`;
   };
 
   test.beforeEach(async ({ page }) => {

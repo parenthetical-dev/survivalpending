@@ -53,7 +53,7 @@ jobs:
 
       - name: Create root user and database in PostgreSQL
         run: |
-          set -e
+          # Create root role if it doesn't exist
           PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "DO \$\$
           BEGIN
             IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'root') THEN
@@ -61,8 +61,12 @@ jobs:
             END IF;
           END
           \$\$;"
-          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;" || echo "Database 'root' may already exist"
-          echo "Created root user and database (if not exists)"
+          
+          # Create root database if it doesn't exist (can't use DO block for CREATE DATABASE)
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'root'" | grep -q 1 || \
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;"
+          
+          echo "PostgreSQL setup completed"
 
       - name: Setup test database
         env:
@@ -187,7 +191,7 @@ jobs:
 
       - name: Create root user and database in PostgreSQL
         run: |
-          set -e
+          # Create root role if it doesn't exist
           PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "DO \$\$
           BEGIN
             IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'root') THEN
@@ -195,8 +199,12 @@ jobs:
             END IF;
           END
           \$\$;"
-          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;" || echo "Database 'root' may already exist"
-          echo "Created root user and database (if not exists)"
+          
+          # Create root database if it doesn't exist (can't use DO block for CREATE DATABASE)
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'root'" | grep -q 1 || \
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE DATABASE root OWNER root;"
+          
+          echo "PostgreSQL setup completed"
 
       - name: Setup test database
         env:
