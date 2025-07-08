@@ -51,6 +51,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create root user in PostgreSQL
+        run: |
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';" || true
+          echo "Created root user (if not exists)"
+
       - name: Setup test database
         env:
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
@@ -171,6 +176,11 @@ jobs:
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
+      - name: Create root user in PostgreSQL
+        run: |
+          PGPASSWORD=testpass psql -h localhost -U testuser -d postgres -c "CREATE ROLE root LOGIN SUPERUSER PASSWORD 'root';" || true
+          echo "Created root user (if not exists)"
 
       - name: Setup test database
         env:
