@@ -40,11 +40,13 @@ test.describe('Story Submission Flow', () => {
     // Step 3: Voice Stage - wait for the voice selection to appear
     await expect(page.getByRole('heading', { name: /choose your voice/i })).toBeVisible({ timeout: 20000 });
     
-    // Wait for voice options to load
-    await page.waitForSelector('[role="button"]:has-text("Sarah")', { timeout: 10000 });
+    // Wait for voice options to load and ensure they're interactive
+    await page.waitForTimeout(1000); // Allow UI to settle
     
-    // Select a voice
-    await page.getByRole('button', { name: /sarah/i }).first().click();
+    // Find and click the Sarah voice option more specifically
+    const sarahButton = page.locator('button').filter({ hasText: 'Sarah' }).first();
+    await sarahButton.waitFor({ state: 'visible', timeout: 10000 });
+    await sarahButton.click();
     
     // Preview voice
     await page.getByRole('button', { name: /preview/i }).click();
