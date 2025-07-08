@@ -8,30 +8,30 @@ interface RateLimitEntry {
 
 class InMemoryRateLimiter {
   private limits: Map<string, RateLimitEntry> = new Map();
-  
+
   constructor(
     private maxRequests: number,
-    private windowMs: number
+    private windowMs: number,
   ) {}
-  
+
   async check(identifier: string): Promise<{ success: boolean; remaining: number; reset: number }> {
     const now = Date.now();
     const entry = this.limits.get(identifier);
-    
+
     if (!entry || now > entry.resetTime) {
       // New window
       this.limits.set(identifier, {
         count: 1,
         resetTime: now + this.windowMs,
       });
-      
+
       return {
         success: true,
         remaining: this.maxRequests - 1,
         reset: now + this.windowMs,
       };
     }
-    
+
     if (entry.count >= this.maxRequests) {
       // Rate limit exceeded
       return {
@@ -40,17 +40,17 @@ class InMemoryRateLimiter {
         reset: entry.resetTime,
       };
     }
-    
+
     // Increment count
     entry.count++;
-    
+
     return {
       success: true,
       remaining: this.maxRequests - entry.count,
       reset: entry.resetTime,
     };
   }
-  
+
   // Clean up old entries periodically
   cleanup() {
     const now = Date.now();
@@ -65,12 +65,12 @@ class InMemoryRateLimiter {
 // Rate limiters for different endpoints
 export const voicePreviewLimiter = new InMemoryRateLimiter(
   10, // 10 requests
-  60 * 1000 // per minute
+  60 * 1000, // per minute
 );
 
 export const voiceGenerateLimiter = new InMemoryRateLimiter(
   5, // 5 requests
-  60 * 1000 // per minute
+  60 * 1000, // per minute
 );
 
 // Cleanup old entries every 5 minutes

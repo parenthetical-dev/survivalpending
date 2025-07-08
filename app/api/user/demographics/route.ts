@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (!payload) {
       return NextResponse.json(
         { error: 'Invalid token' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     if (!ageRange || !state) {
       return NextResponse.json(
         { error: 'Age range and state are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         },
       });
     }
-    
+
     // Mark onboarding as complete
     try {
       await prisma.user.update({
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     await trackStartTrial(request, payload.userId, {
       ageRange,
       state,
-      urbanicity
+      urbanicity,
     });
 
     return NextResponse.json({
@@ -90,16 +90,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Demographics save error:', error);
-    
+
     // More detailed error response for debugging
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to save demographics',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

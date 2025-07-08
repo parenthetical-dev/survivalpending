@@ -26,14 +26,14 @@ interface ContactModalProps {
   title?: string;
 }
 
-export default function ContactModal({ open, onClose, title = "Contact the Development Team" }: ContactModalProps) {
+export default function ContactModal({ open, onClose, title = 'Contact the Development Team' }: ContactModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: 'general',
-    message: ''
+    message: '',
   });
-  
+
   // Use different email based on the title
   const recipientEmail = title.includes('Development') ? 'dev@survivalpending.com' : 'contact@survivalpending.com';
 
@@ -43,12 +43,12 @@ export default function ContactModal({ open, onClose, title = "Contact the Devel
     feature: 'Feature Request',
     security: 'Security Issue',
     partnership: 'Partnership/Collaboration',
-    other: 'Other'
+    other: 'Other',
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Construct the email content
     const subject = `[Developer Contact] ${subjectOptions[formData.subject as keyof typeof subjectOptions]}: ${formData.name}`;
     const body = `Name: ${formData.name}
@@ -63,16 +63,16 @@ This message was sent from the Survival Pending developer contact form.`;
 
     // Create mailto link
     const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
+
     // Open email client
     window.location.href = mailtoLink;
-    
+
     // Reset form and close modal
     setFormData({
       name: '',
       email: '',
       subject: 'general',
-      message: ''
+      message: '',
     });
     onClose();
   };
@@ -80,7 +80,7 @@ This message was sent from the Survival Pending developer contact form.`;
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -93,7 +93,7 @@ This message was sent from the Survival Pending developer contact form.`;
             Have a question, suggestion, or want to contribute? We'd love to hear from you.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>

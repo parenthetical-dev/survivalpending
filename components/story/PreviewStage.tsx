@@ -5,18 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Volume2, 
-  Loader2, 
-  CheckCircle, 
-  Edit3, 
-  Share2, 
+import {
+  Volume2,
+  Loader2,
+  CheckCircle,
+  Edit3,
+  Share2,
   AlertTriangle,
   Pause,
   Play,
   RotateCcw,
   Shield,
-  Info
+  Info,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { VoiceSettings } from './VoiceStage';
@@ -33,12 +33,12 @@ interface PreviewStageProps {
   onBack: () => void;
 }
 
-export default function PreviewStage({ 
-  content, 
-  voiceSettings, 
-  onComplete, 
+export default function PreviewStage({
+  content,
+  voiceSettings,
+  onComplete,
   onEdit,
-  onBack
+  onBack,
 }: PreviewStageProps) {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,7 +74,7 @@ export default function PreviewStage({
       }
 
       let url: string;
-      
+
       // Check if response is JSON (new format) or blob (fallback format)
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -101,7 +101,7 @@ export default function PreviewStage({
   return (
     <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
       <ProgressDots currentStep={4} />
-      
+
       <Card className="mb-4 sm:mb-6 p-0 overflow-hidden">
         <StepHeader
           currentStep={4}
@@ -115,7 +115,7 @@ export default function PreviewStage({
               Voice: {voiceSettings.name} • {Math.ceil(content.length / 13)} seconds (estimated)
             </p>
           </div>
-          
+
           <div className="prose prose-sm dark:prose-invert max-w-none mb-4 sm:mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
             <p className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">{content}</p>
           </div>
@@ -143,7 +143,7 @@ export default function PreviewStage({
 
           {!loading && !error && audioUrl && (
             <div className="space-y-4">
-              <PlyrPlayer 
+              <PlyrPlayer
                 audioUrl={audioUrl}
                 onEnd={() => setIsPlaying(false)}
                 className="mb-4"
@@ -156,7 +156,7 @@ export default function PreviewStage({
                     <strong>Your identity is protected.</strong> Your story will be published with your anonymous username only. No personal information will ever be revealed.
                   </AlertDescription>
                 </Alert>
-                
+
                 <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
                   <Info className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600 dark:text-amber-400" />
                   <AlertDescription className="text-xs sm:text-sm text-amber-800 dark:text-amber-200">

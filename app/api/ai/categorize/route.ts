@@ -15,12 +15,16 @@ const STORY_CATEGORIES = [
   'Work/School',
   'Community',
   'Resilience',
-  'Support'
+  'Support',
 ];
+
+interface CategorizeRequestBody {
+  content: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { content } = await request.json();
+    const { content }: CategorizeRequestBody = await request.json();
 
     if (!content) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
@@ -43,9 +47,9 @@ Categories:`;
       messages: [
         {
           role: 'user',
-          content: prompt
-        }
-      ]
+          content: prompt,
+        },
+      ],
     });
 
     const textContent = response.content[0];
@@ -57,10 +61,10 @@ Categories:`;
     let categories: string[];
     try {
       categories = JSON.parse(textContent.text.trim());
-    } catch (parseError) {
+    } catch {
       // If JSON parsing fails, try to extract categories from the response
-      const categoryMatches = STORY_CATEGORIES.filter(cat => 
-        textContent.text.toLowerCase().includes(cat.toLowerCase())
+      const categoryMatches = STORY_CATEGORIES.filter(cat =>
+        textContent.text.toLowerCase().includes(cat.toLowerCase()),
       );
       categories = categoryMatches.slice(0, 3); // Limit to 3 categories
     }
@@ -68,15 +72,15 @@ Categories:`;
     // Validate categories
     const validCategories = categories.filter(cat => STORY_CATEGORIES.includes(cat));
 
-    return NextResponse.json({ 
-      categories: validCategories.length > 0 ? validCategories : ['Identity'] // Default fallback
+    return NextResponse.json({
+      categories: validCategories.length > 0 ? validCategories : ['Identity'], // Default fallback
     });
 
   } catch (error) {
     console.error('Error categorizing story:', error);
     return NextResponse.json(
-      { error: 'Failed to categorize story', categories: ['Identity'] }, 
-      { status: 500 }
+      { error: 'Failed to categorize story', categories: ['Identity'] },
+      { status: 500 },
     );
   }
 }

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const state = searchParams.get('state');
-    
+
     if (!state) {
       return NextResponse.json({ error: 'State parameter is required' }, { status: 400 });
     }
@@ -15,11 +15,11 @@ export async function GET(request: NextRequest) {
     // First, get all users from the specified state
     const usersFromState = await prisma.userDemographics.findMany({
       where: {
-        state: state
+        state: state,
       },
       select: {
-        userId: true
-      }
+        userId: true,
+      },
     });
 
     const userIds = usersFromState.map(d => d.userId);
@@ -28,12 +28,12 @@ export async function GET(request: NextRequest) {
     const stories = await prisma.story.findMany({
       where: {
         userId: {
-          in: userIds
-        }
+          in: userIds,
+        },
       },
       select: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     const storyIds = stories.map(s => s.id);
@@ -44,26 +44,26 @@ export async function GET(request: NextRequest) {
     // Privacy protection: Only return stories if the state has at least 5 stories
     if (storyCount < MINIMUM_STORIES_FOR_PRIVACY) {
       console.log(`Privacy protection: State ${state} has only ${storyCount} stories (minimum: ${MINIMUM_STORIES_FOR_PRIVACY})`);
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         storyIds: [],
         count: 0,
         message: `This state's stories are currently privacy-protected. States need at least ${MINIMUM_STORIES_FOR_PRIVACY} stories to be viewable.`,
-        privacyProtected: true
+        privacyProtected: true,
       });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       storyIds,
       count: storyCount,
-      privacyProtected: false
+      privacyProtected: false,
     });
   } catch (error) {
     console.error('Error fetching stories by state:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: error instanceof Error ? error.message : 'Unknown error',
       storyIds: [],
-      count: 0
+      count: 0,
     }, { status: 500 });
   }
 }

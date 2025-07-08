@@ -17,7 +17,7 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
           Your survival may be pending. Your story is not.
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 md:space-y-6 pt-0">
         <div className="space-y-4">
           <div className="flex gap-3">
@@ -25,7 +25,7 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
             <div>
               <h3 className="font-semibold text-sm md:text-base">Your Privacy is Protected</h3>
               <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                We've designed this platform with your safety in mind. No real names, 
+                We've designed this platform with your safety in mind. No real names,
                 no email addresses, complete anonymity.
               </p>
             </div>
@@ -36,7 +36,7 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
             <div>
               <h3 className="font-semibold text-sm md:text-base">Your Story Matters</h3>
               <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                Every story shared here becomes part of a vital historical record. 
+                Every story shared here becomes part of a vital historical record.
                 Your experiences deserve to be heard and preserved.
               </p>
             </div>
@@ -47,7 +47,7 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
             <div>
               <h3 className="font-semibold text-sm md:text-base">You're Not Alone</h3>
               <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                You're joining thousands documenting this moment. Each story 
+                You're joining thousands documenting this moment. Each story
                 strengthens our collective proof.
               </p>
             </div>
@@ -56,8 +56,8 @@ export default function WelcomeStep({ onNext, username }: WelcomeStepProps) {
 
         <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-3 md:p-4">
           <p className="text-xs md:text-sm text-blue-900 dark:text-blue-100">
-            In the next steps, we'll show you safety features and ask for some 
-            optional demographic information to help us understand trends. You can 
+            In the next steps, we'll show you safety features and ask for some
+            optional demographic information to help us understand trends. You can
             skip any questions you're not comfortable answering.
           </p>
         </div>

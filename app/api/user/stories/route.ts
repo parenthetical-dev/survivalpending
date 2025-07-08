@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Fetch user from database to get username
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
-      select: { username: true }
+      select: { username: true },
     });
 
     if (!user) {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         _id,
         username,
         storyId
-      }`
+      }`,
     );
     console.log('[User Stories API] Sample of all stories in Sanity:', allStories);
 
@@ -54,9 +54,9 @@ export async function GET(request: NextRequest) {
         status,
         color
       }`,
-      { username: user.username }
+      { username: user.username },
     );
-    
+
     console.log('[User Stories API] Found stories in Sanity:', stories.length);
     console.log('[User Stories API] Story statuses:', stories.map((s: any) => ({ id: s.storyId, status: s.status })));
 
@@ -66,10 +66,10 @@ export async function GET(request: NextRequest) {
       const pgStories = await prisma.story.findMany({
         where: { userId: payload.userId },
         include: { user: true },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
       console.log('[User Stories API] Found in PostgreSQL:', pgStories.length);
-      
+
       // Convert PostgreSQL stories to match the expected format
       const formattedStories = pgStories.map(story => ({
         _id: story.id,
@@ -80,26 +80,26 @@ export async function GET(request: NextRequest) {
         createdAt: story.createdAt.toISOString(),
         categories: [],
         status: story.status.toLowerCase(),
-        color: getStoryColor(story.id)
+        color: getStoryColor(story.id),
       }));
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         stories: formattedStories,
         count: formattedStories.length,
-        source: 'postgresql'
+        source: 'postgresql',
       });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       stories,
       count: stories.length,
-      source: 'sanity'
+      source: 'sanity',
     });
   } catch (error) {
     console.error('Error fetching user stories:', error);
     return NextResponse.json(
       { error: 'Failed to fetch stories' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

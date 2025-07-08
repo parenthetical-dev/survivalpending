@@ -73,7 +73,7 @@ export default function CrisisInterventionModal({
             Thank you for sharing your story. Your courage matters, and you're not alone.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-3 md:space-y-4 py-3 md:py-4">
           <Alert className="py-3">
             <AlertDescription className="text-xs md:text-sm">
@@ -95,7 +95,7 @@ export default function CrisisInterventionModal({
                     {resource.phone.includes('Text') ? (
                       <p className="text-xs md:text-sm text-primary font-mono">{resource.phone}</p>
                     ) : (
-                      <a 
+                      <a
                         href={`tel:${resource.phone.replace(/[^0-9]/g, '')}`}
                         className="text-xs md:text-sm text-primary font-mono hover:underline"
                         onClick={(e) => e.stopPropagation()}

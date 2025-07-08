@@ -9,22 +9,30 @@ interface StepHeaderProps {
   description: string;
 }
 
-const stepIcons = [
-  <PenTool className="w-5 h-5" />,
-  <Sparkles className="w-5 h-5" />,
-  <Mic className="w-5 h-5" />,
-  <Send className="w-5 h-5" />
-];
+const StepIcon = ({ step }: { step: number }) => {
+  switch (step) {
+    case 1:
+      return <PenTool className="w-5 h-5" />;
+    case 2:
+      return <Sparkles className="w-5 h-5" />;
+    case 3:
+      return <Mic className="w-5 h-5" />;
+    case 4:
+      return <Send className="w-5 h-5" />;
+    default:
+      return <PenTool className="w-5 h-5" />;
+  }
+};
 
 export default function StepHeader({ currentStep, title, description }: StepHeaderProps) {
   return (
     <div className="bg-gray-50 dark:bg-gray-800 px-6 sm:px-8 md:px-12 py-4 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
         <div className={cn(
-          "p-2 rounded-lg transition-all",
-          "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400"
+          'p-2 rounded-lg transition-all',
+          'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400',
         )}>
-          {stepIcons[currentStep - 1]}
+          <StepIcon step={currentStep} />
         </div>
         <div>
           <h3 className="font-semibold">Step {currentStep}: {title}</h3>

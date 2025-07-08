@@ -1,26 +1,26 @@
-import { sanityClient } from './sanity'
-import { Story } from '@prisma/client'
-import { getStoryColor } from './utils/storyColors'
+import { sanityClient } from './sanity';
+import { Story } from '@prisma/client';
+import { getStoryColor } from './utils/storyColors';
 
 export async function syncStoryToSanity(
-  story: Story & { user?: { username: string } }, 
-  categories?: string[]
+  story: Story & { user?: { username: string } },
+  categories?: string[],
 ) {
   console.log('[Sanity Sync] Starting sync for story:', {
     storyId: story.id,
     username: story.user?.username,
     dataset: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    hasToken: !!process.env.SANITY_API_WRITE_TOKEN
+    hasToken: !!process.env.SANITY_API_WRITE_TOKEN,
   });
-  
+
   try {
     // Check if story already exists in Sanity
     console.log('[Sanity Sync] Checking for existing story...');
     const existingStory = await sanityClient.fetch(
       `*[_type == "story" && storyId == $storyId][0]`,
-      { storyId: story.id }
-    )
-    console.log('[Sanity Sync] Existing story found:', !!existingStory)
+      { storyId: story.id },
+    );
+    console.log('[Sanity Sync] Existing story found:', !!existingStory);
 
     const storyDocument = {
       _type: 'story',
@@ -34,13 +34,13 @@ export async function syncStoryToSanity(
       sentimentFlags: {
         highRisk: story.flaggedHighRisk,
         crisisContent: story.flaggedCrisis,
-        positiveResilience: story.flaggedPositive
+        positiveResilience: story.flaggedPositive,
       },
       createdAt: story.createdAt.toISOString(),
       categories: categories || [], // AI-generated categories or empty
       tags: [], // To be filled by moderators
-      color: getStoryColor(story.id) // Assign color based on story ID
-    }
+      color: getStoryColor(story.id), // Assign color based on story ID
+    };
 
     if (existingStory) {
       // Update existing document
@@ -48,7 +48,7 @@ export async function syncStoryToSanity(
       const result = await sanityClient
         .patch(existingStory._id)
         .set(storyDocument)
-        .commit()
+        .commit();
       console.log('[Sanity Sync] Update successful:', result._id);
       return result;
     } else {
@@ -63,7 +63,7 @@ export async function syncStoryToSanity(
       error: error instanceof Error ? error.message : error,
       stack: error instanceof Error ? error.stack : undefined,
       dataset: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_API_PROJECT_ID
+      projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_API_PROJECT_ID,
     });
     throw error;
   }
@@ -84,45 +84,45 @@ export async function getApprovedStories(limit: number = 10) {
         createdAt,
         sentimentFlags
       }`,
-      { limit }
-    )
-    return stories
+      { limit },
+    );
+    return stories;
   } catch (error) {
-    console.error('Error fetching approved stories from Sanity:', error)
-    return []
+    console.error('Error fetching approved stories from Sanity:', error);
+    return [];
   }
 }
 
 export async function updateStoryStatus(
-  storyId: string, 
+  storyId: string,
   status: 'approved' | 'rejected',
-  moderatorId?: string
+  moderatorId?: string,
 ) {
   try {
     const story = await sanityClient.fetch(
       `*[_type == "story" && storyId == $storyId][0]`,
-      { storyId }
-    )
+      { storyId },
+    );
 
     if (!story) {
-      throw new Error('Story not found in Sanity')
+      throw new Error('Story not found in Sanity');
     }
 
-    const updateData: any = { status }
-    
+    const updateData: any = { status };
+
     if (status === 'approved') {
-      updateData.approvedAt = new Date().toISOString()
+      updateData.approvedAt = new Date().toISOString();
       if (moderatorId) {
-        updateData.approvedBy = moderatorId
+        updateData.approvedBy = moderatorId;
       }
     }
 
     return await sanityClient
       .patch(story._id)
       .set(updateData)
-      .commit()
+      .commit();
   } catch (error) {
-    console.error('Error updating story status in Sanity:', error)
-    throw error
+    console.error('Error updating story status in Sanity:', error);
+    throw error;
   }
 }

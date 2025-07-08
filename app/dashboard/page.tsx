@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Shield, 
-  AlertTriangle, 
-  PenSquare, 
-  Clock, 
+import {
+  Shield,
+  AlertTriangle,
+  PenSquare,
+  Clock,
   Users,
   Heart,
   ArrowRight,
@@ -20,7 +20,7 @@ import {
   Pause,
   CheckCircle,
   XCircle,
-  Timer
+  Timer,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/ui/logo';
@@ -110,16 +110,16 @@ function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string 
             <Play className="w-4 h-4" />
           )}
         </button>
-        
+
         <div className="flex-1">
           <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded-full">
-            <div 
+            <div
               className="h-full bg-blue-500 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
-        
+
         <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
           {formatTime(audioRef.current?.currentTime || 0)} / {formatTime(duration)}
         </span>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setUserStories(data.stories || []);
@@ -191,31 +191,31 @@ export default function DashboardPage() {
 
   const truncateText = (text: string, maxLength: number = 400) => {
     if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength).trim() + '...';
+    return `${text.slice(0, maxLength).trim() }...`;
   };
 
   const safetyTips = [
     {
       icon: Shield,
-      title: "Private Browsing",
-      description: "Always use incognito/private mode when accessing this site"
+      title: 'Private Browsing',
+      description: 'Always use incognito/private mode when accessing this site',
     },
     {
       icon: AlertTriangle,
-      title: "Quick Exit",
-      description: "Press ESC 3 times or click the X button to quickly leave"
+      title: 'Quick Exit',
+      description: 'Press ESC 3 times or click the X button to quickly leave',
     },
     {
       icon: Clock,
-      title: "Clear History",
-      description: "Remember to clear your browser history after each session"
-    }
+      title: 'Clear History',
+      description: 'Remember to clear your browser history after each session',
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      
+
       <div className="container max-w-6xl mx-auto px-4 pb-6 md:pb-8 pt-[60px] md:pt-[80px]">
         {/* Welcome Back Section */}
         <div className="mb-6 md:mb-8 pt-12 md:pt-16">
@@ -245,8 +245,8 @@ export default function DashboardPage() {
             <CardDescription className="text-sm">Choose an action to continue</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 md:space-y-4 pt-0">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full justify-between"
               onClick={handleNewStory}
             >
@@ -256,9 +256,9 @@ export default function DashboardPage() {
               </div>
               <ArrowRight className="w-5 h-5" />
             </Button>
-            
-            <Button 
-              size="lg" 
+
+            <Button
+              size="lg"
               variant="outline"
               className="w-full justify-between"
               onClick={() => setShowShareModal(true)}
@@ -269,9 +269,9 @@ export default function DashboardPage() {
               </div>
               <ArrowRight className="w-5 h-5" />
             </Button>
-            
-            <Button 
-              size="lg" 
+
+            <Button
+              size="lg"
               variant="outline"
               className="w-full justify-between"
               onClick={() => router.push('/stories')}
@@ -284,9 +284,9 @@ export default function DashboardPage() {
             </Button>
 
             <Separator className="my-4" />
-            
-            <Button 
-              size="sm" 
+
+            <Button
+              size="sm"
               variant="ghost"
               className="w-full"
               onClick={handleLogout}
@@ -333,14 +333,14 @@ export default function DashboardPage() {
           <div className="mb-4">
             <h2 className="text-lg md:text-xl font-bold mb-2">Your Stories</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="inline-flex items-center gap-1"><Timer className="w-3 h-3" /> Pending</span> stories are under review. 
+              <span className="inline-flex items-center gap-1"><Timer className="w-3 h-3" /> Pending</span> stories are under review.
               <span className="inline-flex items-center gap-1 ml-2"><CheckCircle className="w-3 h-3" /> Approved</span> stories are visible to everyone.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {userStories.map((story) => {
               const color = story.color || getStoryColor(story._id);
-              
+
               return (
                 <div
                   key={story._id}
@@ -357,13 +357,13 @@ export default function DashboardPage() {
                     }
                   `}</style>
                   {/* Animated gradient rectangle using single color */}
-                  <div 
+                  <div
                     className="w-full relative overflow-hidden"
-                    style={{ 
+                    style={{
                       height: '48px',
                       backgroundImage: `linear-gradient(90deg, ${color}15, ${color}40, ${color}15)`,
                       backgroundSize: '200% 100%',
-                      animation: 'gradientMove 15s linear infinite'
+                      animation: 'gradientMove 15s linear infinite',
                     }}
                     aria-hidden="true"
                   />
@@ -380,10 +380,10 @@ export default function DashboardPage() {
                         </div>
                         {story.status && (
                           <div className={cn(
-                            "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium",
-                            story.status === 'approved' && "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
-                            story.status === 'pending' && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400",
-                            story.status === 'rejected' && "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                            'flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium',
+                            story.status === 'approved' && 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400',
+                            story.status === 'pending' && 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400',
+                            story.status === 'rejected' && 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400',
                           )}>
                             {story.status === 'approved' && <CheckCircle className="w-3 h-3" />}
                             {story.status === 'pending' && <Timer className="w-3 h-3" />}
@@ -393,20 +393,20 @@ export default function DashboardPage() {
                         )}
                       </div>
                     </div>
-                    
+
                     <p className="text-gray-800 dark:text-gray-200 text-sm md:text-base leading-relaxed mb-4">
                       {truncateText(story.contentSanitized)}
                     </p>
-                    
+
                     {story.audioUrl && (
                       <AudioPlayer audioUrl={story.audioUrl} storyId={story._id} />
                     )}
-                    
+
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <Link href={`/stories/${story._id}`}>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                         >
                           Read Full Story
@@ -462,15 +462,15 @@ export default function DashboardPage() {
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-2 sm:gap-4 text-xs md:text-sm">
             <div className="flex items-center justify-center gap-2">
-              <a 
-                href="https://translifeline.org" 
-                target="_blank" 
+              <a
+                href="https://translifeline.org"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
                 Trans Lifeline:
               </a>
-              <a 
+              <a
                 href="tel:8775658860"
                 className="text-primary hover:underline font-mono"
               >
@@ -479,15 +479,15 @@ export default function DashboardPage() {
             </div>
             <span className="text-muted-foreground hidden sm:inline">•</span>
             <div className="flex items-center justify-center gap-2">
-              <a 
-                href="https://www.thetrevorproject.org" 
-                target="_blank" 
+              <a
+                href="https://www.thetrevorproject.org"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
                 Trevor Project:
               </a>
-              <a 
+              <a
                 href="tel:18664887386"
                 className="text-primary hover:underline font-mono"
               >
@@ -497,7 +497,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      
+
       <ShareModal
         open={showShareModal}
         onClose={() => setShowShareModal(false)}

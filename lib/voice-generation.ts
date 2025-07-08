@@ -24,7 +24,7 @@ export async function generateVoiceAudio(
   text: string,
   voiceId: string,
   userId: string,
-  skipRateLimit: boolean = false
+  skipRateLimit: boolean = false,
 ): Promise<VoiceGenerationResult> {
   try {
     // Validate voice ID to prevent request forgery
@@ -41,9 +41,9 @@ export async function generateVoiceAudio(
     if (!skipRateLimit) {
       const rateLimitResult = await voiceGenerateLimiter.check(userId);
       if (!rateLimitResult.success) {
-        return { 
-          success: false, 
-          error: `Rate limit exceeded. Try again in ${Math.ceil((rateLimitResult.reset - Date.now()) / 1000)} seconds` 
+        return {
+          success: false,
+          error: `Rate limit exceeded. Try again in ${Math.ceil((rateLimitResult.reset - Date.now()) / 1000)} seconds`,
         };
       }
     }
@@ -51,13 +51,13 @@ export async function generateVoiceAudio(
     // In development, return a dummy audio URL
     if (process.env.NODE_ENV === 'development' && !process.env.ELEVENLABS_API_KEY) {
       // Return a dummy audio URL for development
-      return { 
-        success: true, 
+      return {
+        success: true,
         audioUrl: '/api/voice/dummy-audio.mp3',
         audioBuffer: Buffer.from(
           'UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=',
-          'base64'
-        ).buffer as ArrayBuffer
+          'base64',
+        ).buffer,
       };
     }
 
@@ -66,6 +66,7 @@ export async function generateVoiceAudio(
     let retries = 3;
     let lastError;
 
+    // eslint-disable-next-line no-await-in-loop -- Retry logic requires sequential attempts
     while (retries > 0) {
       try {
         response = await fetch(
@@ -75,7 +76,7 @@ export async function generateVoiceAudio(
             headers: {
               'Accept': 'audio/mpeg',
               'Content-Type': 'application/json',
-              'xi-api-key': process.env.ELEVENLABS_API_KEY!,
+              'xi-api-key': process.env.ELEVENLABS_API_KEY,
             },
             body: JSON.stringify({
               text,
@@ -89,14 +90,15 @@ export async function generateVoiceAudio(
               optimize_streaming_latency: 0,
               output_format: 'mp3_44100_128',
             }),
-          }
+          },
         );
 
         if (!response.ok) {
           const errorText = await response.text();
           console.error('ElevenLabs error:', errorText);
-          
+
           if (response.status === 429) {
+            // eslint-disable-next-line no-await-in-loop -- Need to wait before retry
             await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
             retries--;
             lastError = new Error('Rate limit exceeded');
@@ -108,10 +110,10 @@ export async function generateVoiceAudio(
           } else if (response.status === 400 && errorText.includes('quota')) {
             return { success: false, error: 'API quota exceeded' };
           }
-          
+
           throw new Error(`Failed to generate audio: ${errorText}`);
         }
-        
+
         break; // Success, exit loop
       } catch (error) {
         lastError = error;
@@ -119,6 +121,7 @@ export async function generateVoiceAudio(
         if (retries === 0) {
           return { success: false, error: (lastError as any)?.message || 'Failed to generate audio' };
         }
+        // eslint-disable-next-line no-await-in-loop -- Need to wait before retry
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
@@ -128,44 +131,44 @@ export async function generateVoiceAudio(
     }
 
     const audioBuffer = await response.arrayBuffer();
-    
+
     // Generate a temporary story ID for the audio file
     const tempStoryId = `temp_${Date.now()}`;
-    
+
     // Upload to Vercel Blob storage
     try {
       const uploadResult = await uploadAudioToBlob(audioBuffer, generateAudioFilename(tempStoryId, userId, voiceId), {
         contentType: 'audio/mpeg',
         addRandomSuffix: true,
       });
-      
+
       return {
         success: true,
         audioUrl: uploadResult.url,
-        audioBuffer
+        audioBuffer,
       };
     } catch (uploadError) {
       console.error('Failed to upload audio to blob storage:', uploadError);
-      
+
       // Fallback for development
       if (process.env.NODE_ENV === 'development') {
         return {
           success: true,
           audioUrl: `/api/audio/story-${tempStoryId}.mp3`,
-          audioBuffer
+          audioBuffer,
         };
       }
-      
+
       return {
         success: false,
-        error: 'Failed to upload audio'
+        error: 'Failed to upload audio',
       };
     }
   } catch (error) {
     console.error('Voice generation error:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to generate audio' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to generate audio',
     };
   }
 }
@@ -175,31 +178,31 @@ export async function uploadAudioToStorage(
   audioBuffer: ArrayBuffer,
   storyId: string,
   userId?: string,
-  voiceId?: string
+  voiceId?: string,
 ): Promise<string | null> {
   try {
     // Generate a unique filename
     const filename = generateAudioFilename(
       storyId,
       userId || 'anonymous',
-      voiceId || 'default'
+      voiceId || 'default',
     );
-    
+
     // Upload to Vercel Blob storage
     const uploadResult = await uploadAudioToBlob(audioBuffer, filename, {
       contentType: 'audio/mpeg',
       addRandomSuffix: true,
     });
-    
+
     return uploadResult.url;
   } catch (error) {
     console.error('Failed to upload audio to blob storage:', error);
-    
+
     // In development, return a dummy URL as fallback
     if (process.env.NODE_ENV === 'development') {
       return `/api/audio/story-${storyId}.mp3`;
     }
-    
+
     return null;
   }
 }

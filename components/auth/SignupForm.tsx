@@ -32,7 +32,7 @@ export default function SignupForm() {
     length: false,
     uppercase: false,
     number: false,
-    special: false
+    special: false,
   });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function SignupForm() {
       length: password.length >= 8,
       uppercase: /[A-Z]/.test(password),
       number: /[0-9]/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     });
   }, [password]);
 
@@ -67,10 +67,10 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     // Track signup attempt
     trackEvent('SIGNUP_START', 'USER', {
-      hasUsername: !!selectedUsername
+      hasUsername: !!selectedUsername,
     });
 
     if (!turnstileToken) {
@@ -87,22 +87,22 @@ export default function SignupForm() {
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    
+
     if (password.length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
-    
+
     if (!hasUppercase) {
       setError('Password must contain at least one uppercase letter');
       return;
     }
-    
+
     if (!hasNumber) {
       setError('Password must contain at least one number');
       return;
     }
-    
+
     if (!hasSpecial) {
       setError('Password must contain at least one special character');
       return;
@@ -111,21 +111,21 @@ export default function SignupForm() {
     setLoading(true);
     try {
       await signup(selectedUsername, password, turnstileToken);
-      
+
       // Track successful signup
       trackEvent('SIGNUP_COMPLETE', 'USER', {
-        usernameGenerated: true
+        usernameGenerated: true,
       });
-      
+
       toast.success('Account created! Welcome to Survival Pending.');
     } catch (err: any) {
       setError(err.message);
-      
+
       // Track signup failure
       trackEvent('SIGNUP_FAILED', 'USER', {
-        error: err.message
+        error: err.message,
       });
-      
+
       toast.error(err.message);
       setLoading(false);
     }
@@ -139,7 +139,7 @@ export default function SignupForm() {
           Choose an anonymous username to protect your identity
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-3 md:space-y-4 pt-0">
           <div className="space-y-2">
@@ -178,7 +178,7 @@ export default function SignupForm() {
             <Label htmlFor="password">Password</Label>
             <div className="relative">
               <Input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -226,7 +226,7 @@ export default function SignupForm() {
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <div className="relative">
               <Input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -285,7 +285,7 @@ export default function SignupForm() {
           <Alert className="py-3">
             <Shield className="h-4 w-4" />
             <AlertDescription className="text-xs md:text-sm ml-1">
-              <strong>Important:</strong> Your username and password are the only way to access your account. 
+              <strong>Important:</strong> Your username and password are the only way to access your account.
               We cannot recover them. Please save them securely.
             </AlertDescription>
           </Alert>

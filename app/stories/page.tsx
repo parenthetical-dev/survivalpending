@@ -44,20 +44,20 @@ const STORY_CATEGORIES = [
   'Work/School',
   'Community',
   'Resilience',
-  'Support'
+  'Support',
 ];
 
 
-function FilterModal({ 
-  filters, 
-  onApply, 
-  onClear, 
-  onClose
-}: { 
-  filters: any; 
-  onApply: (filters: any) => void; 
-  onClear: () => void; 
-  onClose: () => void; 
+function FilterModal({
+  filters,
+  onApply,
+  onClear,
+  onClose,
+}: {
+  filters: any;
+  onApply: (filters: any) => void;
+  onClear: () => void;
+  onClose: () => void;
 }) {
   const [localFilters, setLocalFilters] = useState(filters);
 
@@ -85,7 +85,7 @@ function FilterModal({
           <span className="text-sm">Stories with audio only</span>
         </label>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-2">Time Range</label>
         <select
@@ -99,7 +99,7 @@ function FilterModal({
           <option value="month">Past month</option>
         </select>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium mb-3">Categories</label>
         <div className="max-h-32 overflow-y-auto space-y-2">
@@ -116,7 +116,7 @@ function FilterModal({
           ))}
         </div>
       </div>
-      
+
       <div className="flex gap-3 pt-4">
         <Button onClick={handleApply} className="flex-1">
           Apply Filters
@@ -185,7 +185,7 @@ function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string 
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
     const newTime = percentage * duration;
-    
+
     audio.currentTime = newTime;
     setProgress(percentage * 100);
   };
@@ -211,19 +211,19 @@ function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string 
             <Play className="w-4 h-4" />
           )}
         </button>
-        
+
         <div className="flex-1">
-          <div 
+          <div
             className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full cursor-pointer relative"
             onClick={handleProgressClick}
           >
-            <div 
+            <div
               className="h-full bg-blue-500 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
-        
+
         <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
           {formatTime(audioRef.current?.currentTime || 0)} / {formatTime(duration)}
         </span>
@@ -261,7 +261,7 @@ export default function StoriesPage() {
         console.log('Stories with states:', data.stories.filter((s: any) => s.demographics?.state).map((s: any) => ({
           id: s._id,
           storyId: s.storyId,
-          state: s.demographics.state
+          state: s.demographics.state,
         })));
         setStories(data.stories);
       }
@@ -279,7 +279,7 @@ export default function StoriesPage() {
         const data = await response.json();
         setMapData({
           statesWithData: data.statesWithData || 0,
-          totalStories: data.totalStories || 0
+          totalStories: data.totalStories || 0,
         });
       }
     } catch (error) {
@@ -303,21 +303,21 @@ export default function StoriesPage() {
 
   const truncateText = (text: string, maxLength: number = 400) => {
     if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength).trim() + '...';
+    return `${text.slice(0, maxLength).trim() }...`;
   };
 
   const sortedAndFilteredStories = () => {
     let filtered = [...stories];
-    
+
     // Apply filters
     if (filters.hasAudio) {
       filtered = filtered.filter(story => story.audioUrl);
     }
-    
+
     if (filters.timeRange !== 'all') {
       const now = new Date();
       const cutoffDate = new Date();
-      
+
       switch (filters.timeRange) {
         case 'today':
           cutoffDate.setHours(0, 0, 0, 0);
@@ -329,31 +329,31 @@ export default function StoriesPage() {
           cutoffDate.setMonth(now.getMonth() - 1);
           break;
       }
-      
+
       filtered = filtered.filter(story => new Date(story.createdAt) >= cutoffDate);
     }
-    
+
     // Apply category filter
     if (filters.categories.length > 0) {
-      filtered = filtered.filter(story => 
-        story.categories && story.categories.some(category => filters.categories.includes(category))
+      filtered = filtered.filter(story =>
+        story.categories && story.categories.some(category => filters.categories.includes(category)),
       );
     }
-    
+
     // Apply state filter
     if (filters.selectedState) {
-      filtered = filtered.filter(story => 
-        story.demographics?.state === filters.selectedState
+      filtered = filtered.filter(story =>
+        story.demographics?.state === filters.selectedState,
       );
     }
-    
+
     // Apply sorting
     filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
-    
+
     return filtered;
   };
 
@@ -384,14 +384,14 @@ export default function StoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      
+
       <div className="container max-w-6xl mx-auto px-4 pt-[120px] md:pt-[140px] pb-12">
         <div className="mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">All Stories</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Voices creating an undeniable chorus. Each one different. All of them true. Together, impossible to ignore.
           </p>
-          
+
           {/* Early stage message */}
           {mapData && mapData.statesWithData < 10 && (
             <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -404,14 +404,14 @@ export default function StoriesPage() {
                 <div className="flex-1">
                   <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">We're Just Getting Started</h3>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Survival Pending is in its early stages. As more stories are shared, our geographic view will become available 
+                    Survival Pending is in its early stages. As more stories are shared, our geographic view will become available
                     while maintaining strict privacy protections. Every story matters in building this collective testimony.
                   </p>
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* Filter and Sort Controls */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-6">
             <div className="flex gap-3">
@@ -429,25 +429,25 @@ export default function StoriesPage() {
                   <DialogHeader>
                     <DialogTitle>Filter Stories</DialogTitle>
                   </DialogHeader>
-                  <FilterModal 
-                    filters={filters} 
-                    onApply={applyFilters} 
+                  <FilterModal
+                    filters={filters}
+                    onApply={applyFilters}
                     onClear={clearFilters}
                     onClose={() => setShowFilterModal(false)}
                   />
                 </DialogContent>
               </Dialog>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowMap(!showMap)}
                 className={showMap ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-300' : ''}
               >
                 <Map className="w-4 h-4 mr-2" />
                 {showMap ? 'Hide Map' : 'Show Map'}
               </Button>
-              
+
               {(filters.hasAudio || filters.timeRange !== 'all' || filters.categories.length > 0 || filters.selectedState) && (
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-1" />
@@ -455,12 +455,12 @@ export default function StoriesPage() {
                 </Button>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">Sort:</span>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={toggleSort}
                 className="min-w-[80px]"
               >
@@ -473,7 +473,7 @@ export default function StoriesPage() {
         {/* Map Component */}
         {showMap && (
           <div className="mb-8">
-            <StoriesMap 
+            <StoriesMap
               onStateSelect={handleStateSelect}
               selectedState={filters.selectedState}
             />
@@ -499,7 +499,7 @@ export default function StoriesPage() {
         ) : displayStories.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 dark:text-gray-400">
-              {stories.length === 0 ? "No stories yet. Be the first to share." : "No stories match your filters."}
+              {stories.length === 0 ? 'No stories yet. Be the first to share.' : 'No stories match your filters.'}
             </p>
             {stories.length === 0 ? (
               <Link href="/signup" className="mt-4 inline-block">
@@ -515,7 +515,7 @@ export default function StoriesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {displayStories.map((story) => {
               const color = story.color || getStoryColor(story._id);
-              
+
               return (
                 <div
                   key={story._id}
@@ -532,13 +532,13 @@ export default function StoriesPage() {
                     }
                   `}</style>
                   {/* Animated gradient rectangle using single color */}
-                  <div 
+                  <div
                     className="w-full relative overflow-hidden"
-                    style={{ 
+                    style={{
                       height: '48px',
                       backgroundImage: `linear-gradient(90deg, ${color}15, ${color}40, ${color}15)`,
                       backgroundSize: '200% 100%',
-                      animation: 'gradientMove 15s linear infinite'
+                      animation: 'gradientMove 15s linear infinite',
                     }}
                     aria-hidden="true"
                   />
@@ -553,20 +553,20 @@ export default function StoriesPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <p className="text-gray-800 dark:text-gray-200 text-sm md:text-base leading-relaxed mb-4">
                       {truncateText(story.contentSanitized)}
                     </p>
-                    
+
                     {story.audioUrl && (
                       <AudioPlayer audioUrl={story.audioUrl} storyId={story._id} />
                     )}
-                    
+
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <Link href={`/stories/${story._id}`}>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                         >
                           Read Full Story

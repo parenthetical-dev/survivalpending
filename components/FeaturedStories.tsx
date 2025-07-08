@@ -77,7 +77,7 @@ function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string 
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
     const newTime = percentage * duration;
-    
+
     audio.currentTime = newTime;
     setProgress(percentage * 100);
   };
@@ -103,19 +103,19 @@ function AudioPlayer({ audioUrl, storyId }: { audioUrl: string; storyId: string 
             <Play className="w-4 h-4" />
           )}
         </button>
-        
+
         <div className="flex-1">
-          <div 
+          <div
             className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full cursor-pointer relative"
             onClick={handleProgressClick}
           >
-            <div 
+            <div
               className="h-full bg-blue-500 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
-        
+
         <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
           {formatTime(audioRef.current?.currentTime || 0)} / {formatTime(duration)}
         </span>
@@ -160,8 +160,8 @@ export function FeaturedStories({ stories, position = 'below' }: FeaturedStories
 
   return (
     <div className={cn(
-      "w-full max-w-6xl mx-auto px-6 md:px-4",
-      position === 'above' ? "mb-8 md:mb-12" : "mt-12 md:mt-16"
+      'w-full max-w-6xl mx-auto px-6 md:px-4',
+      position === 'above' ? 'mb-8 md:mb-12' : 'mt-12 md:mt-16',
     )}>
       <style jsx>{`
         @keyframes gradientMove {
@@ -177,20 +177,20 @@ export function FeaturedStories({ stories, position = 'below' }: FeaturedStories
         {displayStories.map((story, index) => {
           // Select a color from the progress flag based on the story index
           const color = progressFlagColors[index % progressFlagColors.length];
-          
+
           return (
             <div
               key={story._id}
               className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Animated gradient rectangle using single color */}
-              <div 
+              <div
                 className="w-full relative overflow-hidden"
-                style={{ 
+                style={{
                   height: '48px',
                   background: `linear-gradient(90deg, ${color}15, ${color}40, ${color}15)`,
                   backgroundSize: '200% 100%',
-                  animation: 'gradientMove 15s linear infinite'
+                  animation: 'gradientMove 15s linear infinite',
                 }}
                 aria-hidden="true"
               />
@@ -202,11 +202,11 @@ export function FeaturedStories({ stories, position = 'below' }: FeaturedStories
                   <span>{getTimeAgo(story.createdAt)}</span>
                 </div>
               </div>
-              
+
               <p className="text-gray-800 dark:text-gray-200 text-sm md:text-base leading-relaxed line-clamp-4">
                 {story.contentSanitized}
               </p>
-              
+
               {story.audioUrl && (
                 <AudioPlayer audioUrl={story.audioUrl} storyId={story._id} />
               )}

@@ -9,41 +9,41 @@ interface StoryPromptsProps {
 
 const PROMPTS = [
   {
-    category: "Starting Points",
+    category: 'Starting Points',
     prompts: [
-      "The moment I knew things had changed was...",
-      "What I wish people understood about my experience is...",
-      "Despite everything, what keeps me going is...",
-      "The hardest part of my journey has been...",
-    ]
+      'The moment I knew things had changed was...',
+      'What I wish people understood about my experience is...',
+      'Despite everything, what keeps me going is...',
+      'The hardest part of my journey has been...',
+    ],
   },
   {
-    category: "Identity & Self",
+    category: 'Identity & Self',
     prompts: [
-      "Being my authentic self means...",
-      "The first time I felt truly seen was...",
-      "My identity is not up for debate because...",
-      "What makes me proud of who I am is...",
-    ]
+      'Being my authentic self means...',
+      'The first time I felt truly seen was...',
+      'My identity is not up for debate because...',
+      'What makes me proud of who I am is...',
+    ],
   },
   {
-    category: "Community & Support",
+    category: 'Community & Support',
     prompts: [
-      "I found my chosen family when...",
-      "The support that saved me came from...",
-      "To others going through this, I want to say...",
-      "We are stronger together because...",
-    ]
+      'I found my chosen family when...',
+      'The support that saved me came from...',
+      'To others going through this, I want to say...',
+      'We are stronger together because...',
+    ],
   },
   {
-    category: "Resistance & Hope",
+    category: 'Resistance & Hope',
     prompts: [
-      "I refuse to be erased because...",
-      "My act of resistance is...",
+      'I refuse to be erased because...',
+      'My act of resistance is...',
       "The future I'm fighting for looks like...",
-      "Hope lives in me through...",
-    ]
-  }
+      'Hope lives in me through...',
+    ],
+  },
 ];
 
 export default function StoryPrompts({ onSelectPrompt, onClose }: StoryPromptsProps) {

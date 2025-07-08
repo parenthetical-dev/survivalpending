@@ -120,7 +120,7 @@ export default function StoryPage() {
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
     const newTime = percentage * duration;
-    
+
     audio.currentTime = newTime;
     setProgress(percentage * 100);
   };
@@ -172,23 +172,23 @@ export default function StoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      
+
       <div className="container max-w-4xl mx-auto px-4 pt-[80px] md:pt-[100px] pb-12">
         <div className="mb-8">
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <Link href="/stories">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Stories
               </Button>
             </Link>
-            
+
             <div className="h-4 w-px bg-gray-300 dark:bg-gray-600" />
-            
+
             <div className="flex items-center gap-3">
               <span className="font-mono">{story.username}</span>
               <span>•</span>
@@ -212,13 +212,13 @@ export default function StoryPage() {
             }
           `}</style>
           {/* Animated gradient rectangle using consistent color based on story ID */}
-          <div 
+          <div
             className="w-full relative overflow-hidden"
-            style={{ 
+            style={{
               height: '72px',
               backgroundImage: `linear-gradient(90deg, ${story.color || getStoryColor(story._id)}15, ${story.color || getStoryColor(story._id)}40, ${story.color || getStoryColor(story._id)}15)`,
               backgroundSize: '200% 100%',
-              animation: 'gradientMove 15s linear infinite'
+              animation: 'gradientMove 15s linear infinite',
             }}
             aria-hidden="true"
           />
@@ -244,19 +244,19 @@ export default function StoryPage() {
                     <Play className="w-6 h-6" />
                   )}
                 </button>
-                
+
                 <div className="flex-1">
-                  <div 
+                  <div
                     className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full cursor-pointer relative"
                     onClick={handleProgressClick}
                   >
-                    <div 
+                    <div
                       className="h-full bg-blue-500 rounded-full transition-all"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
                 </div>
-                
+
                 <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
                   {formatTime(audioRef.current?.currentTime || 0)} / {formatTime(duration)}
                 </span>
@@ -269,7 +269,7 @@ export default function StoryPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Every story shared makes our collective voice stronger.
               </p>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={() => setShowShareModal(true)}
               >
@@ -280,7 +280,7 @@ export default function StoryPage() {
           </div>
           </div>
         </div>
-        
+
         {/* Next Story Section */}
         <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
           <div className="text-center">

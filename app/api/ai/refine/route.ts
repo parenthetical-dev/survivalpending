@@ -4,8 +4,24 @@ import Anthropic from '@anthropic-ai/sdk';
 import { trackInitiateCheckout } from '@/lib/meta-capi';
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
+
+interface RefineRequestBody {
+  content: string;
+}
+
+interface SuggestionItem {
+  type: 'clarity' | 'impact' | 'flow';
+  original: string;
+  suggested: string;
+  reason: string;
+}
+
+interface RefineResponse {
+  refinedVersion?: string;
+  suggestions: SuggestionItem[];
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,11 +36,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const { content } = await request.json();
+    const { content }: RefineRequestBody = await request.json();
 
     if (!content || content.length < 50) {
-      return NextResponse.json({ 
-        suggestions: [] 
+      return NextResponse.json({
+        suggestions: [],
       });
     }
 
@@ -63,15 +79,15 @@ CRITICAL RULES:
 - Keep the authentic voice - don't over-polish
 - Respect the 90-second constraint (about 1000 characters)
 - Don't sanitize emotions or difficult content
-- Maximum 3-4 suggestions that work as simple replacements`
-        }
-      ]
+- Maximum 3-4 suggestions that work as simple replacements`,
+        },
+      ],
     });
 
-    const responseText = completion.content[0].type === 'text' 
-      ? completion.content[0].text 
+    const responseText = completion.content[0].type === 'text'
+      ? completion.content[0].text
       : '';
-    
+
     // Parse the JSON response
     try {
       // First, try to extract JSON from the response
@@ -80,10 +96,10 @@ CRITICAL RULES:
         console.error('No JSON found in AI response');
         return NextResponse.json({ suggestions: [] });
       }
-      
+
       // Clean the extracted JSON to handle control characters within string values
       let cleanedJson = jsonMatch[0];
-      
+
       // Function to properly escape control characters in JSON string values
       cleanedJson = cleanedJson.replace(/"([^"]*)"/g, (_match, p1) => {
         // Escape control characters within the string value
@@ -96,12 +112,12 @@ CRITICAL RULES:
           .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); // Remove other control characters
         return `"${escaped}"`;
       });
-      
-      const parsed = JSON.parse(cleanedJson);
-      
+
+      const parsed: RefineResponse = JSON.parse(cleanedJson);
+
       // Track that user has entered the refine stage
       await trackInitiateCheckout(request, payload.userId, 'refine');
-      
+
       return NextResponse.json(parsed);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
@@ -113,7 +129,7 @@ CRITICAL RULES:
     console.error('AI refinement error:', error);
     return NextResponse.json(
       { error: 'Failed to generate suggestions' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

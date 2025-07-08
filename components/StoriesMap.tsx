@@ -6,10 +6,10 @@ import {
   Geographies,
   Geography,
   ZoomableGroup,
-  GeographyProps
+  GeographyProps,
 } from 'react-simple-maps';
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 interface StateData {
   state: string;
@@ -33,7 +33,7 @@ const STATE_FIPS_TO_ABBR: { [key: string]: string } = {
   '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH', '34': 'NJ', '35': 'NM',
   '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH', '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI',
   '45': 'SC', '46': 'SD', '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA',
-  '54': 'WV', '55': 'WI', '56': 'WY'
+  '54': 'WV', '55': 'WI', '56': 'WY',
 };
 
 const STATE_NAMES: { [key: string]: string } = {
@@ -47,7 +47,7 @@ const STATE_NAMES: { [key: string]: string } = {
   'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina',
   'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont',
   'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
-  'DC': 'District of Columbia'
+  'DC': 'District of Columbia',
 };
 
 export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapProps) {
@@ -88,23 +88,23 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     const stateId = geo.id;
     const stateAbbr = STATE_FIPS_TO_ABBR[stateId];
     if (!stateAbbr) return '#e5e7eb'; // Lighter gray for unknown
-    
+
     const state = stateData.find(s => s.state === stateAbbr);
     if (!state || state.count === 0) return '#e5e7eb'; // Lighter gray for no data
-    
+
     const isActive = isStateActive(stateAbbr);
     const isSelected = selectedState === stateAbbr;
     const isHovered = hoveredState === stateAbbr;
-    
+
     if (isSelected && isActive) {
       return '#7c3aed'; // Purple for selected
     }
-    
+
     // States below threshold get a special treatment
     if (!isActive) {
       return isHovered ? '#d1d5db' : '#e5e7eb'; // Lighter gray, slightly darker on hover
     }
-    
+
     // Create a gradient from powdery purple to saturated purple
     // Using HSL for better color interpolation
     const minHue = 280; // Purple hue
@@ -113,15 +113,15 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     const maxSat = 80; // High saturation (vibrant)
     const minLight = 75; // Light (powdery)
     const maxLight = 50; // Darker (saturated)
-    
+
     // Use density (0-1) to interpolate
     const hue = minHue + (maxHue - minHue) * state.density;
     const saturation = minSat + (maxSat - minSat) * state.density;
     const lightness = minLight - (minLight - maxLight) * state.density;
-    
+
     // Add hover effect
     const adjustedLightness = isHovered ? lightness - 10 : lightness;
-    
+
     return `hsl(${hue}, ${saturation}%, ${adjustedLightness}%)`;
   };
 
@@ -132,7 +132,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     return {
       name: STATE_NAMES[stateAbbr] || stateAbbr,
       count,
-      isActive
+      isActive,
     };
   };
 
@@ -140,7 +140,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
     const stateId = geo.id;
     const stateAbbr = STATE_FIPS_TO_ABBR[stateId];
     if (!stateAbbr) return;
-    
+
     const isActive = isStateActive(stateAbbr);
     if (isActive) {
       const state = stateData.find(s => s.state === stateAbbr);
@@ -183,7 +183,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
           <div className="flex-1">
             <h3 className="font-medium text-purple-900 dark:text-purple-100 mb-1">Privacy First</h3>
             <p className="text-sm text-purple-700 dark:text-purple-300">
-              To protect storyteller anonymity, states are only clickable once they have at least {PRIVACY_THRESHOLD} stories. 
+              To protect storyteller anonymity, states are only clickable once they have at least {PRIVACY_THRESHOLD} stories.
               This prevents individual stories from being identifiable by location.
             </p>
             <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
@@ -198,7 +198,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Filtering by: {STATE_NAMES[selectedState]}
           </p>
-          <button 
+          <button
             onClick={() => onStateSelect(null)}
             className="text-xs text-purple-600 hover:text-purple-800 underline"
           >
@@ -206,7 +206,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
           </button>
         </div>
       )}
-      
+
       <div className="relative">
         <ComposableMap projection="geoAlbersUsa" className="w-full">
           <Geographies geography={geoUrl}>
@@ -224,7 +224,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
                     style={{
                       default: { outline: 'none' },
                       hover: { outline: 'none', cursor: isActive ? 'pointer' : 'not-allowed' },
-                      pressed: { outline: 'none' }
+                      pressed: { outline: 'none' },
                     }}
                     onMouseEnter={() => {
                       if (stateAbbr) setHoveredState(stateAbbr);
@@ -239,7 +239,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
             }
           </Geographies>
         </ComposableMap>
-        
+
         {/* Hover tooltip */}
         {hoveredState && (
           <div className="absolute bottom-4 left-4 bg-black bg-opacity-90 text-white px-3 py-2 rounded-lg text-sm pointer-events-none">
@@ -252,7 +252,7 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
             })()}
           </div>
         )}
-        
+
         {/* Insufficient data message */}
         {showInsufficientDataMessage && clickedInactiveState && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-2 shadow-lg">
@@ -262,31 +262,31 @@ export default function StoriesMap({ onStateSelect, selectedState }: StoriesMapP
           </div>
         )}
       </div>
-      
+
       <div className="mt-4 max-w-xs">
         {/* Gradient Legend */}
         <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
           <span>Story Density</span>
         </div>
-        
+
         <div className="relative">
           {/* Gradient bar */}
-          <div 
-            className="h-2 w-full rounded-full" 
+          <div
+            className="h-2 w-full rounded-full"
             style={{
-              background: stateData.length > 0 
+              background: stateData.length > 0
                 ? 'linear-gradient(to right, #e5e7eb, hsl(280, 30%, 75%), hsl(280, 55%, 62%), hsl(280, 80%, 50%))'
-                : 'linear-gradient(to right, #e5e7eb, #e5e7eb)'
+                : 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
             }}
           />
-          
+
           {/* Labels */}
           <div className="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-500">
             <span>0</span>
             <span>{Math.max(...stateData.map(s => s.count), 1)}</span>
           </div>
         </div>
-        
+
         <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
           Click active states to filter stories
         </div>

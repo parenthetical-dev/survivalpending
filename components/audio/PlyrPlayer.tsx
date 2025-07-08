@@ -23,17 +23,17 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
       try {
         const response = await fetch(audioUrl);
         const arrayBuffer = await response.arrayBuffer();
-        
+
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         const audioContext = new AudioContext();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        
+
         // Get audio data
         const rawData = audioBuffer.getChannelData(0);
         const samples = 200;
         const blockSize = Math.floor(rawData.length / samples);
         const filteredData = [];
-        
+
         for (let i = 0; i < samples; i++) {
           const blockStart = blockSize * i;
           let sum = 0;
@@ -42,12 +42,12 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
           }
           filteredData.push(sum / blockSize);
         }
-        
+
         // Normalize
         const max = Math.max(...filteredData);
         const normalized = filteredData.map(n => n / max);
         setWaveformData(normalized);
-        
+
         audioContext.close();
       } catch (error) {
         console.error('Audio processing error:', error);
@@ -67,13 +67,13 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
       await import('plyr/dist/plyr.css');
       // @ts-ignore - CSS imports
       await import('@/styles/plyr-custom.css');
-      
+
       plyrRef.current = new Plyr(audioRef.current!, {
         controls: ['play', 'progress', 'current-time', 'duration', 'volume'],
         settings: [],
-        keyboard: { focused: true, global: false }
+        keyboard: { focused: true, global: false },
       });
-      
+
       // Force transparent background
       const plyrElement = audioRef.current?.closest('.plyr');
       if (plyrElement) {
@@ -121,19 +121,19 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
     for (let i = 0; i < waveformData.length; i++) {
       const x = i * barWidth;
       const barHeight = waveformData[i] * canvas.offsetHeight * 0.8;
-      
+
       ctx.fillRect(
         x + barWidth * 0.2,
         centerY - barHeight / 2,
         barWidth * 0.6,
-        barHeight
+        barHeight,
       );
     }
   }, [waveformData]);
 
   if (!audioUrl) {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn('space-y-4', className)}>
         <div className="bg-black/5 dark:bg-white/5 rounded-lg p-4">
           <p className="text-center text-muted-foreground">No audio URL provided</p>
         </div>
@@ -142,17 +142,17 @@ export default function PlyrPlayer({ audioUrl, onEnd, className }: PlyrPlayerPro
   }
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn('space-y-4', className)}>
       {/* Plyr Audio Player with gray background */}
       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-        <audio 
-          ref={audioRef} 
-          src={audioUrl} 
+        <audio
+          ref={audioRef}
+          src={audioUrl}
           controls
           className="w-full"
         />
       </div>
-      
+
       {/* Static Waveform Visualization */}
       {waveformData.length > 0 && (
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">

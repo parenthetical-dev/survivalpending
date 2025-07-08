@@ -40,11 +40,11 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
       saveTimeoutRef.current = setTimeout(() => {
         localStorage.setItem('draft_story', content);
         setAutoSaved(true);
-        
+
         // Track draft save
         trackEvent('STORY_DRAFT_SAVED', 'STORY', {
           contentLength: content.length,
-          progress: Math.round((content.length / CHARACTER_LIMIT) * 100)
+          progress: Math.round((content.length / CHARACTER_LIMIT) * 100),
         });
       }, 1000);
     }
@@ -55,7 +55,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
   useEffect(() => {
     // Track story start
     trackStoryProgress('start');
-    
+
     // Load draft if exists
     const draft = localStorage.getItem('draft_story');
     if (draft) {
@@ -70,10 +70,10 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
     if (!content && !showPrompts) {
       idleTimeoutRef.current = setTimeout(() => {
         setShowIdlePrompt(true);
-        
+
         // Track idle prompt shown
         trackEvent('STORY_IDLE_PROMPT_SHOWN', 'STORY', {
-          timeIdle: IDLE_PROMPT_DELAY / 1000 // in seconds
+          timeIdle: IDLE_PROMPT_DELAY / 1000, // in seconds
         });
       }, IDLE_PROMPT_DELAY);
     }
@@ -105,7 +105,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
   return (
     <div className="container max-w-full md:max-w-6xl mx-auto px-4">
       <ProgressDots currentStep={1} />
-      
+
       <div className="flex gap-6">
         <div className="flex-1">
           <Card className="p-0 overflow-hidden">
@@ -126,12 +126,12 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               const currentValue = e.currentTarget.value;
               const selectionStart = e.currentTarget.selectionStart;
               const selectionEnd = e.currentTarget.selectionEnd;
-              
-              const newValue = 
-                currentValue.substring(0, selectionStart) + 
-                pastedText + 
+
+              const newValue =
+                currentValue.substring(0, selectionStart) +
+                pastedText +
                 currentValue.substring(selectionEnd);
-              
+
               if (newValue.length <= CHARACTER_LIMIT) {
                 e.preventDefault();
                 handleContentChange(newValue);
@@ -147,9 +147,9 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
                 e.preventDefault();
                 const remainingSpace = CHARACTER_LIMIT - currentValue.length + (selectionEnd - selectionStart);
                 const truncatedPaste = pastedText.substring(0, Math.max(0, remainingSpace));
-                const truncatedValue = 
-                  currentValue.substring(0, selectionStart) + 
-                  truncatedPaste + 
+                const truncatedValue =
+                  currentValue.substring(0, selectionStart) +
+                  truncatedPaste +
                   currentValue.substring(selectionEnd);
                 handleContentChange(truncatedValue);
                 toast.warning('Content was truncated to fit the character limit');
@@ -165,17 +165,17 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
           <div className="flex items-center justify-between mb-3 md:mb-4">
             <div className="flex items-center gap-4">
               <Button
-                variant={showPrompts || showIdlePrompt ? "default" : "ghost"}
+                variant={showPrompts || showIdlePrompt ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setShowPrompts(!showPrompts)}
                 className={cn(
-                  showIdlePrompt && "animate-pulse"
+                  showIdlePrompt && 'animate-pulse',
                 )}
               >
                 <Lightbulb className="w-4 h-4 mr-2" />
-                {showIdlePrompt ? "Need a starting point?" : "Need inspiration?"}
+                {showIdlePrompt ? 'Need a starting point?' : 'Need inspiration?'}
               </Button>
-              
+
               {autoSaved && (
                 <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
                   <Save className="w-3 h-3" />
@@ -187,15 +187,15 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
             <div className="flex items-center gap-2 md:gap-4">
               <div className="text-xs md:text-sm text-muted-foreground">
                 <span className={cn(
-                  "font-mono",
-                  remainingChars < 100 && "text-orange-600",
-                  remainingChars < 50 && "text-red-600"
+                  'font-mono',
+                  remainingChars < 100 && 'text-orange-600',
+                  remainingChars < 50 && 'text-red-600',
                 )}>
                   {remainingChars}
                 </span>
                 <span className="text-muted-foreground"> / {CHARACTER_LIMIT}</span>
               </div>
-              
+
               <div className="text-xs md:text-sm text-muted-foreground hidden sm:block">
                 ~90 seconds
               </div>
@@ -204,12 +204,12 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
 
           {/* Progress bar */}
           <div className="h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div 
+            <div
               className={cn(
-                "h-full transition-all duration-300",
-                progress < 80 && "bg-blue-500",
-                progress >= 80 && progress < 95 && "bg-orange-500",
-                progress >= 95 && "bg-red-500"
+                'h-full transition-all duration-300',
+                progress < 80 && 'bg-blue-500',
+                progress >= 80 && progress < 95 && 'bg-orange-500',
+                progress >= 95 && 'bg-red-500',
               )}
               style={{ width: `${progress}%` }}
             />
@@ -220,7 +220,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
           {/* Mobile: Show prompts below */}
           {showPrompts && (
             <div className="md:hidden">
-              <StoryPrompts 
+              <StoryPrompts
                 onSelectPrompt={handlePromptSelect}
                 onClose={() => setShowPrompts(false)}
               />
@@ -238,7 +238,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
                 onClick={() => {
                   trackStoryProgress('write', {
                     contentLength: content.length,
-                    usedPrompts: showPrompts
+                    usedPrompts: showPrompts,
                   });
                   onComplete(content);
                 }}
@@ -253,7 +253,7 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
         {/* Desktop: Show prompts on the right */}
         {showPrompts && (
           <div className="hidden md:block md:w-96">
-            <StoryPrompts 
+            <StoryPrompts
               onSelectPrompt={handlePromptSelect}
               onClose={() => setShowPrompts(false)}
             />

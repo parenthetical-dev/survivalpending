@@ -43,18 +43,18 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = await voicePreviewLimiter.check(payload.userId);
     if (!rateLimitResult.success) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many requests. Please try again later.',
-          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
         },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': '10',
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimitResult.reset.toString(),
-          }
-        }
+          },
+        },
       );
     }
 
@@ -63,9 +63,9 @@ export async function POST(request: NextRequest) {
       // Return a simple beep sound as base64
       const dummyAudio = Buffer.from(
         'UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=',
-        'base64'
+        'base64',
       );
-      
+
       return new NextResponse(dummyAudio, {
         headers: {
           'Content-Type': 'audio/wav',
@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
     let retries = 3;
     let lastError;
 
+    // eslint-disable-next-line no-await-in-loop -- Retry logic requires sequential attempts with backoff
     while (retries > 0) {
       try {
         response = await fetch(
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
             headers: {
               'Accept': 'audio/mpeg',
               'Content-Type': 'application/json',
-              'xi-api-key': process.env.ELEVENLABS_API_KEY!,
+              'xi-api-key': process.env.ELEVENLABS_API_KEY,
             },
             body: JSON.stringify({
               text: text.slice(0, 100), // Limit preview length
@@ -99,16 +100,17 @@ export async function POST(request: NextRequest) {
                 use_speaker_boost: true,
               },
             }),
-          }
+          },
         );
 
         if (!response.ok) {
           const errorText = await response.text();
           console.error('ElevenLabs error:', errorText);
-          
+
           // Check for specific error codes
           if (response.status === 429) {
             // Rate limit - wait before retry
+            // eslint-disable-next-line no-await-in-loop -- Need to wait before retry
             await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
             retries--;
             lastError = new Error('Rate limit exceeded');
@@ -118,24 +120,25 @@ export async function POST(request: NextRequest) {
           } else if (response.status === 422) {
             throw new Error('Invalid voice ID');
           }
-          
+
           throw new Error(`Failed to generate audio: ${errorText}`);
         }
-        
+
         break; // Success, exit loop
       } catch (error) {
         lastError = error;
         retries--;
         if (retries === 0) throw lastError;
+        // eslint-disable-next-line no-await-in-loop -- Need to wait before retry
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
-    const audioBuffer = await response!.arrayBuffer();
-    
+    const audioBuffer = await response.arrayBuffer();
+
     // Track that user has entered the voice stage
     await trackInitiateCheckout(request, payload.userId, 'voice');
-    
+
     return new NextResponse(audioBuffer, {
       headers: {
         'Content-Type': 'audio/mpeg',
@@ -145,7 +148,7 @@ export async function POST(request: NextRequest) {
     console.error('Voice preview error:', error);
     return NextResponse.json(
       { error: 'Failed to generate preview' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

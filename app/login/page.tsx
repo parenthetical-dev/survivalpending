@@ -35,8 +35,8 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-muted-foreground">
             Need an account?{' '}
-            <Link 
-              href="/signup" 
+            <Link
+              href="/signup"
               className="underline underline-offset-4 hover:text-primary"
             >
               Sign up

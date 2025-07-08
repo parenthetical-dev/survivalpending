@@ -7,5 +7,5 @@ export default function StudioLayout({
     <html lang="en">
       <body>{children}</body>
     </html>
-  )
+  );
 }

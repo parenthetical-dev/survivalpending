@@ -1,6 +1,6 @@
-import prisma from '@/lib/prisma'
-import { sanityClient } from './sanity'
-import { StoryStatus } from '@prisma/client'
+import prisma from '@/lib/prisma';
+import { sanityClient } from './sanity';
+import { StoryStatus } from '@prisma/client';
 
 export interface FeaturedStory {
   _id: string;
@@ -21,20 +21,20 @@ export async function getFeaturedStoriesFromNeon(): Promise<FeaturedStory[]> {
     const stories = await prisma.story.findMany({
       where: {
         status: StoryStatus.APPROVED,
-        showOnHomepage: true
+        showOnHomepage: true,
       },
       include: {
         user: {
           select: {
-            username: true
-          }
-        }
+            username: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
-      take: 4
-    })
+      take: 4,
+    });
 
     return stories.map(story => ({
       _id: story.id,
@@ -43,12 +43,12 @@ export async function getFeaturedStoriesFromNeon(): Promise<FeaturedStory[]> {
       audioUrl: story.audioUrl || undefined,
       createdAt: story.createdAt.toISOString(),
       voiceSettings: story.voiceId ? {
-        voiceName: story.voiceId
-      } : undefined
-    }))
+        voiceName: story.voiceId,
+      } : undefined,
+    }));
   } catch (error) {
-    console.error('Error fetching featured stories from Neon:', error)
-    return []
+    console.error('Error fetching featured stories from Neon:', error);
+    return [];
   }
 }
 
@@ -82,12 +82,12 @@ export async function getFeaturedStoriesFromSanity(): Promise<FeaturedStory[]> {
  */
 export async function getFeaturedStories(): Promise<FeaturedStory[]> {
   // Try Sanity first
-  const sanityStories = await getFeaturedStoriesFromSanity()
+  const sanityStories = await getFeaturedStoriesFromSanity();
   if (sanityStories.length > 0) {
-    return sanityStories
+    return sanityStories;
   }
 
   // Fall back to Neon
-  console.log('Falling back to Neon for featured stories')
-  return getFeaturedStoriesFromNeon()
+  console.log('Falling back to Neon for featured stories');
+  return getFeaturedStoriesFromNeon();
 }

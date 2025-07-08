@@ -21,11 +21,11 @@ export default function WaveSurferWaveform({
   onFinish,
   onTimeUpdate,
   onDurationChange,
-  className
+  className,
 }: WaveSurferWaveformProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isReady, setIsReady] = useState(false);
-  
+
   const { wavesurfer, isPlaying: wsIsPlaying, currentTime } = useWavesurfer({
     container: containerRef,
     url: audioUrl || undefined,
@@ -44,7 +44,7 @@ export default function WaveSurferWaveform({
   // Handle play/pause
   useEffect(() => {
     if (!wavesurfer || !isReady) return;
-    
+
     if (isPlaying && !wsIsPlaying) {
       wavesurfer.play();
     } else if (!isPlaying && wsIsPlaying) {
@@ -85,7 +85,7 @@ export default function WaveSurferWaveform({
   }, [wavesurfer, onReady, onFinish, onTimeUpdate, onDurationChange]);
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn('relative w-full', className)}>
       {/* SVG definitions for gradients */}
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <defs>
@@ -113,16 +113,16 @@ export default function WaveSurferWaveform({
           </linearGradient>
         </defs>
       </svg>
-      
+
       {/* Waveform container */}
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="w-full rounded-lg overflow-hidden bg-black/5 dark:bg-white/5"
         style={{
           filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))',
         }}
       />
-      
+
       {/* Loading overlay */}
       {audioUrl && !isReady && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-white/5 rounded-lg">

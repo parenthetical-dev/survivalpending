@@ -36,7 +36,7 @@ export default function ReviewStep({ data, onBack, onComplete }: ReviewStepProps
           Review your information and start documenting
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 md:space-y-6 pt-0">
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -47,7 +47,7 @@ export default function ReviewStep({ data, onBack, onComplete }: ReviewStepProps
 
         <div className="space-y-4">
           <h3 className="font-semibold text-sm md:text-base">Your Information</h3>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-sm text-muted-foreground">Age Range</span>

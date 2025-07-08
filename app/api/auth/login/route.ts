@@ -2,45 +2,51 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateUser } from '@/lib/auth';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 
+interface LoginBody {
+  username: string;
+  password: string;
+  turnstileToken: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json() as LoginBody;
     const { username, password, turnstileToken } = body;
-    
+
     // Validate input
     if (!username || !password || !turnstileToken) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400 },
       );
     }
-    
+
     // Verify Turnstile token
     const isHuman = await verifyTurnstileToken(turnstileToken);
     if (!isHuman) {
       return NextResponse.json(
         { error: 'Captcha verification failed' },
-        { status: 400 }
+        { status: 400 },
       );
     }
-    
+
     // Authenticate user
     const result = await authenticateUser(username, password);
-    
+
     if (!result) {
       return NextResponse.json(
         { error: 'Invalid username or password' },
-        { status: 401 }
+        { status: 401 },
       );
     }
-    
+
     const response = NextResponse.json({
       success: true,
       token: result.token,
       userId: result.id,
       hasCompletedOnboarding: result.hasCompletedOnboarding,
     });
-    
+
     // Set token as HTTP-only cookie
     response.cookies.set('token', result.token, {
       httpOnly: true,
@@ -49,13 +55,13 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     });
-    
+
     return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
       { error: 'Failed to login' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -74,13 +74,13 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
     const newContent = content.replace(suggestion.original, suggestion.suggested);
     setContent(newContent);
     setAppliedSuggestions(new Set([...appliedSuggestions, index]));
-    
+
     // Track individual suggestion applied
     trackEvent('STORY_REFINE_APPLIED', 'STORY', {
       suggestionType: suggestion.type,
-      suggestionIndex: index
+      suggestionIndex: index,
     });
-    
+
     toast.success('Suggestion applied');
   };
 
@@ -96,14 +96,14 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
   return (
     <div className="container max-w-full md:max-w-6xl mx-auto px-4">
       <ProgressDots currentStep={2} />
-      
+
       <Card className="mb-6 p-0 overflow-hidden">
         <StepHeader
           currentStep={2}
           title="Optional AI Refinement"
           description="AI helps polish while preserving your voice"
         />
-        
+
         <div className="p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Left column - Story editor */}
@@ -114,7 +114,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                   {editing ? 'Edit directly or apply suggestions' : 'Original version'}
                 </p>
               </div>
-              
+
               <div className="flex-1 flex flex-col">
                 {editing ? (
                   <Textarea
@@ -128,7 +128,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                   </div>
                 )}
               </div>
-              
+
               {refinedVersion && !editing && (
                 <div className="mt-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
                   <div className="flex items-center justify-between mb-2">
@@ -140,30 +140,30 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                     </div>
                     <Button
                       size="sm"
-                      variant={showRefinedVersion ? "default" : "outline"}
+                      variant={showRefinedVersion ? 'default' : 'outline'}
                       onClick={() => {
                         if (!showRefinedVersion) {
                           setContent(refinedVersion);
                           setShowRefinedVersion(true);
-                          
+
                           // Track complete rewrite applied
                           trackEvent('STORY_REFINE_APPLIED', 'STORY', {
                             suggestionType: 'complete_rewrite',
-                            action: 'applied'
+                            action: 'applied',
                           });
-                          
+
                           toast.success('Applied refined version');
                         } else {
                           setContent(originalContent);
                           setShowRefinedVersion(false);
                           setAppliedSuggestions(new Set());
-                          
+
                           // Track revert to original
                           trackEvent('STORY_REFINE_APPLIED', 'STORY', {
                             suggestionType: 'complete_rewrite',
-                            action: 'reverted'
+                            action: 'reverted',
                           });
-                          
+
                           toast.info('Reverted to original');
                         }
                       }}
@@ -178,10 +178,10 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                   )}
                 </div>
               )}
-              
+
               <div className="mt-4">
                 <Button
-                  variant={editing ? "default" : "outline"}
+                  variant={editing ? 'default' : 'outline'}
                   onClick={() => setEditing(!editing)}
                   className="w-full"
                 >
@@ -211,7 +211,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                   Optional enhancements for clarity and impact
                 </p>
               </div>
-              
+
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex-1 overflow-y-auto">
                 {loading ? (
                   <div className="space-y-3">
@@ -233,11 +233,11 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
                 ) : (
                   <div className="space-y-3">
                     {suggestions.map((suggestion, index) => (
-                      <Card 
+                      <Card
                         key={index}
                         className={cn(
-                          "p-3 md:p-4 cursor-pointer transition-all",
-                          appliedSuggestions.has(index) && "opacity-50"
+                          'p-3 md:p-4 cursor-pointer transition-all',
+                          appliedSuggestions.has(index) && 'opacity-50',
                         )}
                       >
                         <div className="flex items-start gap-2 md:gap-3">
@@ -296,7 +296,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
             // Track skip refinement
             trackEvent('STORY_REFINE_SKIPPED', 'STORY', {
               suggestionsCount: suggestions.length,
-              hadRefinedVersion: !!refinedVersion
+              hadRefinedVersion: !!refinedVersion,
             });
             onSkip();
           }}
@@ -313,7 +313,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
               appliedSuggestionsCount: appliedSuggestions.size,
               totalSuggestions: suggestions.length,
               usedCompleteRewrite: showRefinedVersion,
-              editedManually: content !== originalContent && !showRefinedVersion
+              editedManually: content !== originalContent && !showRefinedVersion,
             });
             onComplete(content);
           }}

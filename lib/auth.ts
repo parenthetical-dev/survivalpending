@@ -16,7 +16,7 @@ export function generateToken(userId: string): string {
   return jwt.sign(
     { userId, type: 'user' },
     JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: '7d' },
   );
 }
 
@@ -30,14 +30,14 @@ export function verifyToken(token: string): { userId: string; type: string } | n
 
 export async function createUser(username: string, password: string) {
   const passwordHash = await hashPassword(password);
-  
+
   const user = await prisma.user.create({
     data: {
       username,
       passwordHash,
     },
   });
-  
+
   return {
     id: user.id,
     username: user.username,

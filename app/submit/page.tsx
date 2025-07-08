@@ -74,15 +74,15 @@ export default function SubmitStoryPage() {
       }
 
       const data = await response.json();
-      
+
       // Clear the draft from localStorage after successful submission
       localStorage.removeItem('draft_story');
-      
+
       if (data.hasCrisisContent) {
         // Show crisis intervention modal
         setShowCrisisModal(true);
         setCrisisInterventionLogId(data.storyId); // Store for tracking resource clicks
-        
+
         // Track that the intervention was shown
         try {
           await fetch('/api/crisis/intervention-shown', {
@@ -119,18 +119,18 @@ export default function SubmitStoryPage() {
         {currentStage === 'write' && (
           <WriteStage onComplete={handleWriteComplete} />
         )}
-        
+
         {currentStage === 'refine' && (
-          <RefineStage 
+          <RefineStage
             originalContent={storyContent}
             onComplete={handleRefineComplete}
             onSkip={() => setCurrentStage('voice')}
             onBack={() => setCurrentStage('write')}
           />
         )}
-        
+
         {currentStage === 'voice' && (
-          <VoiceStage 
+          <VoiceStage
             content={refinedContent}
             onComplete={(voiceSettings) => {
               setSelectedVoice(voiceSettings);
@@ -139,9 +139,9 @@ export default function SubmitStoryPage() {
             onBack={() => setCurrentStage('refine')}
           />
         )}
-        
+
         {currentStage === 'preview' && selectedVoice && (
-          <PreviewStage 
+          <PreviewStage
             content={refinedContent}
             voiceSettings={selectedVoice}
             onComplete={handleSubmit}
@@ -150,7 +150,7 @@ export default function SubmitStoryPage() {
           />
         )}
       </div>
-      
+
       <CrisisInterventionModal
         open={showCrisisModal}
         onClose={() => {
@@ -160,7 +160,7 @@ export default function SubmitStoryPage() {
         }}
         onResourceClick={async (resource) => {
           trackCrisisResource(resource, 'modal');
-          
+
           // Also track in the database
           if (crisisInterventionLogId) {
             try {

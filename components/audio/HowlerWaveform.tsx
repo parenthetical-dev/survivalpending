@@ -19,7 +19,7 @@ export default function HowlerWaveform({
   onPlayPause,
   onTimeUpdate,
   onEnd,
-  className
+  className,
 }: HowlerWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const howlRef = useRef<Howl | null>(null);
@@ -32,7 +32,7 @@ export default function HowlerWaveform({
     for (let i = 0; i < bars; i++) {
       const t = i / bars;
       // Create a realistic waveform pattern
-      const height = 
+      const height =
         Math.sin(t * Math.PI * 4) * 0.3 +
         Math.sin(t * Math.PI * 8) * 0.2 +
         Math.sin(t * Math.PI * 16) * 0.1 +
@@ -48,7 +48,7 @@ export default function HowlerWaveform({
     if (!audioUrl) return;
 
     setIsLoading(true);
-    
+
     const sound = new Howl({
       src: [audioUrl],
       html5: true,
@@ -69,7 +69,7 @@ export default function HowlerWaveform({
       onloaderror: (id, error) => {
         console.error('Load error:', error);
         setIsLoading(false);
-      }
+      },
     });
 
     howlRef.current = sound;
@@ -99,7 +99,7 @@ export default function HowlerWaveform({
     const animate = () => {
       const sound = howlRef.current;
       if (sound && sound.playing()) {
-        const seek = sound.seek() as number;
+        const seek = sound.seek();
         const duration = sound.duration();
         onTimeUpdate(seek, duration);
         animationRef.current = requestAnimationFrame(animate);
@@ -123,10 +123,10 @@ export default function HowlerWaveform({
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      
+
       const barWidth = canvas.offsetWidth / bars;
       const centerY = canvas.offsetHeight / 2;
-      
+
       // Progress Pride colors
       const colors = [
         '#E40303', // Red
@@ -139,28 +139,28 @@ export default function HowlerWaveform({
         '#74D7EE', // Light Blue
         '#613915', // Brown
       ];
-      
+
       // Get current progress
       const sound = howlRef.current;
-      const progress = sound ? (sound.seek() as number) / sound.duration() : 0;
-      
+      const progress = sound ? (sound.seek()) / sound.duration() : 0;
+
       // Draw bars
       for (let i = 0; i < bars; i++) {
         const x = i * barWidth;
         const barHeight = waveformData[i] * canvas.offsetHeight * 0.7;
         const isPlayed = i / bars <= progress;
-        
+
         // Color based on position in the waveform
         const colorIndex = Math.floor((i / bars) * colors.length);
         const color = colors[colorIndex];
-        
+
         // Draw bar
-        ctx.fillStyle = isPlayed ? color : color + '44';
+        ctx.fillStyle = isPlayed ? color : `${color }44`;
         ctx.fillRect(
           x + barWidth * 0.2,
           centerY - barHeight / 2,
           barWidth * 0.6,
-          barHeight
+          barHeight,
         );
       }
     };
@@ -176,7 +176,7 @@ export default function HowlerWaveform({
         frameId = requestAnimationFrame(animate);
       }
     };
-    
+
     if (isPlaying) {
       animate();
     }
@@ -189,7 +189,7 @@ export default function HowlerWaveform({
   }, [isPlaying, bars, waveformData]);
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn('relative w-full', className)}>
       <div className="relative w-full h-24 bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden">
         <canvas
           ref={canvasRef}
@@ -198,14 +198,14 @@ export default function HowlerWaveform({
             // Seek on click
             const sound = howlRef.current;
             if (!sound || isLoading) return;
-            
+
             const rect = canvasRef.current!.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const progress = x / rect.width;
             sound.seek(progress * sound.duration());
           }}
         />
-        
+
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="animate-pulse text-sm text-muted-foreground">

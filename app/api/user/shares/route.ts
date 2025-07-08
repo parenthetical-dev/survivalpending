@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.error('Share tracking error:', error);
     return NextResponse.json(
       { error: 'Failed to track share' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     console.error('Share count error:', error);
     return NextResponse.json(
       { error: 'Failed to get share count' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { ArrowLeft, Users, Heart, Zap, TrendingUp, Globe, HeartHandshake, MapPin, BookOpen, Sparkles, Clock } from "lucide-react";
-import { InfoPagesNav } from "@/components/InfoPagesNav";
-import Navbar from "@/components/layout/Navbar";
+import Link from 'next/link';
+import { ArrowLeft, Users, Heart, Zap, TrendingUp, Globe, HeartHandshake, MapPin, BookOpen, Sparkles, Clock } from 'lucide-react';
+import { InfoPagesNav } from '@/components/InfoPagesNav';
+import Navbar from '@/components/layout/Navbar';
 
 export default function CollectiveResiliencePage() {
   return (
@@ -21,7 +21,7 @@ export default function CollectiveResiliencePage() {
           <div className="flex gap-8">
             {/* Left navigation */}
             <InfoPagesNav />
-            
+
             {/* Main content */}
             <div className="flex-1">
               {/* Header */}
@@ -30,7 +30,7 @@ export default function CollectiveResiliencePage() {
                   Building Our Archive
                 </h1>
               </div>
-            
+
               {/* Main content */}
               <div className="space-y-8">
             {/* Introduction */}

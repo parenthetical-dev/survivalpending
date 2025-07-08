@@ -33,57 +33,57 @@ const VOICE_OPTIONS: VoiceSettings[] = [
     name: 'Sarah',
     description: 'Warm and conversational',
     accent: 'American',
-    style: 'Gentle, empathetic tone perfect for personal stories'
+    style: 'Gentle, empathetic tone perfect for personal stories',
   },
   {
     voiceId: 'MF3mGyEYCl7XYWbV9V6O',
     name: 'Emily',
     description: 'Young and expressive',
     accent: 'American',
-    style: 'Clear and emotional, good for impactful moments'
+    style: 'Clear and emotional, good for impactful moments',
   },
   {
     voiceId: 'TxGEqnHWrfWFTfGW9XjX',
     name: 'Josh',
     description: 'Friendly and authentic',
     accent: 'American',
-    style: 'Natural speaking style with good emotional range'
+    style: 'Natural speaking style with good emotional range',
   },
   {
     voiceId: 'VR6AewLTigWG4xSOukaG',
     name: 'Arnold',
     description: 'Deep and thoughtful',
     accent: 'American',
-    style: 'Measured pace, good for serious topics'
+    style: 'Measured pace, good for serious topics',
   },
   {
     voiceId: 'pNInz6obpgDQGcFmaJgB',
     name: 'Adam',
     description: 'Clear and articulate',
     accent: 'American',
-    style: 'Professional yet personal, versatile'
+    style: 'Professional yet personal, versatile',
   },
   {
     voiceId: 'yoZ06aMxZJJ28mfd3POQ',
     name: 'Sam',
     description: 'Young and relatable',
     accent: 'American',
-    style: 'Energetic and engaging, good for hopeful stories'
+    style: 'Energetic and engaging, good for hopeful stories',
   },
   {
     voiceId: 'AZnzlk1XvdvUeBnXmlld',
     name: 'Domi',
     description: 'Soft and contemplative',
     accent: 'American',
-    style: 'Gentle delivery, perfect for vulnerable moments'
+    style: 'Gentle delivery, perfect for vulnerable moments',
   },
   {
     voiceId: 'ThT5KcBeYPX3keUQqHPh',
     name: 'Bella',
     description: 'Warm and supportive',
     accent: 'American',
-    style: 'Compassionate tone, great for community stories'
-  }
+    style: 'Compassionate tone, great for community stories',
+  },
 ];
 
 export default function VoiceStage({ content, onComplete, onBack }: VoiceStageProps) {
@@ -92,10 +92,10 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
 
   const handlePreview = async (voiceId: string) => {
     setPreviewLoading(voiceId);
-    
+
     // Preview the first sentence
-    const firstSentence = content.split(/[.!?]/)[0] + '.';
-    
+    const firstSentence = `${content.split(/[.!?]/)[0] }.`;
+
     try {
       const response = await fetch('/api/voice/preview', {
         method: 'POST',
@@ -105,7 +105,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
         },
         body: JSON.stringify({
           text: firstSentence.slice(0, 100), // Limit preview length
-          voiceId
+          voiceId,
         }),
       });
 
@@ -140,7 +140,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
   return (
     <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
       <ProgressDots currentStep={3} />
-      
+
       <Card className="p-0 overflow-hidden">
         <StepHeader
           currentStep={3}
@@ -153,7 +153,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
             const voice = VOICE_OPTIONS.find(v => v.voiceId === value);
             trackEvent('STORY_VOICE_SELECTED', 'STORY', {
               voiceId: value,
-              voiceName: voice?.name || 'unknown'
+              voiceName: voice?.name || 'unknown',
             });
           }}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -161,8 +161,8 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
                 <div
                   key={voice.voiceId}
                   className={cn(
-                    "relative rounded-lg border p-3 sm:p-4 cursor-pointer transition-all hover:border-primary",
-                    selectedVoice === voice.voiceId && "border-primary bg-primary/5"
+                    'relative rounded-lg border p-3 sm:p-4 cursor-pointer transition-all hover:border-primary',
+                    selectedVoice === voice.voiceId && 'border-primary bg-primary/5',
                   )}
                   onClick={() => setSelectedVoice(voice.voiceId)}
                 >
@@ -210,14 +210,14 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
               ))}
             </div>
           </RadioGroup>
-          
+
           <div className="mt-6 p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
             <p className="text-xs sm:text-sm text-center text-muted-foreground">
-              <strong>Note:</strong> All voices are AI-generated to protect your anonymity. 
+              <strong>Note:</strong> All voices are AI-generated to protect your anonymity.
               No human voice recordings are used or stored.
             </p>
           </div>
-          
+
           <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
             <Button
               variant="ghost"
@@ -233,7 +233,7 @@ export default function VoiceStage({ content, onComplete, onBack }: VoiceStagePr
               onClick={() => {
                 trackStoryProgress('voice', {
                   selectedVoiceId: selectedVoice,
-                  selectedVoiceName: selectedVoiceData.name
+                  selectedVoiceName: selectedVoiceData.name,
                 });
                 onComplete(selectedVoiceData);
               }}

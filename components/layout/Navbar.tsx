@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { Logo } from "@/components/ui/logo";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import ShareModal from "@/components/share/ShareModal";
-import { ArrowLeft, Menu, Share2, LogOut, Code2, Mail } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import QuickExitButton from "@/components/safety/QuickExitButton";
+import { Logo } from '@/components/ui/logo';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import ShareModal from '@/components/share/ShareModal';
+import { ArrowLeft, Menu, Share2, LogOut, Code2, Mail } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import QuickExitButton from '@/components/safety/QuickExitButton';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,7 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  
+
   const isOnboarding = pathname === '/onboarding';
   const isSubmit = pathname === '/submit';
   const isLoggedIn = !!user;
@@ -38,10 +38,10 @@ export default function Navbar() {
       {/* Header with gradient fade */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent pb-8 md:pb-16 pointer-events-none">
         <div className="px-4 md:px-12 py-4 md:py-6 flex justify-between items-center pointer-events-auto">
-          <Link href={isLoggedIn ? "/dashboard" : "/"} className="hover:opacity-80 transition-opacity">
+          <Link href={isLoggedIn ? '/dashboard' : '/'} className="hover:opacity-80 transition-opacity">
             <Logo className="text-xl md:text-2xl" />
           </Link>
-          
+
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-4">
             {!isLoggedIn && (
@@ -49,10 +49,10 @@ export default function Navbar() {
                 What's This?
               </Link>
             )}
-            
+
             {isLoggedIn && (
               <Link href="/dashboard">
-                <Button 
+                <Button
                   size="sm"
                   className="bg-purple-400/30 hover:bg-purple-400/40 dark:bg-purple-600/30 dark:hover:bg-purple-600/40 text-purple-900 dark:text-purple-100"
                 >
@@ -60,18 +60,18 @@ export default function Navbar() {
                 </Button>
               </Link>
             )}
-            
+
             {!isLoggedIn && (
               <Link href="/login">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                 >
                   Login
                 </Button>
               </Link>
             )}
-            
+
             {!isOnboarding && !isSubmit && (
               <>
                 {!isLoggedIn && (
@@ -82,8 +82,8 @@ export default function Navbar() {
                   </Link>
                 )}
                 <Link href="/stories">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white"
                   >
                     Browse Stories
@@ -91,10 +91,10 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            
+
             {isLoggedIn && (
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 size="sm"
                 onClick={handleSignOut}
                 className="flex items-center gap-2 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
@@ -103,9 +103,9 @@ export default function Navbar() {
                 Sign Out Safely
               </Button>
             )}
-            
+
             <QuickExitButton />
-            
+
             {/* Social Media Icons */}
             <div className="flex items-center gap-2 ml-4 border-l border-gray-300 dark:border-gray-600 pl-4">
               <a
@@ -132,7 +132,7 @@ export default function Navbar() {
               </a>
             </div>
           </div>
-          
+
           {/* Mobile Navigation */}
           <div className="flex lg:hidden items-center gap-2">
             {!isOnboarding && !isSubmit && !isLoggedIn && (
@@ -160,7 +160,7 @@ export default function Navbar() {
                 <div className="mb-8 mt-12">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex justify-start">
-                    <Link href={isLoggedIn ? "/dashboard" : "/"} className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={isLoggedIn ? '/dashboard' : '/'} className="hover:opacity-80 transition-opacity" onClick={() => setMobileMenuOpen(false)}>
                       <Logo className="text-2xl" />
                     </Link>
                   </div>
@@ -168,25 +168,25 @@ export default function Navbar() {
                 <nav className="flex flex-col gap-3">
                   {/* Main action buttons at the top */}
                   {!isLoggedIn && (
-                    <Link 
-                      href="/login" 
+                    <Link
+                      href="/login"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Button 
+                      <Button
                         variant="outline"
-                        size="sm" 
+                        size="sm"
                         className="w-full h-12"
                       >
                         Login
                       </Button>
                     </Link>
                   )}
-                  
+
                   {!isOnboarding && !isSubmit && (
                     <>
                       {!isLoggedIn && (
-                        <Link 
-                          href="/signup" 
+                        <Link
+                          href="/signup"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Button
@@ -197,8 +197,8 @@ export default function Navbar() {
                           </Button>
                         </Link>
                       )}
-                      <Link 
-                        href="/stories" 
+                      <Link
+                        href="/stories"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Button
@@ -210,10 +210,10 @@ export default function Navbar() {
                       </Link>
                     </>
                   )}
-                  
+
                   {isLoggedIn && (
                     <>
-                      <Link 
+                      <Link
                         href="/dashboard"
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -224,7 +224,7 @@ export default function Navbar() {
                           Dashboard
                         </Button>
                       </Link>
-                      <Button 
+                      <Button
                         variant="secondary"
                         size="sm"
                         className="w-full h-12 flex items-center gap-2 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
@@ -238,10 +238,10 @@ export default function Navbar() {
                       </Button>
                     </>
                   )}
-                  
+
                   {/* What's This link */}
                   {!isLoggedIn && (
-                    <Link 
+                    <Link
                       href="/about"
                       className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2 mt-4"
                       onClick={() => setMobileMenuOpen(false)}
@@ -249,36 +249,36 @@ export default function Navbar() {
                       What's This?
                     </Link>
                   )}
-                  
+
                   {/* Divider */}
                   <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
-                  
+
                   {/* Value Prop Links */}
-                  <Link 
-                    href="/why" 
+                  <Link
+                    href="/why"
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     The Power of Being Witnessed
                   </Link>
-                  <Link 
-                    href="/how" 
+                  <Link
+                    href="/how"
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Safety by Design
                   </Link>
-                  <Link 
-                    href="/community" 
+                  <Link
+                    href="/community"
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Building Our Archive
                   </Link>
-                  
+
                   {/* Divider */}
                   <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
-                  
+
                   {/* Share Link */}
                   <button
                     className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2 text-left w-full"
@@ -306,7 +306,7 @@ export default function Navbar() {
                       </Button>
                     </a>
                   </div>
-                  
+
                   {/* Social Media Icons */}
                   <div className="flex items-center justify-start gap-4 py-2">
                     <a
@@ -332,9 +332,9 @@ export default function Navbar() {
                       </svg>
                     </a>
                   </div>
-                  
+
                   <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <a 
+                    <a
                       href="https://app.termly.io/policy-viewer/policy.html?policyUUID=61228498-eb21-4048-bf3a-00a9518e88c3"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -342,7 +342,7 @@ export default function Navbar() {
                     >
                       Privacy
                     </a>
-                    <a 
+                    <a
                       href="https://app.termly.io/policy-viewer/policy.html?policyUUID=69f226cd-4d1f-4513-b13e-7b7060379aac"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -354,7 +354,7 @@ export default function Navbar() {
                   <div className="text-xs text-gray-500 dark:text-gray-500">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span>MMXXV</span>
-                      <span 
+                      <span
                         className="inline-flex items-center font-black tracking-tight"
                         style={{ fontFamily: 'Satoshi, sans-serif' }}
                       >
