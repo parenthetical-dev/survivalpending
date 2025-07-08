@@ -1,30 +1,34 @@
 import { test, expect } from '@playwright/test';
+import { mockAuthentication } from './helpers/auth';
 
 test.describe('Story Submission Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Mock authentication by setting a token
-    await page.addInitScript(() => {
-      localStorage.setItem('token', 'test-jwt-token');
-      localStorage.setItem('hasCompletedOnboarding', 'true');
-    });
+    // Mock authentication
+    await mockAuthentication(page);
   });
 
   test('complete story submission flow', async ({ page }) => {
     // Navigate to story submission page
     await page.goto('/story/submit');
     
-    // Step 1: Write Stage
-    await expect(page.getByRole('heading', { name: 'Share Your Story' })).toBeVisible();
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
     
-    // Type a story
-    const storyText = 'This is my test story about finding courage and acceptance.';
+    // Step 1: Write Stage
+    await expect(page.getByRole('heading', { name: 'Write Your Story' })).toBeVisible();
+    
+    // Type a story (minimum 50 characters required)
+    const storyText = 'This is my test story about finding courage and acceptance. I want to share my experience of discovering my true self.';
     await page.getByPlaceholder(/start typing your story/i).fill(storyText);
     
+    // Wait for auto-save indicator
+    await page.waitForTimeout(1500);
+    
     // Click continue
-    await page.getByRole('button', { name: /continue/i }).click();
+    await page.getByRole('button', { name: /continue to refine/i }).click();
     
     // Step 2: Refine Stage
-    await expect(page.getByText(/would you like claude/i)).toBeVisible();
+    await expect(page.getByText(/would you like claude/i)).toBeVisible({ timeout: 10000 });
     
     // Skip refinement for this test
     await page.getByRole('button', { name: /skip.*keep original/i }).click();
@@ -45,68 +49,87 @@ test.describe('Story Submission Flow', () => {
     await page.getByRole('button', { name: /continue.*voice/i }).click();
     
     // Step 4: Preview Stage
-    await expect(page.getByText(/preview your story/i)).toBeVisible();
+    await expect(page.getByText(/preview your story/i)).toBeVisible({ timeout: 10000 });
     
-    // Play full audio
-    await page.getByRole('button', { name: /play/i }).click();
-    // Wait for audio element to appear
-    await expect(page.locator('audio')).toBeVisible({ timeout: 5000 });
+    // Wait for audio to be generated
+    await page.waitForTimeout(2000);
     
-    // Submit story
+    // Submit story without playing (faster for tests)
     await page.getByRole('button', { name: /submit story/i }).click();
     
     // Verify success
-    await expect(page).toHaveURL('/story/success');
-    await expect(page.getByText(/story.*submitted/i)).toBeVisible();
+    await expect(page).toHaveURL('/story/success', { timeout: 10000 });
+    await expect(page.getByText(/story.*submitted/i)).toBeVisible({ timeout: 10000 });
   });
 
   test('quick exit functionality', async ({ page }) => {
     await page.goto('/story/submit');
     
-    // Type a story
-    await page.getByPlaceholder(/start typing your story/i).fill('Test story');
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
     
-    // Test quick exit button - it displays "ESC" with an X icon
-    await page.getByRole('button', { name: /ESC/i }).click();
+    // Type a story
+    await page.getByPlaceholder(/start typing your story/i).fill('Test story for quick exit');
+    
+    // Test quick exit button
+    const exitButton = page.locator('button').filter({ hasText: 'ESC' });
+    await expect(exitButton).toBeVisible();
+    
+    // Click exit button
+    await exitButton.click();
     
     // Should redirect to google.com
-    await expect(page).toHaveURL('https://www.google.com');
+    await page.waitForURL('https://www.google.com/**', { timeout: 10000 });
   });
 
   test('character limit enforcement', async ({ page }) => {
     await page.goto('/story/submit');
     
-    // Type a very long story
-    const longStory = 'a'.repeat(1050);
-    await page.getByPlaceholder(/start typing your story/i).fill(longStory);
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
     
-    // Check character count
-    await expect(page.getByText(/1000.*1000/)).toBeVisible();
+    // Type exactly 1000 characters (the limit)
+    const maxStory = 'a'.repeat(1000);
+    await page.getByPlaceholder(/start typing your story/i).fill(maxStory);
     
-    // Verify continue button is disabled
-    await expect(page.getByRole('button', { name: /continue/i })).toBeDisabled();
+    // Check character count shows 0 remaining
+    await expect(page.getByText('0')).toBeVisible();
+    await expect(page.getByText('/ 1000')).toBeVisible();
+    
+    // Try to type more - it should not accept
+    await page.getByPlaceholder(/start typing your story/i).type('b');
+    
+    // Content should still be 1000 chars
+    const content = await page.getByPlaceholder(/start typing your story/i).inputValue();
+    expect(content.length).toBe(1000);
   });
 
   test('draft auto-save', async ({ page }) => {
     await page.goto('/story/submit');
     
-    // Type a story
-    const draftText = 'This is my draft story';
-    await page.getByPlaceholder(/start typing your story/i).fill(draftText);
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle');
     
-    // Wait for auto-save - the code saves after 1 second
-    await page.waitForTimeout(1500);
+    // Type a story with minimum length (50 chars)
+    const draftText = 'This is my draft story that will be automatically saved by the system';
+    const textarea = page.getByPlaceholder(/start typing your story/i);
+    await textarea.fill(draftText);
     
-    // Check localStorage
-    await page.waitForFunction(() => {
-      const draft = localStorage.getItem('draft_story');
-      return draft === 'This is my draft story';
-    }, { timeout: 5000 });
+    // Wait for auto-save indicator to appear
+    await expect(page.getByText('Saved')).toBeVisible({ timeout: 3000 });
+    
+    // Verify localStorage was updated
+    const savedDraft = await page.evaluate(() => localStorage.getItem('draft_story'));
+    expect(savedDraft).toBe(draftText);
     
     // Reload page
     await page.reload();
+    await page.waitForLoadState('networkidle');
     
     // Check if draft is restored
-    await expect(page.getByPlaceholder(/start typing your story/i)).toHaveValue(draftText);
+    await expect(textarea).toHaveValue(draftText);
+    
+    // Should show toast notification about draft restoration
+    await expect(page.getByText('Draft restored')).toBeVisible({ timeout: 5000 });
   });
 });

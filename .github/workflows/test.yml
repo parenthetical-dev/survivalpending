@@ -58,6 +58,10 @@ jobs:
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
           JWT_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
         run: |
           mkdir -p test-results
           # Run tests and capture exit code
@@ -180,7 +184,18 @@ jobs:
 
       - name: Build Next.js app
         env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          JWT_SECRET: test-secret
+          TURNSTILE_SECRET_KEY: test-turnstile-secret
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || '' }}
           PIRSCH_ACCESS_TOKEN: ${{ secrets.PIRSCH_ACCESS_TOKEN || '' }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN || '' }}
+          META_TEST_EVENT_CODE: ${{ secrets.META_TEST_EVENT_CODE || '' }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET || 'test-secret' }}
         run: npm run build
         
       - name: Run Playwright tests
@@ -191,7 +206,13 @@ jobs:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: test-site-key
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || '' }}
           PIRSCH_ACCESS_TOKEN: ${{ secrets.PIRSCH_ACCESS_TOKEN || '' }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN || '' }}
+          META_TEST_EVENT_CODE: ${{ secrets.META_TEST_EVENT_CODE || '' }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET || 'test-secret' }}
           BASE_URL: http://localhost:3000
           FULL_BROWSER_MATRIX: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
           CI: true
