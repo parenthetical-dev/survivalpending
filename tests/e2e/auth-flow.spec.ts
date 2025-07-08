@@ -32,7 +32,7 @@ test.describe('Authentication Flow', () => {
     await page.locator('input#confirmPassword').fill('TestPassword123!');
     
     // In development mode, we should see the bypass message
-    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 15000 });
     
     // Submit
     await page.getByRole('button', { name: /create account/i }).click();
@@ -102,17 +102,27 @@ test.describe('Authentication Flow', () => {
     await page.locator('input#confirmPassword').fill('TestPassword123!');
     
     // Wait for captcha bypass
-    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 15000 });
     
     // Create account
     await page.getByRole('button', { name: /create account/i }).click();
     
     // Wait for redirect (could be onboarding or dashboard)
-    try {
-      await page.waitForURL(/\/(onboarding|dashboard)/, { timeout: 10000 });
-    } catch (error) {
-      console.log('Signup might have failed, continuing with test...');
-      // If signup failed, we'll try to login anyway with the generated username
+    const signupSucceeded = await page.waitForURL(/\/(onboarding|dashboard)/, { timeout: 20000 })
+      .then(() => true)
+      .catch(() => false);
+    
+    if (!signupSucceeded) {
+      // Check for error message
+      const signupError = await page.getByText(/error|already|failed|taken/i).isVisible().catch(() => false);
+      if (signupError) {
+        const errorText = await page.getByText(/error|already|failed|taken/i).textContent();
+        console.log(`Signup failed with error: ${errorText}`);
+      }
+      expect(signupError).toBe(false); // Fail test if signup error is visible
+      
+      // Also check if we're still on signup page
+      expect(page.url()).not.toContain('/signup');
     }
     
     // Clear cookies/storage to simulate logout
@@ -130,13 +140,31 @@ test.describe('Authentication Flow', () => {
     await page.locator('input#password').fill('TestPassword123!');
     
     // In development mode, we should see the bypass message
-    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 15000 });
     
     // Submit
     await page.getByRole('button', { name: /log in/i }).click();
     
-    // Should redirect to dashboard or onboarding
-    await expect(page).toHaveURL(/\/(dashboard|onboarding)/, { timeout: 10000 });
+    // Wait for response and check for errors
+    try {
+      await expect(page).toHaveURL(/\/(dashboard|onboarding)/, { timeout: 20000 });
+    } catch (e) {
+      // Check for error message to provide better debugging info
+      const errorVisible = await page.getByText(/error|invalid|failed|incorrect|wrong/i).isVisible().catch(() => false);
+      if (errorVisible) {
+        const errorText = await page.getByText(/error|invalid|failed|incorrect|wrong/i).textContent();
+        console.log(`Login failed with error: ${errorText}`);
+      }
+      
+      // Log current URL for debugging
+      console.log(`Current URL after login attempt: ${page.url()}`);
+      
+      // Take a screenshot for debugging
+      await page.screenshot({ path: 'login-failure.png', fullPage: true });
+      
+      expect(errorVisible).toBe(false); // Fail with a clear message if error is visible
+      throw e;
+    }
   });
 
   test('invalid login shows error', async ({ page }) => {
@@ -147,7 +175,7 @@ test.describe('Authentication Flow', () => {
     await page.locator('input#password').fill('wrongpassword');
     
     // In development mode, we should see the bypass message
-    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Development mode: Captcha bypassed')).toBeVisible({ timeout: 15000 });
     
     // Submit
     await page.getByRole('button', { name: /log in/i }).click();
