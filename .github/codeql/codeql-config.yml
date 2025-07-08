@@ -1,0 +1,79 @@
+# CodeQL configuration for Survival Pending
+# Focus on security issues critical for anonymous LGBTQ+ platform
+
+name: "Survival Pending Security Config"
+
+# Disable default queries
+disable-default-queries: false
+
+# Custom query suites
+queries:
+  # Core security queries
+  - uses: security-extended
+  - uses: security-and-quality
+  
+  # Additional security queries for web applications
+  - uses: security-experimental
+    
+# Custom query filters
+query-filters:
+  # Include critical security issues
+  - include:
+      severity: 
+        - error
+        - warning
+      tags contain:
+        - security
+        - authentication
+        - authorization
+        - privacy
+        - data-exposure
+        - injection
+        - xss
+        - csrf
+        - cryptography
+        - randomness
+        - path-traversal
+        - command-injection
+        - sql-injection
+        - nosql-injection
+        
+  # Exclude non-critical recommendations
+  - exclude:
+      tags contain:
+        - recommendation
+        - maintainability
+        - readability
+      severity:
+        - note
+        
+# Path filters - focus on critical code paths
+paths-ignore:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/tests/**"
+  - "**/mocks/**"
+  - "**/__tests__/**"
+  - "**/node_modules/**"
+  - "**/.next/**"
+  - "**/dist/**"
+  - "**/build/**"
+
+# Custom patterns for sensitive data detection
+patterns:
+  # Check for hardcoded credentials
+  - pattern: '(api[_-]?key|password|secret|token)\s*[:=]\s*["\'][^"\']+["\']'
+    severity: error
+    message: "Potential hardcoded credential detected"
+    
+  # Check for unsafe user data handling
+  - pattern: 'dangerouslySetInnerHTML|innerHTML\s*='
+    severity: warning
+    message: "Potential XSS vulnerability through unsafe HTML injection"
+    
+  # Check for missing authentication
+  - pattern: 'app\.get\(|app\.post\(|app\.put\(|app\.delete\(|router\.(get|post|put|delete)\('
+    severity: note
+    message: "Ensure this endpoint has proper authentication"
