@@ -150,8 +150,7 @@ Story: "${contentText}"`,
         await prisma.story.update({
           where: { id: story.id },
           data: {
-            moderationNotes: `Audio generation failed: ${String(audioResult.error).substring(0, 200).replace(/[
-]/g, ' ')}`,
+            moderationNotes: `Audio generation failed: ${String(audioResult.error).substring(0, 200).replace(/[\n\r]/g, ' ')}`,
           },
         });
       }
@@ -163,8 +162,7 @@ Story: "${contentText}"`,
       await prisma.story.update({
         where: { id: story.id },
         data: {
-          moderationNotes: `Audio generation error: ${error instanceof Error ? error.message.substring(0, 200).replace(/[
-]/g, ' ') : 'Unknown error'}`,
+          moderationNotes: `Audio generation error: ${error instanceof Error ? error.message.substring(0, 200).replace(/[\n\r]/g, ' '): 'Unknown error'}`,
         },
       });
     }

@@ -46,8 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (!story) {
       // Sanitize log output to prevent log injection
-      const sanitizedId = storyId.replace(/[
-]/g, '_');
+      const sanitizedId = storyId.replace(/[\n\r]/g, '_');
       console.error(`Story not found in database: ${sanitizedId}`);
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
@@ -90,11 +89,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Sanitize log output to prevent log injection
-    const sanitizedStoryId = storyId.replace(/[
-]/g, '_');
-    const sanitizedStatus = status?.replace(/[
-]/g, '_') || 'unknown';
+    const sanitizedStoryId = storyId.replace(/[\n\r]/g, '_');
+    const sanitizedStatus = status?.replace(/[\n\r]/g, '_') || 'unknown';
     console.log(`Story ${sanitizedStoryId} updated from Sanity: ${sanitizedStatus}`);
 
     return NextResponse.json({
