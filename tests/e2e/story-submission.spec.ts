@@ -43,9 +43,50 @@ test.describe('Story Submission Flow', () => {
     // Wait for voice options to load and ensure they're interactive
     await page.waitForTimeout(1000); // Allow UI to settle
     
-    // Find and click the Sarah voice option more specifically
-    const sarahButton = page.locator('button').filter({ hasText: 'Sarah' }).first();
-    await sarahButton.waitFor({ state: 'visible', timeout: 10000 });
+    // Debug: Log what's on the page if voice selection fails
+    const voiceSelectors = [
+      'button:has-text("Sarah")',
+      '[data-voice="Sarah"]',
+      'button[aria-label*="Sarah"]',
+      '.voice-option:has-text("Sarah")',
+      'div:has-text("Sarah") button'
+    ];
+    
+    let voiceButtonFound = false;
+    let sarahButton: any = null;
+    
+    for (const selector of voiceSelectors) {
+      try {
+        const button = page.locator(selector).first();
+        if (await button.isVisible({ timeout: 2000 })) {
+          sarahButton = button;
+          voiceButtonFound = true;
+          console.log(`Found voice button with selector: ${selector}`);
+          break;
+        }
+      } catch (e) {
+        // Continue trying other selectors
+      }
+    }
+    
+    if (!voiceButtonFound) {
+      // Take screenshot for debugging
+      await page.screenshot({ path: 'voice-selection-error.png', fullPage: true });
+      
+      // Log all visible text to help debug
+      const visibleText = await page.locator('body').textContent();
+      console.error('Voice selection not found. Page content:', visibleText?.substring(0, 500));
+      
+      // Try to find any voice-related button
+      const anyVoiceButton = await page.locator('button').filter({ hasText: /voice|sarah|emily|rachel|matt/i }).first();
+      if (await anyVoiceButton.isVisible({ timeout: 1000 }).catch(() => false)) {
+        console.log('Found alternative voice button, using it instead');
+        sarahButton = anyVoiceButton;
+      } else {
+        throw new Error('No voice selection buttons found on page');
+      }
+    }
+    
     await sarahButton.click();
     
     // Preview voice

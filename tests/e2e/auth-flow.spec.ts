@@ -44,11 +44,42 @@ test.describe('Authentication Flow', () => {
     const currentUrl = page.url();
     if (currentUrl.includes('/signup')) {
       // Look for any error message
-      const errorVisible = await page.getByText(/error|already|failed/i).isVisible().catch(() => false);
-      if (errorVisible) {
-        console.log('Signup failed - username might already exist or other error. Test will skip.');
-        return;
+      const errorSelectors = [
+        'text=/error/i',
+        'text=/already/i', 
+        'text=/failed/i',
+        '.error-message',
+        '[role="alert"]',
+        '.text-destructive'
+      ];
+      
+      let errorText = '';
+      for (const selector of errorSelectors) {
+        try {
+          const element = await page.locator(selector).first();
+          if (await element.isVisible({ timeout: 1000 })) {
+            errorText = await element.textContent() || '';
+            break;
+          }
+        } catch (e) {
+          // Continue checking other selectors
+        }
       }
+      
+      if (errorText) {
+        console.error(`Signup failed with error: ${errorText}`);
+        // Also check console for errors
+        page.on('console', msg => {
+          if (msg.type() === 'error') {
+            console.error('Browser console error:', msg.text());
+          }
+        });
+        throw new Error(`Signup failed: ${errorText}`);
+      }
+      
+      // If no visible error but still on signup page, check for network issues
+      console.error('Signup failed - still on signup page but no visible error');
+      throw new Error('Signup failed - no redirect occurred');
     }
     
     // Should redirect to onboarding
@@ -189,14 +220,34 @@ test.describe('Authentication Flow', () => {
       page.getByText(/incorrect credentials/i),
       page.getByText(/login failed/i),
       page.locator('[role="alert"]'),
-      page.locator('.text-destructive')
+      page.locator('.text-destructive'),
+      page.locator('.error-message')
     ];
     
     let errorFound = false;
+    let errorText = '';
     for (const selector of errorSelectors) {
-      if (await selector.isVisible().catch(() => false)) {
-        errorFound = true;
-        break;
+      try {
+        if (await selector.isVisible({ timeout: 2000 })) {
+          errorFound = true;
+          errorText = await selector.textContent() || 'Error visible but no text';
+          console.log(`Found error: ${errorText}`);
+          break;
+        }
+      } catch (e) {
+        // Continue checking other selectors
+      }
+    }
+    
+    if (!errorFound) {
+      // Take screenshot for debugging
+      await page.screenshot({ path: 'invalid-login-no-error.png', fullPage: true });
+      console.error('No error message found after invalid login attempt');
+      console.log('Current URL:', page.url());
+      
+      // Check if we're still on login page
+      if (!page.url().includes('/login')) {
+        console.error('Unexpected redirect after invalid login:', page.url());
       }
     }
     
