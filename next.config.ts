@@ -15,6 +15,11 @@ project: "survival-pending",
 // Only print logs for uploading source maps in CI
 silent: !process.env.CI,
 
+// Disable auth token requirement for build (source maps optional)
+authToken: process.env.SENTRY_AUTH_TOKEN,
+disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+
 // For all available options, see:
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 

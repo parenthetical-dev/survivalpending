@@ -1,10 +1,6 @@
 import Groq from 'groq-sdk';
 import { randomInt } from 'crypto';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 // Word lists for offline fallback
 const adjectives = [
   'brave', 'gentle', 'fierce', 'quiet', 'bold', 'tender', 'strong', 'subtle',
@@ -26,6 +22,15 @@ const nouns = [
 
 export async function generateUsername(): Promise<string> {
   try {
+    // Initialize Groq client only when needed
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error('GROQ_API_KEY not configured');
+    }
+    
+    const groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+    
     // Try using Groq for more creative combinations
     const completion = await groq.chat.completions.create({
       messages: [
