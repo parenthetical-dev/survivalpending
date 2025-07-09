@@ -73,10 +73,23 @@ export const voiceGenerateLimiter = new InMemoryRateLimiter(
   60 * 1000, // per minute
 );
 
+// Authentication rate limiters - stricter to prevent brute force attacks
+export const loginLimiter = new InMemoryRateLimiter(
+  5, // 5 attempts
+  15 * 60 * 1000, // per 15 minutes
+);
+
+export const signupLimiter = new InMemoryRateLimiter(
+  3, // 3 signups
+  60 * 60 * 1000, // per hour
+);
+
 // Cleanup old entries every 5 minutes
 if (typeof window === 'undefined') {
   setInterval(() => {
     voicePreviewLimiter.cleanup();
     voiceGenerateLimiter.cleanup();
+    loginLimiter.cleanup();
+    signupLimiter.cleanup();
   }, 5 * 60 * 1000);
 }

@@ -1,6 +1,13 @@
 export async function verifyTurnstileToken(token: string): Promise<boolean> {
-  // Skip verification in development and test environments
-  if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' || process.env.CI === 'true') && token === 'development-token') {
+  // Skip verification ONLY in local development and test environments
+  // SECURITY: This bypass is strictly for local development only
+  if (process.env.NODE_ENV === 'development' && process.env.ALLOW_DEV_BYPASS === 'true' && token === 'development-token') {
+    console.warn('[SECURITY] Using development token bypass - this should NEVER appear in production logs');
+    return true;
+  }
+  
+  // Allow bypass in test environment for automated testing
+  if (process.env.NODE_ENV === 'test' && token === 'test-token') {
     return true;
   }
 

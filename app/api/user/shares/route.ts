@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import prisma from '@/lib/prisma';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Track the share in the database
     // For now, we'll store it in the user's record or create a shares table
     // Since we don't have a shares table yet, let's just log it
-    console.log(`User ${payload.userId} shared via ${method}`);
+    console.log(`User ${sanitizeForLogging(payload.userId)} shared via ${sanitizeForLogging(method)}`);
 
     // In a real implementation, you'd want to:
     // 1. Create a UserShares table to track sharing activity

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 // Disable body parsing to get raw body for signature verification
 export const runtime = 'nodejs';
@@ -45,9 +46,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!story) {
-      // Sanitize log output to prevent log injection
-      const sanitizedId = storyId.replace(/[\n\r]/g, '_');
-      console.error(`Story not found in database: ${sanitizedId}`);
+      console.error(`Story not found in database: ${sanitizeForLogging(storyId)}`);
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
@@ -89,9 +88,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const sanitizedStoryId = storyId.replace(/[\n\r]/g, '_');
-    const sanitizedStatus = status?.replace(/[\n\r]/g, '_') || 'unknown';
-    console.log(`Story ${sanitizedStoryId} updated from Sanity: ${sanitizedStatus}`);
+    console.log(`Story ${sanitizeForLogging(storyId)} updated from Sanity: ${sanitizeForLogging(status || 'unknown')}`);
 
     return NextResponse.json({
       success: true,
@@ -100,7 +97,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Sanity webhook error:', error);
+    console.error('Sanity webhook error:', sanitizeForLogging(error));
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

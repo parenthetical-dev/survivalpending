@@ -14,8 +14,8 @@ import { trackEvent } from '@/lib/analytics';
 
 export default function LoginForm() {
   const { login } = useAuth();
-  // In test environment, bypass Turnstile
-  const isDevelopment = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+  // Only bypass in development with explicit env var
+  const isDevelopment = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_ALLOW_DEV_BYPASS === 'true';
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

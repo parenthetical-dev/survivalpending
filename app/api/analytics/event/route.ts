@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sanitizeForLogging, sanitizeObjectForLogging } from '@/lib/sanitize';
 
 const PIRSCH_EVENT_URL = 'https://api.pirsch.io/api/v1/event';
 
@@ -58,9 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Only log in development, not in CI/test environments
     if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
-      // Sanitize log output to prevent log injection
-      const sanitizedName = name.replace(/[\n\r]/g, '_');
-      console.log('[Pirsch API] Sending event:', sanitizedName, JSON.stringify(payload).replace(/[\n\r]/g, '_'));
+      console.log('[Pirsch API] Sending event:', sanitizeForLogging(name), sanitizeObjectForLogging(payload));
     }
 
     const response = await fetch(PIRSCH_EVENT_URL, {
@@ -75,18 +74,17 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const text = await response.text();
       if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
-        console.error('[Pirsch API] Event tracking failed:', response.status, text);
+        console.error('[Pirsch API] Event tracking failed:', response.status, sanitizeForLogging(text));
       }
     } else {
       if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
-        const sanitizedEventName = name.replace(/[\n\r]/g, '_');
-        console.log('[Pirsch API] Event tracked successfully:', sanitizedEventName);
+        console.log('[Pirsch API] Event tracked successfully:', sanitizeForLogging(name));
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[Pirsch API] Error:', error);
+    console.error('[Pirsch API] Error:', sanitizeForLogging(error));
     return NextResponse.json({ success: true }); // Don't fail the request
   }
 }

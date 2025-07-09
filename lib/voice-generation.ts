@@ -1,5 +1,6 @@
 import { voiceGenerateLimiter } from '@/lib/rate-limit';
 import { uploadAudioToBlob, generateAudioFilename } from '@/lib/blob-storage';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 interface VoiceGenerationResult {
   success: boolean;
@@ -9,7 +10,7 @@ interface VoiceGenerationResult {
 }
 
 // Allowed ElevenLabs voice IDs
-const ALLOWED_VOICE_IDS = [
+export const ALLOWED_VOICE_IDS = [
   'EXAVITQu4vr4xnSDxMaL', // Sarah
   'MF3mGyEYCl7XYWbV9V6O', // Emily
   'TxGEqnHWrfWFTfGW9XjX', // Josh
@@ -28,6 +29,7 @@ export async function generateVoiceAudio(
 ): Promise<VoiceGenerationResult> {
   try {
     // Validate voice ID to prevent request forgery
+    // CodeQL False Positive: js/request-forgery - Voice ID is properly validated against allowlist
     if (!ALLOWED_VOICE_IDS.includes(voiceId)) {
       return { success: false, error: 'Invalid voice ID' };
     }
@@ -69,6 +71,7 @@ export async function generateVoiceAudio(
     // eslint-disable-next-line no-await-in-loop -- Retry logic requires sequential attempts
     while (retries > 0) {
       try {
+        // CodeQL False Positive: js/request-forgery - Voice ID is validated above against ALLOWED_VOICE_IDS
         response = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
           {
@@ -95,7 +98,7 @@ export async function generateVoiceAudio(
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('ElevenLabs error:', errorText);
+          console.error('ElevenLabs error:', sanitizeForLogging(errorText));
 
           if (response.status === 429) {
             // eslint-disable-next-line no-await-in-loop -- Need to wait before retry
@@ -111,7 +114,7 @@ export async function generateVoiceAudio(
             return { success: false, error: 'API quota exceeded' };
           }
 
-          throw new Error(`Failed to generate audio: ${errorText}`);
+          throw new Error(`Failed to generate audio: ${sanitizeForLogging(errorText)}`);
         }
 
         break; // Success, exit loop
@@ -148,7 +151,7 @@ export async function generateVoiceAudio(
         audioBuffer,
       };
     } catch (uploadError) {
-      console.error('Failed to upload audio to blob storage:', uploadError);
+      console.error('Failed to upload audio to blob storage:', sanitizeForLogging(uploadError));
 
       // Fallback for development
       if (process.env.NODE_ENV === 'development') {
@@ -165,7 +168,7 @@ export async function generateVoiceAudio(
       };
     }
   } catch (error) {
-    console.error('Voice generation error:', error);
+    console.error('Voice generation error:', sanitizeForLogging(error));
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate audio',
@@ -196,7 +199,7 @@ export async function uploadAudioToStorage(
 
     return uploadResult.url;
   } catch (error) {
-    console.error('Failed to upload audio to blob storage:', error);
+    console.error('Failed to upload audio to blob storage:', sanitizeForLogging(error));
 
     // In development, return a dummy URL as fallback
     if (process.env.NODE_ENV === 'development') {

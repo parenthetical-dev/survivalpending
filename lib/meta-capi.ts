@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 interface MetaEventData {
   event_name: string;
@@ -81,7 +82,7 @@ export async function sendMetaEvent(
   userId?: string,
   customData?: Record<string, any>,
 ): Promise<void> {
-  console.log('[Meta CAPI] Attempting to send event:', eventName);
+  console.log('[Meta CAPI] Attempting to send event:', sanitizeForLogging(eventName));
   console.log('[Meta CAPI] Environment check:', {
     hasPixelId: !!META_PIXEL_ID,
     pixelId: META_PIXEL_ID,
@@ -91,7 +92,7 @@ export async function sendMetaEvent(
 
   // Skip if not configured
   if (!META_PIXEL_ID || !META_ACCESS_TOKEN) {
-    console.log('[Meta CAPI] Missing configuration, skipping event:', eventName);
+    console.log('[Meta CAPI] Missing configuration, skipping event:', sanitizeForLogging(eventName));
     return;
   }
 
@@ -145,21 +146,21 @@ export async function sendMetaEvent(
 
     const responseText = await response.text();
     console.log('[Meta CAPI] Response status:', response.status);
-    console.log('[Meta CAPI] Response body:', responseText);
+    console.log('[Meta CAPI] Response body:', sanitizeForLogging(responseText));
 
     if (!response.ok) {
-      console.error('[Meta CAPI] Error response:', responseText);
+      console.error('[Meta CAPI] Error response:', sanitizeForLogging(responseText));
     } else {
       try {
         const result = JSON.parse(responseText);
-        console.log(`[Meta CAPI] Success! Event sent: ${eventName}`, result);
+        console.log(`[Meta CAPI] Success! Event sent: ${sanitizeForLogging(eventName)}`, result);
       } catch (e) {
-        console.log(`[Meta CAPI] Event sent but couldn't parse response: ${eventName}`);
+        console.log(`[Meta CAPI] Event sent but couldn't parse response: ${sanitizeForLogging(eventName)}`);
       }
     }
   } catch (error) {
     // Don't let tracking errors break the application
-    console.error('Failed to send Meta event:', error);
+    console.error('Failed to send Meta event:', sanitizeForLogging(error));
   }
 }
 

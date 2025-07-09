@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 // Add routes that require authentication
 const protectedRoutes = ['/onboarding', '/submit', '/profile', '/settings', '/dashboard'];
@@ -11,7 +12,7 @@ export function middleware(request: NextRequest) {
   
   // Only log in development, not in CI/test environments
   if (process.env.NODE_ENV === 'development' && process.env.CI !== 'true') {
-    console.log('[Middleware] Running for path:', pathname);
+    console.log('[Middleware] Running for path:', sanitizeForLogging(pathname));
     console.log('[Middleware] PIRSCH_ACCESS_TOKEN exists:', !!(process.env.PIRSCH_ACCESS_TOKEN && process.env.PIRSCH_ACCESS_TOKEN.trim()));
   }
   
@@ -84,9 +85,14 @@ export function middleware(request: NextRequest) {
       };
 
       console.log('[Pirsch] Tracking page view:', {
-        url: pathname,
+        url: sanitizeForLogging(pathname),
         hasToken: !!process.env.PIRSCH_ACCESS_TOKEN,
-        payload
+        payload: {
+          ...payload,
+          url: sanitizeForLogging(payload.url),
+          referrer: sanitizeForLogging(payload.referrer),
+          user_agent: sanitizeForLogging(payload.user_agent)
+        }
       });
 
       // Fire and forget - don't await
@@ -99,16 +105,16 @@ export function middleware(request: NextRequest) {
         body: JSON.stringify(payload)
       }).then(res => {
         if (!res.ok) {
-          console.error('[Pirsch] Tracking failed:', res.status, res.statusText);
-          res.text().then(text => console.error('[Pirsch] Response:', text));
+          console.error('[Pirsch] Tracking failed:', res.status, sanitizeForLogging(res.statusText));
+          res.text().then(text => console.error('[Pirsch] Response:', sanitizeForLogging(text)));
         } else {
           console.log('[Pirsch] Page view tracked successfully');
         }
       }).catch((error) => {
-        console.error('[Pirsch] Error tracking page view:', error);
+        console.error('[Pirsch] Error tracking page view:', sanitizeForLogging(error));
       });
     } catch (error) {
-      console.error('[Pirsch] Unexpected error:', error);
+      console.error('[Pirsch] Unexpected error:', sanitizeForLogging(error));
     }
   } else {
     if (shouldTrack) {
