@@ -6,7 +6,8 @@ test.describe('Authentication Flow', () => {
     
     // Just verify the page loads with expected elements
     await expect(page.getByText('Create Your Account')).toBeVisible();
-    await expect(page.locator('input#username')).toBeVisible();
+    // Signup page has username selection radio buttons, not input field
+    await expect(page.getByText('Choose Your Username')).toBeVisible();
     await expect(page.locator('input#password')).toBeVisible();
   });
 
@@ -22,23 +23,26 @@ test.describe('Authentication Flow', () => {
   test('invalid login shows error', async ({ page }) => {
     await page.goto('/login');
     
-    // Wait for the page to be fully loaded
-    await page.waitForLoadState('networkidle');
-    
-    // Wait for the username input to be visible and enabled
+    // Wait for the username input to be visible and ready
     const usernameInput = page.locator('input#username');
-    await usernameInput.waitFor({ state: 'visible' });
+    await expect(usernameInput).toBeVisible();
+    await expect(usernameInput).toBeEnabled();
     
     // Clear any existing value and type the username with a delay for WebKit
     await usernameInput.click();
-    await usernameInput.press('Control+A');
-    await usernameInput.press('Delete');
-    await usernameInput.type('invalid_user_9999', { delay: 100 });
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Backspace');
+    
+    // Type username character by character with small delay
+    await usernameInput.type('invalid_user_9999', { delay: 50 });
     
     // Enter password
-    await page.locator('input#password').fill('wrongpassword');
+    const passwordInput = page.locator('input#password');
+    await passwordInput.click();
+    await passwordInput.type('wrongpassword', { delay: 50 });
     
-    // Just check that the form accepts input
+    // Verify the form accepted input
     await expect(usernameInput).toHaveValue('invalid_user_9999');
+    await expect(passwordInput).toHaveValue('wrongpassword');
   });
 });
