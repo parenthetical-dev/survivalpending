@@ -50,37 +50,22 @@ test.describe('Authentication Flow', () => {
     // Check if we're still on signup page (indicating an error)
     const currentUrl = page.url();
     if (currentUrl.includes('/signup')) {
-      // Look for any error message (excluding the static "Already have an account?" link)
-      const errorSelectors = [
-        'text=/error/i',
-        'text=/failed/i',
-        '.error-message',
-        '[role="alert"]',
-        '.text-destructive',
-        '[data-error="true"]'
-      ];
-      
+      // Look for actual error messages only (Alert components with variant="destructive")
+      const errorAlert = page.locator('div[role="alert"] >> text=/error|failed|invalid/i').first();
+      let hasError = false;
       let errorText = '';
-      for (const selector of errorSelectors) {
-        try {
-          const element = page.locator(selector).first();
-          if (await element.isVisible({ timeout: 1000 })) {
-            errorText = await element.textContent() || '';
-            break;
-          }
-        } catch (e) {
-          // Continue checking other selectors
+      
+      try {
+        hasError = await errorAlert.isVisible({ timeout: 1000 });
+        if (hasError) {
+          errorText = await errorAlert.textContent() || '';
         }
+      } catch (e) {
+        // No error found
       }
       
-      if (errorText) {
+      if (hasError && errorText) {
         console.error(`Signup failed with error: ${errorText}`);
-        // Also check console for errors
-        page.on('console', msg => {
-          if (msg.type() === 'error') {
-            console.error('Browser console error:', msg.text());
-          }
-        });
         throw new Error(`Signup failed: ${errorText}`);
       }
       

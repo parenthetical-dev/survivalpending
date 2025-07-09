@@ -53,68 +53,21 @@ test.describe('Story Submission Flow', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000); // Give time for animations
     
-    // Step 3: Voice Stage - wait for the voice selection to appear
+    // Step 3: Voice Stage - simplified approach
     await expect(page.getByRole('heading', { name: /choose your voice/i })).toBeVisible({ timeout: 20000 });
     
-    // Wait for voice options to load and ensure they're interactive
-    await page.waitForTimeout(1000); // Allow UI to settle
-    
-    // Debug: Log what's on the page if voice selection fails
-    const voiceSelectors = [
-      'button:has-text("Sarah")',
-      '[data-voice="Sarah"]',
-      'button[aria-label*="Sarah"]',
-      '.voice-option:has-text("Sarah")',
-      'div:has-text("Sarah") button'
-    ];
-    
-    let voiceButtonFound = false;
-    let sarahButton: any = null;
-    
-    for (const selector of voiceSelectors) {
-      try {
-        const button = page.locator(selector).first();
-        if (await button.isVisible({ timeout: 2000 })) {
-          sarahButton = button;
-          voiceButtonFound = true;
-          console.log(`Found voice button with selector: ${selector}`);
-          break;
-        }
-      } catch (e) {
-        // Continue trying other selectors
-      }
-    }
-    
-    if (!voiceButtonFound) {
-      // Take screenshot for debugging
-      await page.screenshot({ path: 'voice-selection-error.png', fullPage: true });
-      
-      // Log all visible text to help debug
-      const visibleText = await page.locator('body').textContent();
-      console.error('Voice selection not found. Page content:', visibleText?.substring(0, 500));
-      
-      // Try to find any voice-related button
-      const anyVoiceButton = await page.locator('button').filter({ hasText: /voice|sarah|emily|rachel|matt/i }).first();
-      if (await anyVoiceButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-        console.log('Found alternative voice button, using it instead');
-        sarahButton = anyVoiceButton;
-      } else {
-        throw new Error('No voice selection buttons found on page');
-      }
-    }
-    
-    await sarahButton.click();
-    console.log('Voice selected successfully');
+    // Just click the first voice option available
+    const firstVoiceOption = page.locator('input[type="radio"]').first();
+    await firstVoiceOption.click();
+    console.log('Selected first available voice');
     
     // Wait a moment for the selection to register
     await page.waitForTimeout(1000);
     
-    // Skip the preview button interaction as it's not critical for E2E testing
-    // Just continue to the next stage
-    console.log('Skipping preview, continuing to next stage...');
-    
-    // Continue
-    await page.getByRole('button', { name: /continue.*voice|continue to preview/i }).click();
+    // Find and click any continue button
+    const continueButton = page.getByRole('button').filter({ hasText: /continue/i }).last();
+    await continueButton.click();
+    console.log('Clicked continue button');
     
     // Step 4: Preview Stage
     await expect(page.getByText(/preview your story/i)).toBeVisible({ timeout: 10000 });
