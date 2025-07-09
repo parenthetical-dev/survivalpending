@@ -15,7 +15,7 @@ describe('sanitizeForLogging', () => {
     const input = 'a'.repeat(2000);
     const result = sanitizeForLogging(input, 100);
     expect(result).toHaveLength(100);
-    expect(result).toEndWith('...');
+    expect(result).toMatch(/\.\.\.$/);
   });
 
   it('handles non-string inputs', () => {
