@@ -1,6 +1,6 @@
 export async function verifyTurnstileToken(token: string): Promise<boolean> {
-  // Skip verification in development
-  if (process.env.NODE_ENV === 'development' && token === 'development-token') {
+  // Skip verification in development and test environments
+  if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' || process.env.CI === 'true') && token === 'development-token') {
     return true;
   }
 
