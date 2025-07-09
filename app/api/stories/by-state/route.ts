@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 const MINIMUM_STORIES_FOR_PRIVACY = 5;
 
@@ -39,11 +40,11 @@ export async function GET(request: NextRequest) {
     const storyIds = stories.map(s => s.id);
     const storyCount = storyIds.length;
 
-    console.log(`Found ${storyCount} stories from state ${state}`);
+    console.log(`Found ${storyCount} stories from state ${sanitizeForLogging(state)}`);
 
     // Privacy protection: Only return stories if the state has at least 5 stories
     if (storyCount < MINIMUM_STORIES_FOR_PRIVACY) {
-      console.log(`Privacy protection: State ${state} has only ${storyCount} stories (minimum: ${MINIMUM_STORIES_FOR_PRIVACY})`);
+      console.log(`Privacy protection: State ${sanitizeForLogging(state)} has only ${storyCount} stories (minimum: ${MINIMUM_STORIES_FOR_PRIVACY})`);
 
       return NextResponse.json({
         storyIds: [],

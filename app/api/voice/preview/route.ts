@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { voicePreviewLimiter } from '@/lib/rate-limit';
 import { trackInitiateCheckout } from '@/lib/meta-capi';
+import { sanitizeForLogging } from '@/lib/sanitize';
 
 // Allowed ElevenLabs voice IDs
 const ALLOWED_VOICE_IDS = [
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('ElevenLabs error:', errorText);
+          console.error('ElevenLabs error:', sanitizeForLogging(errorText));
 
           // Check for specific error codes
           if (response.status === 429) {
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
             throw new Error('Invalid voice ID');
           }
 
-          throw new Error(`Failed to generate audio: ${errorText}`);
+          throw new Error(`Failed to generate audio: ${sanitizeForLogging(errorText)}`);
         }
 
         break; // Success, exit loop
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Voice preview error:', error);
+    console.error('Voice preview error:', sanitizeForLogging(error));
     return NextResponse.json(
       { error: 'Failed to generate preview' },
       { status: 500 },
