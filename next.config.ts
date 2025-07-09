@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
   /* config options here */
 };
 
-export default withSentryConfig(nextConfig, {
+// Disable Sentry in test environments
+const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.CI === 'true';
+
+export default isTestEnvironment ? nextConfig : withSentryConfig(nextConfig, {
 // For all available options, see:
 // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

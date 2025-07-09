@@ -1,5 +1,6 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import React from 'react'
 
 // Mock environment variables for tests
 process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY = 'test-site-key'
@@ -313,4 +314,21 @@ jest.mock('@sentry/nextjs', () => ({
   captureRouterTransitionStart: jest.fn(),
   init: jest.fn(),
   replayIntegration: jest.fn(),
+}))
+
+// Mock Turnstile component
+jest.mock('@marsidev/react-turnstile', () => ({
+  Turnstile: ({ onSuccess }) => {
+    // Automatically call onSuccess with a test token in tests
+    React.useEffect(() => {
+      if (onSuccess) {
+        onSuccess('test-turnstile-token');
+      }
+    }, [onSuccess]);
+    
+    return React.createElement('div', {
+      'data-testid': 'turnstile-widget',
+      className: 'cf-turnstile',
+    });
+  },
 }))

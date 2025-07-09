@@ -35,13 +35,18 @@ export default defineConfig({
   // Optimize web server startup
   webServer: {
     command: process.env.CI 
-      ? 'npm run build && npm start' // Use production build in CI
+      ? 'npm start' // Build is already done in workflow
       : 'npm run dev',
     url: 'http://localhost:3000',
-    timeout: process.env.CI ? 180 * 1000 : 120 * 1000, // 3 min for build
+    timeout: process.env.CI ? 60 * 1000 : 120 * 1000, // 1 min for start (already built)
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      ...Object.fromEntries(
+        Object.entries(process.env).filter(([_, v]) => v !== undefined)
+      ) as { [key: string]: string },
+    },
   },
 
   // Global timeout for the entire test run

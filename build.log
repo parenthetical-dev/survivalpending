@@ -1,0 +1,139 @@
+
+> nextjs@0.1.0 build
+> prisma generate && next build
+
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.11.1) to ./node_modules/@prisma/client in 85ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.3.5
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings in 26.0s
+
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/@sentry/node/build/cjs/otel/instrument.js
+./node_modules/@sentry/node/build/cjs/index.js
+./node_modules/@sentry/nextjs/build/cjs/index.server.js
+
+ ✓ Compiled successfully in 43s
+   Linting and checking validity of types ...
+
+./app/stories/[id]/page.tsx
+40:6  Warning: React Hook useEffect has a missing dependency: 'fetchStory'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/MetaPixel.tsx
+50:9  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/audio/AudioSineWave.tsx
+192:6  Warning: React Hook useEffect has missing dependencies: 'waveConfig.amplitude', 'waveConfig.speed', and 'waveConfig.waves'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/audio/HowlerWaveform.tsx
+83:6  Warning: React Hook useEffect has missing dependencies: 'onEnd', 'onPlayPause', and 'startAnimation'. Either include them or remove the dependency array. If 'onPlayPause' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+
+./components/audio/ModernWaveform.tsx
+247:6  Warning: React Hook useEffect has a missing dependency: 'drawStaticWaveform'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/audio/PrismaticWaveform.tsx
+160:6  Warning: React Hook useEffect has a missing dependency: 'drawStaticWaveform'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/audio/ThreeWaveform.tsx
+127:20  Warning: The ref value 'containerRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'containerRef.current' to a variable inside the effect, and use that variable in the cleanup function.  react-hooks/exhaustive-deps
+172:6  Warning: React Hook useEffect has missing dependencies: 'onEnd' and 'onPlayPause'. Either include them or remove the dependency array. If 'onPlayPause' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+258:6  Warning: React Hook useEffect has a missing dependency: 'onTimeUpdate'. Either include it or remove the dependency array. If 'onTimeUpdate' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+
+./components/audio/VoiceWaveform.tsx
+104:6  Warning: React Hook useEffect has missing dependencies: 'onEnd' and 'onPlayPause'. Either include them or remove the dependency array. If 'onPlayPause' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+202:6  Warning: React Hook useEffect has a missing dependency: 'onTimeUpdate'. Either include it or remove the dependency array. If 'onTimeUpdate' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+
+./components/story/PreviewStage.tsx
+56:6  Warning: React Hook useEffect has missing dependencies: 'audioUrl' and 'generateAudio'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/story/RefineStage.tsx
+47:6  Warning: React Hook useEffect has a missing dependency: 'fetchSuggestions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/43) ...
+   Generating static pages (10/43) 
+   Generating static pages (21/43) 
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages (32/43) 
+ ✓ Generating static pages (43/43)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                     8.5 kB         283 kB
+├ ○ /_not-found                            226 B         211 kB
+├ ○ /about                               4.06 kB         274 kB
+├ ƒ /api/admin/sync                        226 B         211 kB
+├ ƒ /api/ai/categorize                     226 B         211 kB
+├ ƒ /api/ai/refine                         226 B         211 kB
+├ ƒ /api/analytics/event                   226 B         211 kB
+├ ƒ /api/auth/login                        226 B         211 kB
+├ ƒ /api/auth/logout                       226 B         211 kB
+├ ƒ /api/auth/me                           226 B         211 kB
+├ ƒ /api/auth/signup                       226 B         211 kB
+├ ƒ /api/crisis/intervention-shown         226 B         211 kB
+├ ƒ /api/crisis/resource-clicked           226 B         211 kB
+├ ƒ /api/cron/sync                         226 B         211 kB
+├ ƒ /api/featured-stories                  226 B         211 kB
+├ ƒ /api/stories                           226 B         211 kB
+├ ƒ /api/stories/[id]                      226 B         211 kB
+├ ƒ /api/stories/approved                  226 B         211 kB
+├ ƒ /api/stories/by-state                  226 B         211 kB
+├ ƒ /api/stories/map-data                  226 B         211 kB
+├ ƒ /api/stories/map-data-synced           226 B         211 kB
+├ ƒ /api/stories/random                    226 B         211 kB
+├ ƒ /api/story/submit                      226 B         211 kB
+├ ƒ /api/user/demographics                 226 B         211 kB
+├ ƒ /api/user/shares                       226 B         211 kB
+├ ƒ /api/user/stories                      226 B         211 kB
+├ ƒ /api/user/stories/count                226 B         211 kB
+├ ƒ /api/voice/generate                    226 B         211 kB
+├ ƒ /api/voice/preview                     226 B         211 kB
+├ ƒ /api/webhooks/sanity                   226 B         211 kB
+├ ○ /community                           4.62 kB         275 kB
+├ ○ /dashboard                           5.26 kB         280 kB
+├ ○ /developer                           9.42 kB         286 kB
+├ ○ /how                                 4.45 kB         275 kB
+├ ○ /login                               7.72 kB         239 kB
+├ ○ /onboarding                          10.4 kB         287 kB
+├ ○ /signup                              7.38 kB         278 kB
+├ ○ /stories                             41.6 kB         316 kB
+├ ƒ /stories/[id]                        2.77 kB         277 kB
+├ ○ /story/submit                        4.36 kB         266 kB
+├ ○ /story/success                       2.11 kB         222 kB
+├ ƒ /studio/[[...tool]]                  1.47 MB        1.69 MB
+├ ○ /submit                              3.98 kB         287 kB
+└ ○ /why                                 3.93 kB         274 kB
++ First Load JS shared by all             210 kB
+  ├ chunks/4bd1b696-cb027502232f7a03.js  53.2 kB
+  ├ chunks/52774a7f-813452d8aa8ce87b.js  37.6 kB
+  ├ chunks/6615-681a61aef96e52dd.js       116 kB
+  └ other shared chunks (total)           3.2 kB
+
+
+ƒ Middleware                             86.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

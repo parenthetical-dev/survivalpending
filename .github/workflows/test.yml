@@ -11,25 +11,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Permissions needed for test reporting
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  issues: write
+
 jobs:
   unit-tests:
     name: Unit & Integration Tests
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: survivalpending_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -46,7 +38,7 @@ jobs:
 
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
         run: |
           echo "Creating database schema..."
           npx prisma db push --skip-generate
@@ -55,9 +47,13 @@ jobs:
 
       - name: Run unit tests
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
         run: |
           mkdir -p test-results
           # Run tests and capture exit code
@@ -91,17 +87,6 @@ jobs:
             echo "has_coverage=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: always() && steps.coverage-check.outputs.has_coverage == 'true'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          flags: unit
-          name: unit-tests
-          fail_ci_if_error: false
-          verbose: true
-
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -120,7 +105,10 @@ jobs:
 
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: always() && github.event_name == 'pull_request'
+        if: |
+          always() && 
+          github.event_name == 'pull_request' && 
+          github.event.pull_request.head.repo.full_name == github.repository
         with:
           name: Jest Tests
           path: 'test-results/jest-junit.xml'
@@ -137,21 +125,6 @@ jobs:
       matrix:
         shardIndex: [1, 2]
         shardTotal: [2]
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: survivalpending_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -171,24 +144,57 @@ jobs:
 
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
         run: |
           echo "Creating database schema..."
           npx prisma db push --skip-generate
           npx prisma generate
           echo "Database schema created successfully"
+          
+      - name: Clean test database
+        env:
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
+          JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
+        run: |
+          echo "Cleaning test database..."
+          npx tsx prisma/clean-test-db.ts
+          echo "Test database cleaned successfully"
 
       - name: Build Next.js app
+        env:
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
+          JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
+          TURNSTILE_SECRET_KEY: test-turnstile-secret
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || '' }}
+          PIRSCH_ACCESS_TOKEN: ${{ secrets.PIRSCH_ACCESS_TOKEN || '' }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN || '' }}
+          META_TEST_EVENT_CODE: ${{ secrets.META_TEST_EVENT_CODE || '' }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET || 'test-secret' }}
+          NEXT_PUBLIC_META_PIXEL_ID: ${{ secrets.META_PIXEL_ID || '' }}
         run: npm run build
         
       - name: Run Playwright tests
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: test-site-key
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'test-key' }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'test-token' }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || '' }}
+          PIRSCH_ACCESS_TOKEN: ${{ secrets.PIRSCH_ACCESS_TOKEN || '' }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN || '' }}
+          META_TEST_EVENT_CODE: ${{ secrets.META_TEST_EVENT_CODE || '' }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET || 'test-secret' }}
           BASE_URL: http://localhost:3000
           FULL_BROWSER_MATRIX: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
           CI: true
@@ -213,16 +219,57 @@ jobs:
 
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: always()
+        if: |
+          always() && 
+          github.event_name == 'pull_request' && 
+          github.event.pull_request.head.repo.full_name == github.repository
         with:
           name: Playwright Tests
           path: 'test-results/junit.xml'
           reporter: java-junit
+          fail-on-error: false
+
+  upload-coverage:
+    name: Upload Coverage to Codecov
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests]
+    # Only run if both test jobs succeeded
+    if: success()
+    
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+      
+      - name: Check if coverage file exists
+        id: coverage-check
+        run: |
+          if [ -f "coverage/lcov.info" ] && [ -s "coverage/lcov.info" ]; then
+            echo "Coverage file exists and is not empty"
+            echo "has_coverage=true" >> $GITHUB_OUTPUT
+            ls -la coverage/
+          else
+            echo "::error::Coverage file is missing or empty"
+            echo "has_coverage=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unit
+          name: unit-tests
+          fail_ci_if_error: false
+          verbose: true
 
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [unit-tests, e2e-tests]
+    needs: [unit-tests, e2e-tests, upload-coverage]
     if: always()
     
     steps:
@@ -269,9 +316,10 @@ jobs:
           echo "- 📊 [Test Results](./jest-results)" >> $GITHUB_STEP_SUMMARY
 
       - name: Comment PR
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const comment = `### 🧪 Test Results
             

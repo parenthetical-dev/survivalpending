@@ -177,7 +177,10 @@ export default function WriteStage({ onComplete }: WriteStageProps) {
               </Button>
 
               {autoSaved && (
-                <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
+                <span 
+                  data-testid="autosave-indicator"
+                  className="text-xs md:text-sm text-muted-foreground flex items-center gap-1"
+                >
                   <Save className="w-3 h-3" />
                   Saved
                 </span>

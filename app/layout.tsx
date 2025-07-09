@@ -7,6 +7,8 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import FooterSection from '@/components/layout/FooterSection';
 import AnalyticsInitializer from '@/components/AnalyticsInitializer';
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 
 
 const jetbrainsMono = JetBrains_Mono({
@@ -44,7 +46,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const metaPixelId = process.env.META_PIXEL_ID;
+  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   return (
     <html lang="en">
@@ -56,6 +58,7 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} font-sans antialiased bg-gray-50 dark:bg-gray-900`}
       >
         <Analytics/>
+        <SpeedInsights/>
         <AnalyticsInitializer />
         {metaPixelId && <MetaPixelWrapper pixelId={metaPixelId} />}
         <AuthProvider>
