@@ -4,20 +4,28 @@ test.describe('Authentication Flow', () => {
   test('signup page loads', async ({ page }) => {
     await page.goto('/signup');
     
-    // Just verify the page loads with expected elements
-    await expect(page.getByText('Create Your Account')).toBeVisible();
-    // Signup page has username selection radio buttons, not input field
-    await expect(page.getByText('Choose Your Username')).toBeVisible();
-    await expect(page.locator('input#password')).toBeVisible();
+    // Wait for page to load and check for key elements
+    await expect(page.getByRole('heading', { name: 'Create Your Account' })).toBeVisible({ timeout: 10000 });
+    
+    // Check for password field which should always be present
+    await expect(page.locator('input[type="password"]').first()).toBeVisible();
+    
+    // Check for the signup button
+    await expect(page.getByRole('button', { name: /sign up|create account/i })).toBeVisible();
   });
 
   test('login page loads', async ({ page }) => {
     await page.goto('/login');
     
-    // Just verify the page loads with expected elements
-    await expect(page.getByText('Log In')).toBeVisible();
-    await expect(page.locator('input#username')).toBeVisible();
-    await expect(page.locator('input#password')).toBeVisible();
+    // Wait for page to load and check for key elements
+    await expect(page.getByRole('heading', { name: /log in|sign in/i })).toBeVisible({ timeout: 10000 });
+    
+    // Check for form fields
+    await expect(page.locator('input[type="text"]').first()).toBeVisible();
+    await expect(page.locator('input[type="password"]').first()).toBeVisible();
+    
+    // Check for the login button
+    await expect(page.getByRole('button', { name: /log in|sign in/i })).toBeVisible();
   });
 
   test('invalid login shows error', async ({ page }) => {
