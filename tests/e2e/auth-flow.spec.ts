@@ -22,11 +22,23 @@ test.describe('Authentication Flow', () => {
   test('invalid login shows error', async ({ page }) => {
     await page.goto('/login');
     
-    // Enter invalid credentials
-    await page.locator('input#username').fill('invalid_user_9999');
+    // Wait for the page to be fully loaded
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for the username input to be visible and enabled
+    const usernameInput = page.locator('input#username');
+    await usernameInput.waitFor({ state: 'visible' });
+    
+    // Clear any existing value and type the username with a delay for WebKit
+    await usernameInput.click();
+    await usernameInput.press('Control+A');
+    await usernameInput.press('Delete');
+    await usernameInput.type('invalid_user_9999', { delay: 100 });
+    
+    // Enter password
     await page.locator('input#password').fill('wrongpassword');
     
     // Just check that the form accepts input
-    await expect(page.locator('input#username')).toHaveValue('invalid_user_9999');
+    await expect(usernameInput).toHaveValue('invalid_user_9999');
   });
 });
