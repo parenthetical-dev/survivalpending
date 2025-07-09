@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "neon": {
+      "command": "npx",
+      "args": ["@neon-tech/mcp-server"]
+    }
+  }
+}

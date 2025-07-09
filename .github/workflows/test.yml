@@ -22,21 +22,6 @@ jobs:
   unit-tests:
     name: Unit & Integration Tests
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: survivalpending_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -53,7 +38,7 @@ jobs:
 
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
         run: |
           echo "Creating database schema..."
           npx prisma db push --skip-generate
@@ -62,7 +47,7 @@ jobs:
 
       - name: Run unit tests
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
@@ -140,21 +125,6 @@ jobs:
       matrix:
         shardIndex: [1, 2]
         shardTotal: [2]
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: survivalpending_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -174,7 +144,7 @@ jobs:
 
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
         run: |
           echo "Creating database schema..."
           npx prisma db push --skip-generate
@@ -183,8 +153,9 @@ jobs:
           
       - name: Clean test database
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
         run: |
           echo "Cleaning test database..."
           npx tsx prisma/clean-test-db.ts
@@ -192,8 +163,9 @@ jobs:
 
       - name: Build Next.js app
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || 'test-key' }}
@@ -209,8 +181,9 @@ jobs:
         
       - name: Run Playwright tests
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/survivalpending_test
+          DATABASE_URL: ${{ secrets.NEON_TEST_DATABASE_URL }}
           JWT_SECRET: test-secret
+          TEST_SECRET: test-secret
           TURNSTILE_SECRET_KEY: test-turnstile-secret
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: test-site-key
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'test-key' }}

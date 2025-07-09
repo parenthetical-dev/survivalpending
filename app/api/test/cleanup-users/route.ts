@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function POST() {
-  // Only allow in test environment
-  if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'development') {
+export async function POST(request: Request) {
+  // Allow in test environment or with test secret
+  const testSecret = request.headers.get('x-test-secret');
+  const isTestEnv = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+  const hasValidSecret = testSecret === process.env.TEST_SECRET;
+  
+  if (!isTestEnv && !hasValidSecret) {
     return NextResponse.json({ error: 'Not allowed in production' }, { status: 403 });
   }
 

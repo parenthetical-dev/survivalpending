@@ -7,7 +7,10 @@ test.describe('Story Submission Flow', () => {
     try {
       const response = await fetch('http://localhost:3000/api/test/cleanup-users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-test-secret': process.env.TEST_SECRET || 'test-secret'
+        }
       });
       if (!response.ok) {
         console.warn('Failed to cleanup test users:', response.statusText);
