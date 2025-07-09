@@ -6,6 +6,11 @@ name: "Survival Pending Security Config"
 # Disable default queries
 disable-default-queries: false
 
+# Languages to analyze
+languages:
+  - javascript
+  - typescript
+
 # Custom query suites
 queries:
   # Core security queries
