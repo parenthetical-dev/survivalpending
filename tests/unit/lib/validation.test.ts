@@ -169,7 +169,7 @@ describe('validateApiResponse', () => {
   });
 
   it('should handle validator throwing error', () => {
-    const throwingValidator = (): any => {
+    const throwingValidator = (data: unknown): data is any => {
       throw new Error('Validator error');
     };
     expect(validateApiResponse({}, throwingValidator)).toBeNull();
