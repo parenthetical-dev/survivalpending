@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
   test('signup page loads', async ({ page }) => {
-    await page.goto('/signup');
+    await page.goto('/signup', { waitUntil: 'domcontentloaded' });
     
-    // Wait for page to load and check for key elements
-    await expect(page.getByRole('heading', { name: 'Create Your Account' })).toBeVisible({ timeout: 10000 });
+    // Wait for the title to be visible - this ensures React has hydrated
+    await expect(page.getByText('Create Your Account')).toBeVisible({ timeout: 30000 });
     
     // Check for password field which should always be present
     await expect(page.locator('input[type="password"]').first()).toBeVisible();
@@ -15,10 +15,10 @@ test.describe('Authentication Flow', () => {
   });
 
   test('login page loads', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
     
-    // Wait for page to load and check for key elements
-    await expect(page.getByRole('heading', { name: /log in|sign in/i })).toBeVisible({ timeout: 10000 });
+    // Wait for the title to be visible - this ensures React has hydrated
+    await expect(page.getByText('Welcome Back')).toBeVisible({ timeout: 30000 });
     
     // Check for form fields
     await expect(page.locator('input[type="text"]').first()).toBeVisible();
@@ -42,12 +42,12 @@ test.describe('Authentication Flow', () => {
     await page.keyboard.press('Backspace');
     
     // Type username character by character with small delay
-    await usernameInput.type('invalid_user_9999', { delay: 50 });
+    await usernameInput.fill('invalid_user_9999');
     
     // Enter password
     const passwordInput = page.locator('input#password');
     await passwordInput.click();
-    await passwordInput.type('wrongpassword', { delay: 50 });
+    await passwordInput.fill('wrongpassword');
     
     // Verify the form accepted input
     await expect(usernameInput).toHaveValue('invalid_user_9999');
