@@ -106,14 +106,18 @@ test.describe('Story Submission Flow', () => {
     await sarahButton.click();
     console.log('Voice selected successfully');
     
-    // The preview button is part of the selected voice card, find and click it
-    console.log('Looking for preview button in selected voice card...');
+    // Wait a moment for the selection to register
+    await page.waitForTimeout(500);
     
-    // Find the preview button within the selected voice card
-    const selectedVoiceCard = page.locator('.border-primary.bg-primary\\/5');
-    const previewButton = selectedVoiceCard.getByRole('button', { name: /preview|play/i });
+    // The preview button is within each voice card - find the one for Sarah
+    console.log('Looking for preview button...');
     
-    await previewButton.waitFor({ state: 'visible', timeout: 10000 });
+    // Find Sarah's card and its preview button
+    const sarahCard = page.locator('div').filter({ hasText: 'Sarah' }).filter({ has: page.locator('input[type="radio"]') });
+    const previewButton = sarahCard.getByRole('button').filter({ has: page.locator('svg') });
+    
+    // Wait for it to be visible and enabled
+    await expect(previewButton).toBeVisible({ timeout: 10000 });
     await expect(previewButton).toBeEnabled({ timeout: 10000 });
     
     // Preview voice

@@ -50,14 +50,14 @@ test.describe('Authentication Flow', () => {
     // Check if we're still on signup page (indicating an error)
     const currentUrl = page.url();
     if (currentUrl.includes('/signup')) {
-      // Look for any error message
+      // Look for any error message (excluding the static "Already have an account?" link)
       const errorSelectors = [
         'text=/error/i',
-        'text=/already/i', 
         'text=/failed/i',
         '.error-message',
         '[role="alert"]',
-        '.text-destructive'
+        '.text-destructive',
+        '[data-error="true"]'
       ];
       
       let errorText = '';
@@ -153,16 +153,20 @@ test.describe('Authentication Flow', () => {
       .catch(() => false);
     
     if (!signupSucceeded) {
-      // Check for error message
-      const signupError = await page.getByText(/error|already|failed|taken/i).isVisible().catch(() => false);
-      if (signupError) {
-        const errorText = await page.getByText(/error|already|failed|taken/i).textContent();
-        console.log(`Signup failed with error: ${errorText}`);
-      }
-      expect(signupError).toBe(false); // Fail test if signup error is visible
+      // Check for actual error message in Alert component
+      const errorAlert = page.locator('[role="alert"], .text-destructive');
+      const hasError = await errorAlert.isVisible().catch(() => false);
       
-      // Also check if we're still on signup page
-      expect(page.url()).not.toContain('/signup');
+      if (hasError) {
+        const errorText = await errorAlert.textContent();
+        console.log(`Signup failed with error: ${errorText}`);
+        throw new Error(`Signup failed: ${errorText}`);
+      }
+      
+      // If no error but still on signup page, something went wrong
+      if (page.url().includes('/signup')) {
+        throw new Error('Signup failed - no redirect occurred and no error shown');
+      }
     }
     
     // Clear cookies/storage to simulate logout
