@@ -29,11 +29,10 @@ export function isStateActive(count: number): boolean {
 
 /**
  * Generates an appropriate privacy message based on state participation
- * @param totalStates - Total number of states in the dataset
  * @param activeStates - Number of states with 5+ stories
  * @returns A descriptive message about geographic diversity
  */
-export function getPrivacyMessage(totalStates: number, activeStates: number): string {
+export function getPrivacyMessage(activeStates: number): string {
   if (activeStates === 0) {
     return 'Building our community presence across states';
   } else if (activeStates < 5) {
@@ -121,6 +120,6 @@ export function createGeographicSummary(
     activeStates,
     totalStories,
     displayTotalStories: formatStoryCount(totalStories),
-    privacyMessage: getPrivacyMessage(stateCounts.length, activeStates),
+    privacyMessage: getPrivacyMessage(activeStates),
   };
 }
