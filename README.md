@@ -1,10 +1,25 @@
-# Survival Pending
+# Survival Pending - Monorepo
 
 > A living, real-time archive of LGBTQ+ resilience in the United States.
 
 <p align="center">
-  <img src="public/ogimage.png" alt="Survival Pending" width="600" />
+  <img src="apps/web/public/ogimage.png" alt="Survival Pending" width="600" />
 </p>
+
+## 📁 Monorepo Structure
+
+This is a Turborepo monorepo containing:
+
+```
+├── apps/
+│   ├── web/          # Next.js web application
+│   └── mobile/       # React Native mobile application
+├── packages/
+│   ├── ui/           # Shared UI components
+│   ├── core/         # Core business logic and utilities
+│   ├── database/     # Prisma schema and database client
+│   └── config/       # Shared configuration files
+```
 
 ## 🌈 About
 
@@ -49,7 +64,7 @@ Your safety is our absolute priority:
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and pnpm 9.15.1+
 - PostgreSQL database (we recommend [Neon](https://neon.tech))
 - Required API keys (see Environment Setup)
 
@@ -63,12 +78,12 @@ Your safety is our absolute priority:
 
 2. **Install dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Set up environment variables**
    
-   Create a `.env.local` file:
+   For the web app, create `apps/web/.env.local`:
    ```env
    # Database
    DATABASE_URL="postgresql://..."
@@ -93,18 +108,31 @@ Your safety is our absolute priority:
    SANITY_API_TOKEN="your-sanity-token"
    ```
 
+   For the mobile app, create `apps/mobile/.env.local`:
+   ```env
+   EXPO_PUBLIC_API_URL="http://localhost:3000"
+   ```
+
 4. **Initialize the database**
    ```bash
-   npx prisma generate
-   npx prisma db push
+   pnpm db:generate
+   pnpm db:push
    ```
 
 5. **Run the development server**
    ```bash
-   npm run dev
+   # Run all apps
+   pnpm dev
+   
+   # Run only web app
+   pnpm dev --filter=web
+   
+   # Run only mobile app
+   pnpm dev --filter=mobile
    ```
 
-   Open [http://localhost:3000](http://localhost:3000) to see the application.
+   - Web app: [http://localhost:3000](http://localhost:3000)
+   - Mobile app: Follow Expo instructions in terminal
 
 ## 🏗️ Architecture
 
@@ -122,23 +150,52 @@ Your safety is our absolute priority:
 - **Analytics**: Google Analytics 4 & Meta Pixel (privacy-preserving)
 - **Deployment**: Optimized for Vercel
 
+### Monorepo Commands
+
+```bash
+# Development
+pnpm dev              # Run all apps
+pnpm dev --filter=web # Run only web app
+pnpm dev --filter=mobile # Run only mobile app
+
+# Building
+pnpm build            # Build all apps
+pnpm build --filter=web # Build specific app
+
+# Database
+pnpm db:generate      # Generate Prisma client
+pnpm db:push          # Push schema changes
+pnpm db:migrate       # Run migrations
+
+# Testing & Linting
+pnpm test             # Run all tests
+pnpm lint             # Lint all packages
+pnpm type-check       # Type check all packages
+
+# Clean
+pnpm clean            # Clean all build artifacts
+```
+
 ### Project Structure
 
 ```
 survivalpending/
-├── app/                    # Next.js app router pages
-│   ├── (authenticated)/    # Protected routes
-│   ├── api/               # API endpoints
-│   └── ...                # Public pages
-├── components/            # React components
-│   ├── auth/             # Authentication components
-│   ├── story/            # Story creation flow
-│   ├── safety/           # Safety features (quick exit, crisis modal)
-│   └── ui/               # shadcn/ui components
-├── lib/                   # Utility functions and services
-├── prisma/               # Database schema and migrations
-├── sanity/               # CMS configuration (optional)
-└── scripts/              # Deployment and maintenance scripts
+├── apps/
+│   ├── web/                # Next.js web application
+│   │   ├── app/           # App router pages
+│   │   ├── components/    # Web-specific components
+│   │   └── lib/           # Web-specific utilities
+│   └── mobile/            # React Native mobile app
+│       ├── src/           # Mobile app source
+│       └── assets/        # Mobile assets
+├── packages/
+│   ├── ui/                # Shared UI components
+│   ├── core/              # Business logic & utilities
+│   ├── database/          # Prisma schema & client
+│   └── config/            # Shared configurations
+├── turbo.json             # Turborepo configuration
+├── pnpm-workspace.yaml    # PNPM workspace config
+└── package.json           # Root package.json
 ```
 
 ## 🤝 Contributing
@@ -169,15 +226,25 @@ This is a safe space. We expect all contributors to:
 - Be inclusive and welcoming
 - Follow our community guidelines
 
-## 📋 Available Scripts
+## 📋 Deployment
+
+### Web App (Vercel)
+
+The web app is optimized for deployment on Vercel:
+
+1. Connect your GitHub repository to Vercel
+2. Set the root directory to `apps/web`
+3. Configure environment variables
+4. Deploy
+
+### Mobile App
+
+The mobile app can be built using Expo EAS:
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run sync:dev    # Sync development data
-npm run sync:prod   # Sync production data
+cd apps/mobile
+eas build --platform ios
+eas build --platform android
 ```
 
 ## 🔒 Security Considerations

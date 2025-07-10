@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@survivalpending/database';
 
 const prismaClientSingleton = () => {
   // Log database URL in test/development for debugging

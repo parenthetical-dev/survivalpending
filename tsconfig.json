@@ -1,27 +1,13 @@
 {
+  "extends": "@survivalpending/config/tsconfig/base.json",
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@survivalpending/ui": ["./packages/ui/src"],
+      "@survivalpending/core": ["./packages/core/src"],
+      "@survivalpending/database": ["./packages/database"],
+      "@survivalpending/shared": ["./packages/shared/src"],
+      "@survivalpending/config": ["./packages/config"]
     }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "jest-dom.d.ts"],
-  "exclude": ["node_modules"]
+  }
 }
