@@ -1,6 +1,6 @@
-import { voiceGenerateLimiter } from '@/lib/rate-limit';
-import { uploadAudioToBlob, generateAudioFilename } from '@/lib/blob-storage';
-import { sanitizeForLogging } from '@/lib/sanitize';
+import { voiceGenerateLimiter } from '../lib/rate-limit';
+import { uploadAudioToBlob, generateAudioFilename } from '../lib/blob-storage';
+import { sanitizeForLogging } from '../lib/sanitize';
 
 interface VoiceGenerationResult {
   success: boolean;
