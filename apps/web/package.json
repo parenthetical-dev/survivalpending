@@ -18,9 +18,9 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@survivalpending/ui": "workspace:*",
-    "@survivalpending/core": "workspace:*",
-    "@survivalpending/database": "workspace:*",
+    "@survivalpending/ui": "file:../../packages/ui",
+    "@survivalpending/core": "file:../../packages/core",
+    "@survivalpending/database": "file:../../packages/database",
     "@anthropic-ai/sdk": "^0.56.0",
     "@hookform/resolvers": "^5.1.1",
     "@marsidev/react-turnstile": "^1.1.0",

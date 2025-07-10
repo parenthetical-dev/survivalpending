@@ -17,6 +17,6 @@
   "devDependencies": {
     "prisma": "^6.11.1",
     "typescript": "^5.6.3",
-    "@survivalpending/config": "workspace:*"
+    "@survivalpending/config": "file:../config"
   }
 }
