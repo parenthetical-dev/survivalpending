@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -40,13 +40,7 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
   const [editing, setEditing] = useState(false);
   const [appliedSuggestions, setAppliedSuggestions] = useState<Set<number>>(new Set());
 
-  useEffect(() => {
-    // Track refine stage start
-    trackEvent('STORY_REFINE_START', 'STORY');
-    fetchSuggestions();
-  }, []);
-
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     try {
       const response = await fetch('/api/ai/refine', {
         method: 'POST',
@@ -68,7 +62,13 @@ export default function RefineStage({ originalContent, onComplete, onSkip, onBac
     } finally {
       setLoading(false);
     }
-  };
+  }, [originalContent]);
+
+  useEffect(() => {
+    // Track refine stage start
+    trackEvent('STORY_REFINE_START', 'STORY');
+    fetchSuggestions();
+  }, [fetchSuggestions]);
 
   const applySuggestion = (index: number, suggestion: Suggestion) => {
     const newContent = content.replace(suggestion.original, suggestion.suggested);

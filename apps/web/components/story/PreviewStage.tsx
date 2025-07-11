@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,16 +46,7 @@ export default function PreviewStage({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    generateAudio();
-    return () => {
-      if (audioUrl && audioUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(audioUrl);
-      }
-    };
-  }, []);
-
-  const generateAudio = async () => {
+  const generateAudio = useCallback(async () => {
     try {
       const response = await fetch('/api/voice/generate', {
         method: 'POST',
@@ -95,8 +86,16 @@ export default function PreviewStage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [content, voiceSettings.voiceId]);
 
+  useEffect(() => {
+    generateAudio();
+    return () => {
+      if (audioUrl && audioUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [generateAudio]);
 
   return (
     <div className="container max-w-full md:max-w-6xl mx-auto px-3 sm:px-4">
