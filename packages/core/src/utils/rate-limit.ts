@@ -84,8 +84,8 @@ export const signupLimiter = new InMemoryRateLimiter(
   60 * 60 * 1000, // per hour
 );
 
-// Cleanup old entries every 5 minutes
-if (typeof window === 'undefined') {
+// Cleanup old entries every 5 minutes (Node.js only)
+if (typeof process !== 'undefined' && process.versions && process.versions.node) {
   setInterval(() => {
     voicePreviewLimiter.cleanup();
     voiceGenerateLimiter.cleanup();
