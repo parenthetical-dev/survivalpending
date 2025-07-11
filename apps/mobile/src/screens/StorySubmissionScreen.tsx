@@ -12,12 +12,15 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../config/api';
+import * as SecureStore from 'expo-secure-store';
+import { STORAGE_KEYS } from '../config/api';
 
 const MAX_CHARACTERS = 1000;
 
 export function StorySubmissionScreen() {
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { } = useAuth();
   const [story, setStory] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,12 +37,15 @@ export function StorySubmissionScreen() {
 
     setIsSubmitting(true);
     try {
+      // Get auth token from SecureStore
+      const token = await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
+      
       // This would call your API endpoint
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/story/submit`, {
+      const response = await fetch(`${API_URL}/api/story/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ content: story }),
       });

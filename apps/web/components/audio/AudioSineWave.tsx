@@ -189,7 +189,7 @@ export default function AudioSineWave({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, progress, isSetup]);
+  }, [isPlaying, progress, isSetup, waveConfig.amplitude, waveConfig.speed, waveConfig.waves]);
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-lg bg-black/5 dark:bg-white/5', className)}>

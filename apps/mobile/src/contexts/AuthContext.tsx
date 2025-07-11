@@ -1,18 +1,21 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { verifyToken } from '@survivalpending/core';
+import { authApi } from '../api/auth';
+import { STORAGE_KEYS } from '../config/api';
+import type { LoginInput, SignupInput } from '../types/auth';
 
 interface User {
   id: string;
   username: string;
-  token: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  signIn: (username: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
   isLoading: boolean;
+  login: (credentials: LoginInput) => Promise<void>;
+  signup: (credentials: SignupInput) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,68 +25,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored token on mount
-    loadStoredAuth();
+    // Check for existing auth token
+    checkAuthStatus();
   }, []);
 
-  const loadStoredAuth = async () => {
+  const checkAuthStatus = async () => {
     try {
-      const token = await SecureStore.getItemAsync('authToken');
-      const storedUser = await SecureStore.getItemAsync('user');
+      const token = await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
+      const userData = await SecureStore.getItemAsync(STORAGE_KEYS.USER_DATA);
       
-      if (token && storedUser) {
-        const userData = JSON.parse(storedUser);
-        const verified = verifyToken(token);
-        
-        if (verified) {
-          setUser(userData);
-        } else {
-          // Token expired, clear storage
-          await SecureStore.deleteItemAsync('authToken');
-          await SecureStore.deleteItemAsync('user');
+      if (token && userData) {
+        setUser(JSON.parse(userData));
+        // Verify token is still valid
+        try {
+          await authApi.getCurrentUser();
+        } catch (error) {
+          // Token invalid, clear auth
+          await logout();
         }
       }
     } catch (error) {
-      console.error('Error loading auth:', error);
+      console.error('Error checking auth status:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signIn = async (username: string, password: string) => {
-    // This would call your API endpoint
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Invalid credentials');
-    }
-
-    const data = await response.json();
-    const userData = {
-      id: data.user.id,
-      username: data.user.username,
-      token: data.token,
-    };
-
-    // Store auth data securely
-    await SecureStore.setItemAsync('authToken', data.token);
-    await SecureStore.setItemAsync('user', JSON.stringify(userData));
-    
-    setUser(userData);
+  const login = async (credentials: LoginInput) => {
+    const response = await authApi.login(credentials);
+    setUser(response.user);
   };
 
-  const signOut = async () => {
-    await SecureStore.deleteItemAsync('authToken');
-    await SecureStore.deleteItemAsync('user');
+  const signup = async (credentials: SignupInput) => {
+    const response = await authApi.signup(credentials);
+    setUser(response.user);
+  };
+
+  const logout = async () => {
+    await authApi.logout();
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      const userData = await authApi.getCurrentUser();
+      setUser(userData);
+      await SecureStore.setItemAsync(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,6 +45,7 @@ export default function PreviewStage({
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const audioUrlRef = useRef<string | null>(null);
 
   const generateAudio = useCallback(async () => {
     try {
@@ -72,11 +73,13 @@ export default function PreviewStage({
         const data = await response.json();
         url = data.url;
         setAudioUrl(url);
+        audioUrlRef.current = url;
       } else {
         // Fallback: handle direct audio response
         const blob = await response.blob();
         url = URL.createObjectURL(blob);
         setAudioUrl(url);
+        audioUrlRef.current = url;
       }
 
       // Audio is handled by Plyr
@@ -91,8 +94,8 @@ export default function PreviewStage({
   useEffect(() => {
     generateAudio();
     return () => {
-      if (audioUrl && audioUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(audioUrl);
+      if (audioUrlRef.current && audioUrlRef.current.startsWith('blob:')) {
+        URL.revokeObjectURL(audioUrlRef.current);
       }
     };
   }, [generateAudio]);

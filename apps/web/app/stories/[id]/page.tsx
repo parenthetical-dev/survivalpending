@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Clock, Play, Pause, ArrowLeft, Share2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -37,7 +37,7 @@ export default function StoryPage() {
     if (params.id) {
       fetchStory(params.id as string);
     }
-  }, [params.id]);
+  }, [params.id, fetchStory]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -69,7 +69,7 @@ export default function StoryPage() {
     };
   }, [story]);
 
-  async function fetchStory(id: string) {
+  const fetchStory = useCallback(async (id: string) => {
     try {
       const response = await fetch(`/api/stories/${id}`);
       if (response.ok) {
@@ -84,7 +84,7 @@ export default function StoryPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
 
   const getTimeAgo = (date: string) => {
     const now = new Date();
