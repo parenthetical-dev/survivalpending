@@ -33,6 +33,23 @@ export default function StoryPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [loadingNextStory, setLoadingNextStory] = useState(false);
 
+  const fetchStory = useCallback(async (id: string) => {
+    try {
+      const response = await fetch(`/api/stories/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setStory(data.story);
+      } else {
+        router.push('/stories');
+      }
+    } catch (error) {
+      console.error('Error fetching story:', error);
+      router.push('/stories');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
   useEffect(() => {
     if (params.id) {
       fetchStory(params.id as string);
@@ -68,23 +85,6 @@ export default function StoryPage() {
       audio.removeEventListener('ended', handleEnded);
     };
   }, [story]);
-
-  const fetchStory = useCallback(async (id: string) => {
-    try {
-      const response = await fetch(`/api/stories/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setStory(data.story);
-      } else {
-        router.push('/stories');
-      }
-    } catch (error) {
-      console.error('Error fetching story:', error);
-      router.push('/stories');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
 
   const getTimeAgo = (date: string) => {
     const now = new Date();
