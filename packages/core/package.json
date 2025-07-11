@@ -24,6 +24,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.4",
+    "next": "15.3.5",
     "@survivalpending/config": "file:../config",
     "@survivalpending/database": "file:../database",
     "tsup": "^8.3.5",
