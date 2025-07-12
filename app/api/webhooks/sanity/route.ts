@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Parse the validated body
     const payload = JSON.parse(body);
-    const { _type, storyId, status, moderatorNotes } = payload;
+    const { _type, storyId, status, moderatorNotes, showOnHomepage } = payload;
 
     // Only process story updates
     if (_type !== 'story' || !storyId) {
@@ -63,6 +63,10 @@ export async function POST(req: NextRequest) {
 
     if (moderatorNotes !== undefined) {
       updateData.moderationNotes = moderatorNotes;
+    }
+
+    if (showOnHomepage !== undefined) {
+      updateData.showOnHomepage = showOnHomepage;
     }
 
     // Note: tags and categories are stored in Sanity only, not in Neon
