@@ -48,31 +48,47 @@ export class SyncService {
         const batch = stories.slice(i, i + batchSize);
         console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(stories.length / batchSize)}`);
 
-        const mutations = batch.map(story => ({
-          createOrReplace: {
-            _type: 'story',
-            _id: `story-${story.id}`,
-            storyId: story.id,
-            username: story.user?.username || 'anonymous',
-            content: story.contentText,
-            contentSanitized: story.contentSanitized || story.contentText,
-            voiceId: story.voiceId,
-            audioUrl: story.audioUrl,
-            status: story.status.toLowerCase() || 'pending',
-            sentimentFlags: {
-              highRisk: story.flaggedHighRisk,
-              crisisContent: story.flaggedCrisis,
-              positiveResilience: story.flaggedPositive,
+        // Fetch existing stories from Sanity to preserve showOnHomepage
+        const existingStories = await sanityClient
+          .config({ dataset: this.sanityDataset })
+          .fetch<Array<{ storyId: string; showOnHomepage?: boolean }>>(`*[_type == "story" && storyId in $storyIds]`, {
+            storyIds: batch.map(s => s.id)
+          });
+
+        const existingStoriesMap = new Map(
+          existingStories.map(s => [s.storyId, s])
+        );
+
+        const mutations = batch.map(story => {
+          const existingSanityStory = existingStoriesMap.get(story.id);
+          
+          return {
+            createOrReplace: {
+              _type: 'story',
+              _id: `story-${story.id}`,
+              storyId: story.id,
+              username: story.user?.username || 'anonymous',
+              content: story.contentText,
+              contentSanitized: story.contentSanitized || story.contentText,
+              voiceId: story.voiceId,
+              audioUrl: story.audioUrl,
+              status: story.status.toLowerCase() || 'pending',
+              sentimentFlags: {
+                highRisk: story.flaggedHighRisk,
+                crisisContent: story.flaggedCrisis,
+                positiveResilience: story.flaggedPositive,
+              },
+              createdAt: story.createdAt.toISOString(),
+              approvedAt: story.approvedAt?.toISOString(),
+              moderatorNotes: story.moderationNotes,
+              // Preserve showOnHomepage from Sanity if it exists, otherwise use Neon value
+              showOnHomepage: existingSanityStory?.showOnHomepage ?? story.showOnHomepage,
+              tags: [],
+              categories: [],
+              color: story.color || getStoryColor(story.id),
             },
-            createdAt: story.createdAt.toISOString(),
-            approvedAt: story.approvedAt?.toISOString(),
-            moderatorNotes: story.moderationNotes,
-            showOnHomepage: story.showOnHomepage,
-            tags: [],
-            categories: [],
-            color: story.color || getStoryColor(story.id),
-          },
-        }));
+          };
+        });
 
         // Execute batch mutation
         await sanityClient
@@ -133,7 +149,10 @@ export class SyncService {
             const updateData: any = {
               status: (sanityStory.status?.toUpperCase() || 'PENDING') as StoryStatus,
               moderationNotes: sanityStory.moderatorNotes,
-              showOnHomepage: sanityStory.showOnHomepage || false,
+              // Only update showOnHomepage if it's explicitly set in Sanity
+              ...(sanityStory.showOnHomepage !== undefined && {
+                showOnHomepage: sanityStory.showOnHomepage
+              }),
               color: sanityStory.color || existingStory.color || getStoryColor(sanityStory.storyId),
             };
 
